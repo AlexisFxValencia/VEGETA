@@ -2,8 +2,6 @@
 
 A very light app to plot MORET, SERPENT and MCNP Geometries and export them as 3D files.
 
-If you just want to use it without downloading it, use this URL : file:///Y:/VEGETA/index.html
-
 ## Getting started
 
 Just download the VEGETA folder and open index.html with your browser (Firefox or Chrome eg).
