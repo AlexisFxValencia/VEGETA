@@ -1,0 +1,93 @@
+body { margin: 0; }
+
+header{    
+    background-color: brown;
+    width:100%;
+    position:fixed;
+    height: min-content;
+}
+
+#jdd_title{
+    position:fixed; 
+    margin-top:0%;  
+    width: 100%;
+    height: min-content;
+
+    text-align: center;
+    background-color:rgb(160, 230, 95);
+    border-width:5px;
+    border-style:dotted;
+    border-color:black;
+}
+.cursor_display{
+    margin-top: 0%;
+    text-align: left;
+    margin-left: 1%;
+}
+#maDivGauche{
+    background-color: rgb(63, 180, 155);
+    text-align: center;
+    height:100%;
+    width :30%;
+    position:fixed;
+
+    left:0;
+    margin-top:2.45%;    
+    overflow-y: auto;
+}
+
+#maDivDroite{
+    height:100%;
+    width: 70%;
+    margin-top:2.45%;
+    position: fixed;
+    right:0;
+    background-color: rgb(160, 230, 95);
+    text-align: center; 
+}
+
+
+textarea{
+    display: block;
+    width: 95%;
+    height: 43%;
+    margin-left: auto;
+    margin-right: auto;
+    
+    
+}
+
+
+
+
+#view_title{
+    text-align: center;
+}
+
+#start_button{
+    position:float;
+    margin-top : 50 px;
+    width: 250px;
+	height: 50px;
+	cursor: pointer;
+	font-size: 20px;
+	font-weight: bold;
+	color: black;
+	background: white;
+	border: 2px solid rgb(160, 230, 95);
+	box-shadow: 5px 5px 0 rgb(160, 230, 95),
+		-5px -5px 0 rgb(160, 230, 95),
+		-5px 5px 0 rgb(160, 230, 95),
+		5px -5px 0 rgb(160, 230, 95);
+	transition: 500ms ease-in-out;
+    border-radius: 34px;
+
+}
+
+#start_button:hover {
+	box-shadow: 20px 5px 0 rgb(48, 105, 93), -20px -5px 0 rgb(48, 105, 93);
+}
+
+#start_button:focus {
+	outline: none;
+}

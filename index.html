@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<title>JDD viewer - Neutronics input 3D plotting </title>
+		<link href="style.css" rel="stylesheet" type="text/css">
+		<link href="transparentbutton.css" rel="stylesheet" type ="text/css">
+	</head>
+	<body>		
+		<header> 
+			<h3 id="jdd_title">VEGETA - Visualizer & Exporter for GEometries of Tridimentional Aspect</h3>			
+		</header>		
+		<div id="maDivGauche" >
+			<span>
+				<p>
+					<span id="x_cursor" class="cursor_display">x_cursor :</span>
+					<span id="y_cursor" class="cursor_display">y_cursor :</span>
+					<span id="z_cursor" class="cursor_display">z_cursor :</span>
+				</p>
+				<!--<p> Input Data (only MORET 5 for now): </p>-->
+				<select name="code" id="code-select">
+					<option value="MORET">MORET 5</option>
+					<option value="SERPENT">SERPENT 2</option>
+					<option value="SERPENT">MCNP</option>
+					<option value="TRIPOLI">TRIPOLI 4</option>
+					<option value="OpenMC">OpenMC</option>
+				</select>
+				<input type="button" id = "dae_button" value="Export to dae" onclick= "export_dae()" />
+				<input type="button" id = "stl_button" value="Export to .stl" onclick= "export_stl()" />
+				<input type="button" id = "obj_button" value="Export to .obj" onclick= "export_obj()" />				
+				<input type="button" id = "ply_button" value="Export to .ply" onclick= "export_ply()" />				
+			</span>
+			<div>
+				<div>
+					<input type="range" id="x_slider" min="0" max="100" step="1">
+					<input type="text" id="x_writing_zone" value="" maxlength="5" />
+				</div>
+				<div>
+					<input type="range" id="y_slider" min="0" max="100" step="1">
+					<input type="text" id="y_writing_zone" value="" maxlength="5" />
+				</div>
+				<div>
+					<input type="range" id="z_slider" min="0" max="100" step="1">
+					<input type="text" id="z_writing_zone" value="" maxlength="5" />
+				</div>	
+			</div>
+			<br/>
+			<input type="file" id="uploader">			
+			<br>
+			<br>
+			<textarea id="textareabox">Paste your input text here and click on "Plot" </textarea>            
+			<br>
+			<input type="button" id = "start_button" value="Plot" onclick= "start_or_refresh()" />
+			<br>
+			<br>
+			<h3><a  href="help.html">I need help</a></h3>
+			<div id="buttons_zone">
+			</div>
+		</div>
+
+		<div>
+			<div id="maDivDroite">
+				<script src ="js/core/main.js"></script>
+				<script src="js/lib/three.js"></script>
+				<script src ="js/lib/OrbitControls.js"></script>
+				<script src ="js/lib/ConvexHull.js"></script>
+				<script src ="js/lib/ConvexGeometry.js"></script>
+
+
+
+				<script src="js/core/moret/moretReader.js"></script>
+				<script src="js/core/moret/moretMeshCreator.js"></script>		
+				<script src="js/core/moret/moretMeshTransformer.js"></script>
+				<script src="js/core/moret/moretManager.js"></script>
+				<script src="js/core/moret/moretLatticeCreator.js"></script>
+				<script src="js/core/moret/moretModuleCreator.js"></script>
+
+				<script src="js/core/serpent/serpentReader.js"></script>
+				<script src="js/core/serpent/serpentMeshCreator.js"></script>
+				<script src="js/core/serpent/serpentManager.js"></script>
+
+
+				<script src="js/core/openMC/openMCManager.js"></script>
+				<script src="js/core/openMC/openMCReader.js"></script>
+				<script src="js/core/openMC/surface.js"></script>
+				<script src="js/core/openMC/cell.js"></script>
+
+
+				<<script src="js/core/cutManager.js"></script>
+				<script src="js/core/sceneManager.js"></script>
+				<script src="js/core/exportManager.js"></script>
+				<script src="js/core/buttonsGenerator.js"></script>
+				<script src="js/core/pickHelper.js"></script>
+				<script src="js/core/meshTools.js"></script>
+				<!--<script src="js/core/FontLoader.js"></script>-->
+				
+				<script src="js/lib/csg/csg-lib.js"></script>
+				<script src="js/lib/csg/three-csg.js"></script>
+				<script src="js/lib/export-lib/ColladaExporter.js"></script>
+				<script src="js/lib/export-lib/STLExporter.js"></script>
+				<script src="js/lib/export-lib/OBJExporter.js"></script>
+				<script src="js/lib/export-lib/PLYExporter.js"></script>
+			</div>
+		
+		<script>
+			var firstStart = true;
+		</script>
+		
+	</div>
+	</body>
+</html>
