@@ -10,10 +10,11 @@ Don't forget to choose the right code (MORET, SERPENT,...) on top of the page.
 
 The test files are in the JDD folder.
 
+![Capture](https://user-images.githubusercontent.com/84465552/176698642-a51f6735-899f-4574-bf13-03142fb5000b.PNG)
 
 
 ## Authors and acknowledgment
-made by Alexis VALENCIA - alexis.valencia@irsn.fr
+made by Alexis VALENCIA - alexisfx.valencia@gmail.com
 
 ## License
 This is a MIT licence project.
