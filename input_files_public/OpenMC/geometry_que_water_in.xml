@@ -1,0 +1,74 @@
+<?xml version='1.0' encoding='utf-8'?>
+<geometry>
+  <cell id="28" material="3" name="water_in_cell" region="1 -2 5 -6 9 -10 ~(11 -14 5 -6 9 -10) ~(16 -19 5 -6 9 -10) ~(21 -24 5 -6 9 -10) ~(26 -29 5 -6 9 -10) ~(31 -34 5 -6 9 -10) ~(36 -39 5 -6 9 -10) ~(41 -44 5 -6 9 -10) ~(46 -49 5 -6 9 -10) ~(51 -54 5 -6 9 -10) ~(56 -59 5 -6 9 -10) ~(61 -64 5 -6 9 -10) ~(66 -69 5 -6 9 -10)" universe="1" />
+  <surface boundary="reflective" coeffs="0.0" id="1" type="x-plane" />
+  <surface coeffs="4.144" id="2" type="x-plane" />
+  <surface coeffs="4.5" id="3" type="x-plane" />
+  <surface boundary="reflective" coeffs="5.0" id="4" type="x-plane" />
+  <surface boundary="reflective" coeffs="0.0" id="5" type="y-plane" />
+  <surface coeffs="4.0" id="6" type="y-plane" />
+  <surface coeffs="4.5" id="7" type="y-plane" />
+  <surface boundary="reflective" coeffs="5.0" id="8" type="y-plane" />
+  <surface boundary="reflective" coeffs="-40.0" id="9" type="z-plane" />
+  <surface boundary="reflective" coeffs="40.0" id="10" type="z-plane" />
+  <surface coeffs="0.1" id="11" type="x-plane" />
+  <surface coeffs="0.138" id="12" type="x-plane" />
+  <surface coeffs="0.199" id="13" type="x-plane" />
+  <surface coeffs="0.23700000000000002" id="14" type="x-plane" />
+  <surface coeffs="3.8" id="15" type="y-plane" />
+  <surface coeffs="0.43700000000000006" id="16" type="x-plane" />
+  <surface coeffs="0.4750000000000001" id="17" type="x-plane" />
+  <surface coeffs="0.536" id="18" type="x-plane" />
+  <surface coeffs="0.5740000000000001" id="19" type="x-plane" />
+  <surface coeffs="3.8" id="20" type="y-plane" />
+  <surface coeffs="0.774" id="21" type="x-plane" />
+  <surface coeffs="0.812" id="22" type="x-plane" />
+  <surface coeffs="0.873" id="23" type="x-plane" />
+  <surface coeffs="0.911" id="24" type="x-plane" />
+  <surface coeffs="3.8" id="25" type="y-plane" />
+  <surface coeffs="1.1110000000000002" id="26" type="x-plane" />
+  <surface coeffs="1.1490000000000002" id="27" type="x-plane" />
+  <surface coeffs="1.2100000000000002" id="28" type="x-plane" />
+  <surface coeffs="1.2480000000000002" id="29" type="x-plane" />
+  <surface coeffs="3.8" id="30" type="y-plane" />
+  <surface coeffs="1.4480000000000002" id="31" type="x-plane" />
+  <surface coeffs="1.4860000000000002" id="32" type="x-plane" />
+  <surface coeffs="1.5470000000000002" id="33" type="x-plane" />
+  <surface coeffs="1.5850000000000002" id="34" type="x-plane" />
+  <surface coeffs="3.8" id="35" type="y-plane" />
+  <surface coeffs="1.7850000000000001" id="36" type="x-plane" />
+  <surface coeffs="1.8230000000000002" id="37" type="x-plane" />
+  <surface coeffs="1.8840000000000001" id="38" type="x-plane" />
+  <surface coeffs="1.9220000000000002" id="39" type="x-plane" />
+  <surface coeffs="3.8" id="40" type="y-plane" />
+  <surface coeffs="2.1220000000000003" id="41" type="x-plane" />
+  <surface coeffs="2.16" id="42" type="x-plane" />
+  <surface coeffs="2.221" id="43" type="x-plane" />
+  <surface coeffs="2.2590000000000003" id="44" type="x-plane" />
+  <surface coeffs="3.8" id="45" type="y-plane" />
+  <surface coeffs="2.459" id="46" type="x-plane" />
+  <surface coeffs="2.497" id="47" type="x-plane" />
+  <surface coeffs="2.558" id="48" type="x-plane" />
+  <surface coeffs="2.596" id="49" type="x-plane" />
+  <surface coeffs="3.8" id="50" type="y-plane" />
+  <surface coeffs="2.7960000000000003" id="51" type="x-plane" />
+  <surface coeffs="2.8340000000000005" id="52" type="x-plane" />
+  <surface coeffs="2.8950000000000005" id="53" type="x-plane" />
+  <surface coeffs="2.9330000000000003" id="54" type="x-plane" />
+  <surface coeffs="3.8" id="55" type="y-plane" />
+  <surface coeffs="3.1330000000000005" id="56" type="x-plane" />
+  <surface coeffs="3.1710000000000003" id="57" type="x-plane" />
+  <surface coeffs="3.232" id="58" type="x-plane" />
+  <surface coeffs="3.2700000000000005" id="59" type="x-plane" />
+  <surface coeffs="3.8" id="60" type="y-plane" />
+  <surface coeffs="3.47" id="61" type="x-plane" />
+  <surface coeffs="3.508" id="62" type="x-plane" />
+  <surface coeffs="3.569" id="63" type="x-plane" />
+  <surface coeffs="3.607" id="64" type="x-plane" />
+  <surface coeffs="3.8" id="65" type="y-plane" />
+  <surface coeffs="3.8070000000000004" id="66" type="x-plane" />
+  <surface coeffs="3.8450000000000006" id="67" type="x-plane" />
+  <surface coeffs="3.9060000000000006" id="68" type="x-plane" />
+  <surface coeffs="3.9440000000000004" id="69" type="x-plane" />
+  <surface coeffs="3.8" id="70" type="y-plane" />
+</geometry>

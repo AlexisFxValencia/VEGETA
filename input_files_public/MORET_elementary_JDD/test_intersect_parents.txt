@@ -1,0 +1,15 @@
+
+
+  MODU 0
+
+**** Acier des etuis, cales et gaines
+TYPE 8 CYLZ 6.1 47.178
+VOLU 8 0 8 2		0 0 -56.122
+  
+**** Fissile sec
+TYPE 9 CYLZ 6.1 12.415
+
+VOLU 9 8 9 10		0 0 -90.885
+
+FINM 
+ 	

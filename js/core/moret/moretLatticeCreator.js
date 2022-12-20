@@ -1,7 +1,8 @@
 class moretLatticeCreator{
-	constructor(mesh_creator, mesh_tools){
+	constructor(mesh_creator, mesh_tools, cut_manager){
         this.mesh_creator = mesh_creator;
 		this.mesh_tools = mesh_tools;
+		this.cut_manager = cut_manager;
     }
 
 	create_lattices_first_module(){
@@ -303,7 +304,7 @@ class moretLatticeCreator{
 		//console.log("model_volume", model_volume);
 		let mesh = model_mesh.clone(true);
 		mesh.material = model_mesh.material.clone();	
-		mesh.material.clippingPlanes = [ x_plane, y_plane, z_plane ];
+		mesh.material.clippingPlanes = [ this.cut_manager.x_plane, this.cut_manager.y_plane, this.cut_manager.z_plane ];
 		
 		// A RAJOUTER POUR DES COULEURS ALEATOIRES / NE PAS SUPPRIMER						
 		//moret_latice_cell.material.color.setHex(Math.random() * 0xffffff );				
@@ -326,7 +327,7 @@ class moretLatticeCreator{
 		
 		let cloned_mesh = model_volume.clone(true);
 		cloned_mesh.material = model_volume.material.clone();	
-		cloned_mesh.material.clippingPlanes = [ x_plane, y_plane, z_plane ];
+		cloned_mesh.material.clippingPlanes = [ this.cut_manager.x_plane, this.cut_manager.y_plane, this.cut_manager.z_plane ];
 
 		let x_index = 0;
 		let y_index = 0;

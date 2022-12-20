@@ -1,0 +1,43 @@
+% --- Research reactor input for Serpent tutorial
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% We'll start from a simple water geometry %
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+% --- Our reactor model will fit inside a cubic surface with an edge length of 100 cm
+
+surf sCUBE cube 0.0 0.0 0.0 100.0
+
+% --- Cell cIN contains water
+
+cell cIN  0 water   -sCUBE
+
+% --- Cell cOUT is defined as an outside cell
+
+cell cOUT 0 outside  sCUBE
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Link additional input files here %
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+% --- Link the materials file to this input
+ 
+include "materials"
+
+/******************
+ * Run parameters *
+ ******************/
+
+% --- Neutron population: 10000 neutrons per cycle, 100 active / 50 inactive cycles
+
+set pop 10000 100 50
+
+% --- Geometry plots
+
+% --- XY-plot
+
+plot 3 200 200 0 -100 100 -100 100
+
+% --- XZ-plot
+
+plot 2 200 200 0 -100 100 -100 100

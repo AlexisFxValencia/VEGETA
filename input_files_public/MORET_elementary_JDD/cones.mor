@@ -1,0 +1,19 @@
+GEOM
+
+    * Module '3x4x1-2' 
+    MODU 0 
+      TYPE 1 BOX 170.8 136.98 225.0 
+      TYPE 2 PLAY SUPE 5.
+      TYPE 3 CYLX 10 50
+      TYPE 4 CONX ANGL 45
+      TYPE 5 CONY 0.2
+      TYPE 6 CONZ 0.4
+
+
+      VOLU plan 0 2 4 12 7 3
+      VOLU cylinx 0 3 5 40 0 0
+      VOLU conex 0 4 4 -80 7.32 0.0 
+      VOLU coney 0 5 5 0 0 0
+      VOLU conez 0 6 5 0 0 0
+
+ENDM

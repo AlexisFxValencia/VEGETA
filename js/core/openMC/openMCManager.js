@@ -6,59 +6,132 @@ class openMCManager {
         this.group_array = [];
     }
 
-    
-    generate_points(){
+    create_objects_in_the_scene(){
+        this.create_objects();
+        this.add_points_to_the_scene();
+
+        //let openMC_tests = new openMCTests(this.mesh_tools);
+		//openMC_tests.create_sphere_intersection();
+		//openMC_tests.create_planes_intersection();
+		//openMC_tests.create_sphere_cylinder_intersection();
+        //openMC_tests.create_sphere_plane_intersection();
+    }
+
+
+    create_objects(){
         for (let mycell of openMC_reader.cell_array){
             let mate = this.openMC_reader.mate_array.find(mate => mate.id === mycell.material);
             mycell.color = mate.color;
-
-            if (!mycell.is_complex){
+            
+            if (mycell.is_complex){
+                for (let i = 0; i < mycell.nb_points_to_try; i++){                
+                    mycell.update_limits();                
+                    this.push_one_point(mycell);
+                }                            
+            } else{
+                /*
                 mycell.compute_x_limits(this.openMC_reader.surface_array);
                 mycell.compute_y_limits(this.openMC_reader.surface_array);
                 mycell.compute_z_limits(this.openMC_reader.surface_array);
+                */
+               this.create_cell_mesh(mycell);
             }
-            
-            for (let i = 0; i < mycell.nb_points_to_try; i++){
-                if (mycell.is_complex){
-                    mycell.update_limits();
-                }
-                this.push_one_point(mycell);
-            }
-                
         }
-        
     }
 
+    create_cell_mesh(mycell){
+        let local_surfaces = [];
+        let local_signs = [];
+
+        for (let cell_surface of mycell.surfaces_array ){
+            let surface = this.openMC_reader.surface_array.find(plane_1 => plane_1.id === cell_surface[0]);
+            local_surfaces.push(surface);
+            local_signs.push(cell_surface[1]);
+        }
+        //console.log("local_planes : ", local_planes);
+        //console.log("local_signs : ", local_signs);
+
+        let myintersector = new intersector();    
+
+        if (this.are_only_planes_in(local_surfaces)){
+            console.log("creating the true mesh of cell n°", mycell.id);
+            let points_intersection = myintersector.intersect_planes(local_surfaces, local_signs);            
+            const geometry = new ConvexGeometry(points_intersection);
+            let material = new THREE.MeshBasicMaterial( { color: mycell.color } );
+            const mesh = new THREE.Mesh( geometry, material );
+            mesh.name = mycell.id;
+            mesh.material.name = mycell.material;
+            scene_manager.scene.add(mesh);
+       
+        } else if (this.are_only_spheres_in(local_surfaces)){
+            console.log("creating the true mesh of cell n°", mycell.id);
+            let points_intersection = myintersector.intersect_spheres(local_surfaces, local_signs);            
+            const geometry = new ConvexGeometry(points_intersection);
+            let material = new THREE.MeshBasicMaterial( { color: mycell.color } );
+            const mesh = new THREE.Mesh( geometry, material );
+            mesh.name = mycell.id;
+            mesh.material.name = mycell.material;
+            scene_manager.scene.add(mesh);
+        }
+
+
+        
+
+    }
+
+    are_only_planes_in(local_planes){
+        //console.log(local_planes);
+        let to_return = true;
+        for (let plane of local_planes){
+            if (plane.type != "x-plane" && plane.type != "y-plane" && plane.type != "z-plane"){
+                to_return = false;
+            }
+
+        }
+        return to_return;
+    }
     
+    are_only_spheres_in(local_spheres){
+        console.log(local_spheres);
+        let to_return = true;
+        for (let sphere of local_spheres){
+            if (sphere.type != "sphere"){
+                to_return = false;
+            }
+
+        }
+        console.log("sphere to_return : ", to_return);
+        return to_return;
+    }
 
     push_one_point(mycell){
         let x = Math.random() * (mycell.x_max - mycell.x_min) + mycell.x_min;
         let y = Math.random() * (mycell.y_max - mycell.y_min) + mycell.y_min;;
         //let z = Math.random() * (mycell.z_max - mycell.z_min) + mycell.z_min;;
         let z = this.z_cut;
+        let point = new THREE.Vector3( x, y, z);
                 
-        if (this.point_is_in_cell(x, y, z, mycell)){
+        if (this.point_is_in_cell(point, mycell)){
             mycell.computed_points.push(x, y, z);
             mycell.computed_points_colors.push(mycell.color.r, mycell.color.g, mycell.color.b);
             
-            let myvector = new THREE.Vector3( x, y, z );
-            mycell.computed_points_vectors.push(myvector);
+            mycell.computed_points_vectors.push(point);
         } 
 
     }
 
-    point_is_in_cell(x, y, z, mycell){
+    point_is_in_cell(point, mycell){
         let is_in_cell = true;
         if (mycell.region.includes("~")){
-            is_in_cell = this.convert_to_boolean(mycell.region, x, y, z);
-            console.log(is_in_cell);
+            is_in_cell = this.convert_to_boolean(mycell.region, point);
+            //console.log(is_in_cell);
              
         } else {
             for (let surface_delimiter of mycell.surfaces_array){
             //console.log(this.openMC_reader.surface_array);
             let bounding_surface = this.openMC_reader.surface_array.find(surf => surf.id === surface_delimiter[0]);
             //console.log("bounding surface : ", bounding_surface);
-            if (!bounding_surface.includes(x, y, z, surface_delimiter[1])){
+            if (!bounding_surface.includes(point, surface_delimiter[1])){
                 is_in_cell = false;
             }
             
@@ -69,7 +142,9 @@ class openMCManager {
     }
 
     
-    convert_to_boolean(region, x, y, z){
+    convert_to_boolean(region, point){
+        console.log("converting to boolean ")
+        
         //var unique_surfaces = 
         let line = region.replaceAll("~", " ");
         line = line.replaceAll(")", " ");
@@ -85,7 +160,7 @@ class openMCManager {
         for (let surface_id of unique_ids_array){
             let bounding_surface = this.openMC_reader.surface_array.find(surf => surf.id === surface_id);
             let is_inside_surf_1 = false;
-            if (bounding_surface.includes(x, y, z, "-")){
+            if (bounding_surface.includes(point, -1)){
                 is_inside_surf_1 = true;
             } 
             let obj = {id : surface_id, is_inside_surf : is_inside_surf_1} 
@@ -116,6 +191,7 @@ class openMCManager {
             console.log(line_2);
         }
         */
+       console.log(eval(line_2));
         
         
         return eval(line_2);

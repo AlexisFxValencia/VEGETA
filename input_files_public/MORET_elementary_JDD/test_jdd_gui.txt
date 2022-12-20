@@ -1,0 +1,5 @@
+    TYPE 2 BOX 0.63 0.63 5.000
+
+TYPE 102 BOX 0.60349 5 6   * guide tube outer radius
+    TYPE 101 BOX 2.1 5 2  * guide tube inner radius
+    VOLU 2 1 2 water -10.08 -10.08 0.0 * cell 2 - used for the lattice geometry 

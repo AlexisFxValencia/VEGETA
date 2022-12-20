@@ -1,0 +1,15 @@
+
+
+TYPE 1 SPHE 3 0 0
+VOLU 201 0 1 EAU 3 3 3
+VOLU 202 0 1 EAU 3 -3 3
+VOLU 203 0 1 EAU -3 3 3
+VOLU 204 0 1 EAU -3 -3 3
+
+   COMP EAU CONC
+       H1-H2O 6.67607E-02
+	   O16    3.33804E-02
+   ENDC
+   
+   
+**** Rendu : 4 sphères tangentes alignées de même couleur (bleue)

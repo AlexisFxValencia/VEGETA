@@ -20,10 +20,11 @@
 				<!--<p> Input Data (only MORET 5 for now): </p>-->
 				<select name="code" id="code-select">
 					<option value="MORET">MORET 5</option>
+					<option value="OpenMC">OpenMC</option>
 					<option value="SERPENT">SERPENT 2</option>
 					<option value="SERPENT">MCNP</option>
 					<option value="TRIPOLI">TRIPOLI 4</option>
-					<option value="OpenMC">OpenMC</option>
+					
 				</select>
 				<input type="button" id = "dae_button" value="Export to dae" onclick= "export_dae()" />
 				<input type="button" id = "stl_button" value="Export to .stl" onclick= "export_stl()" />
@@ -65,6 +66,11 @@
 				<script src ="js/lib/OrbitControls.js"></script>
 				<script src ="js/lib/ConvexHull.js"></script>
 				<script src ="js/lib/ConvexGeometry.js"></script>
+				
+				<script src ="js/lib/earcut.js"></script>
+				<script src ="js/lib/delaunator/utils.js"></script>
+				<script src ="js/lib/delaunator/orient2d.js"></script>
+				<script src ="js/lib/delaunator/delaunator.js"></script>
 
 
 
@@ -84,6 +90,13 @@
 				<script src="js/core/openMC/openMCReader.js"></script>
 				<script src="js/core/openMC/surface.js"></script>
 				<script src="js/core/openMC/cell.js"></script>
+				<script src="js/core/openMC/sphere.js"></script>
+				<script src="js/core/openMC/plane.js"></script>
+				<script src="js/core/openMC/cylinder.js"></script>
+				<script src="js/core/openMC/intersector.js"></script>
+				<script src="js/core/openMC/openMCTests.js"></script>
+
+				
 
 
 				<<script src="js/core/cutManager.js"></script>

@@ -33,7 +33,7 @@ class cell{
 
         update_nb_points_to_try(){
                 if (this.is_complex){
-                        this.nb_points_to_try = 12000;
+                        this.nb_points_to_try = 120;
                 }
                 
         }
@@ -70,9 +70,9 @@ class cell{
                         let surface_id = parseInt(ids[i], 10);
                         
                         if (surface_id < 0){
-                                this.surfaces_array.push([ids[i].replace('-', ''), "-"]) 
+                                this.surfaces_array.push([ids[i].replace('-', ''), -1]) 
                         } else{
-                                this.surfaces_array.push([ids[i].replace('-', ''), "+"]) 
+                                this.surfaces_array.push([ids[i].replace('-', ''), +1]) 
                         }
                 }
         }
@@ -81,11 +81,11 @@ class cell{
                 for (let surface_delimiter of this.surfaces_array){
                         let bounding_surface = surface_array.find(surf => surf.id === surface_delimiter[0]);
                         if (bounding_surface.type == "x-plane"){
-                            if (surface_delimiter[1] == '-'){
+                            if (surface_delimiter[1] == -1){
                                         if (bounding_surface.coeff < this.x_max){
                                                 this.x_max =  bounding_surface.coeff;
                                         }
-                            } else if (surface_delimiter[1] == '+'){
+                            } else if (surface_delimiter[1] == +1){
                                         if (bounding_surface.coeff > this.x_min){
                                                 this.x_min =  bounding_surface.coeff;
                                         }
@@ -98,11 +98,11 @@ class cell{
                 for (let surface_delimiter of this.surfaces_array){
                         let bounding_surface = surface_array.find(surf => surf.id === surface_delimiter[0]);
                         if (bounding_surface.type == "y-plane"){
-                            if (surface_delimiter[1] == '-'){
+                            if (surface_delimiter[1] == -1){
                                         if (bounding_surface.coeff < this.y_max){
                                                 this.y_max =  bounding_surface.coeff;
                                         }
-                            } else if (surface_delimiter[1] == '+'){
+                            } else if (surface_delimiter[1] == +1){
                                         if (bounding_surface.coeff > this.y_min){
                                                 this.y_min =  bounding_surface.coeff;
                                         }
@@ -115,11 +115,11 @@ class cell{
                 for (let surface_delimiter of this.surfaces_array){
                         let bounding_surface = surface_array.find(surf => surf.id === surface_delimiter[0]);
                         if (bounding_surface.type == "z-plane"){
-                            if (surface_delimiter[1] == '-'){
+                            if (surface_delimiter[1] == -1){
                                         if (bounding_surface.coeff < this.z_max){
                                                 this.z_max =  bounding_surface.coeff;
                                         }
-                            } else if (surface_delimiter[1] == '+'){
+                            } else if (surface_delimiter[1] == +1){
                                         if (bounding_surface.coeff > this.z_min){
                                                 this.z_min =  bounding_surface.coeff;
                                         }

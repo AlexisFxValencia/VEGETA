@@ -23,6 +23,10 @@ class openMCReader{
 
 	parse_surfaces(xml){
 		var surfaces = xml.getElementsByTagName("surface");
+
+
+		//A GARDER, il fuat juste créer un "this.surface_array_points" pour garder les points aussi
+		/*
 		for (var i = 0; i < surfaces.length; i++) {   
 			let id = surfaces[i].attributes.id.nodeValue;
 			let type = surfaces[i].attributes.type.nodeValue;
@@ -30,9 +34,59 @@ class openMCReader{
 			
 			//console.log("surface : ", id, " coeff : ", coeff, "type : ", type);
 			let parsed_surface = new surface(id, type, coeff);
-			this.surface_array.push(parsed_surface);
+			this.surface_array_points.push(parsed_surface);
 		}   
+		*/
+		
 		//console.log(this.surface_array);
+
+		
+		for (var i = 0; i < surfaces.length; i++) {  
+			let id = surfaces[i].attributes.id.nodeValue;
+			let type = surfaces[i].attributes.type.nodeValue;
+			let coeff_list = surfaces[i].attributes.coeffs.nodeValue.split(' ');
+			
+			
+			if (coeff_list.length == 1){
+				let coeff = parseFloat(coeff_list[0]);
+				if (type == "x-plane"){
+					let plane_1 = new plane(1, 0, 0, -coeff);
+					plane_1.id = id;
+					plane_1.type = type;
+					this.surface_array.push(plane_1);				
+				} else if (type == "y-plane"){
+					let plane_1 = new plane(0, 1, 0, -coeff);
+					plane_1.id = id;
+					plane_1.type = type;
+					this.surface_array.push(plane_1);
+				} else if (type == "z-plane"){
+					let plane_1 = new plane(0, 0, 1, -coeff);
+					plane_1.id = id;
+					plane_1.type = type;
+					this.surface_array.push(plane_1);
+				} 
+			}
+				
+			if (type == "sphere"){
+				console.log(coeff_list);
+				let radius = parseFloat(coeff_list[3]);
+				let x_center = parseFloat(coeff_list[0]);
+				let y_center = parseFloat(coeff_list[1]);
+				let z_center = parseFloat(coeff_list[2]);
+				
+				let sphere_1 = new sphere(radius, x_center, y_center, z_center);
+				console.log(sphere_1);
+				sphere_1.id = id;
+				sphere_1.type = type;
+				this.surface_array.push(sphere_1);
+			}
+			
+
+		}
+
+		console.log("this.surface_array", this.surface_array);	
+		
+
 	}
 
 	parse_cells(xml){
@@ -40,7 +94,11 @@ class openMCReader{
 		for (var i = 0; i < cells.length; i++) {   
 			let id = cells[i].attributes.id.nodeValue;
 			let material = cells[i].attributes.material.nodeValue;
-			let name = cells[i].attributes.name.nodeValue;
+			let name = id;
+			if (cells[i].attributes.name){
+				name = cells[i].attributes.name.nodeValue;
+			}
+			
 			let region = cells[i].attributes.region.nodeValue;
 			let universe = cells[i].attributes.universe.nodeValue;
 			
@@ -75,25 +133,8 @@ class openMCReader{
 
 	parsing_mates(){
 		let temp_array = [];
-		/*
-		for (let mycell of openMC_reader.cell_array){
-			temp_array.push(mycell.material);
-		}
-		let unique_id_mates_array = [...new Set(temp_array)];
-		for (let id_mate of unique_id_mates_array){
-			let obj = {id : id_mate, color : this.mesh_tools.getRandomColor()};
-			this.mate_array.push(obj);
-		}
-		*/
-		//console.log(this.mate_array);
 		for (let mycell of openMC_reader.cell_array){
 			let id_mate = mycell.material;
-			/*
-			let color_cell = this.mesh_tools.getRandomColor()
-			if (mycell.name.includes("water")){
-				color_cell = new THREE.Color(0x3379ff); //blue for water
-			}
-			*/
 			let color_cell = this.mesh_tools.attribute_material_color(mycell.name);
 			let obj = {id : id_mate, color : color_cell};
 			temp_array.push(obj);

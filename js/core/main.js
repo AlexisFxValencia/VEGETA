@@ -51,9 +51,10 @@ function start_or_refresh(){
 			document.getElementById('start_button').value = "Refresh";			
 			scene_manager = new sceneManager();
 			scene_manager.scene_initialization();	
-				
-        	set_planes();
-			moret_manager = new moretManager(moret_reader, mesh_tools, document);
+			
+			cut_manager = new cutManager(scene_manager);
+        	cut_manager.set_planes();
+			moret_manager = new moretManager(moret_reader, mesh_tools, cut_manager, document);
 
 			scene_manager.generate_controls(moret_manager);			
 
@@ -66,10 +67,11 @@ function start_or_refresh(){
 			moret_manager.reset(moret_reader);
 		} 
 		moret_manager.create_objects_in_the_scene();
-		buttons_generator = new buttonsGenerator(moret_manager, mesh_array, document);
-		buttons_generator.create_buttons(); 
-		set_planes_position(moret_manager);  
+		buttons_generator = new buttonsGenerator(moret_manager, mesh_array, cut_manager, scene_manager, document);
+		buttons_generator.create_buttons(); 		 
+		scene_manager.set_bbox(moret_manager); 
 		scene_manager.locate_camera(); 
+		cut_manager.set_planes_position(); 
 		scene_manager.render();
 		
 	} else if (code_choice == "SERPENT"){
@@ -80,7 +82,8 @@ function start_or_refresh(){
 			document.getElementById('start_button').value = "Refresh";				
             scene_manager = new sceneManager();		
 			scene_manager.scene_initialization();	
-			set_planes();
+			cut_manager = new cutManager(scene_manager);
+        	cut_manager.set_planes();
 			serpent_manager = new serpentManager(serpent_reader, mesh_array, mesh_tools, document);
 
 			scene_manager.generate_controls(serpent_manager);	
@@ -94,10 +97,11 @@ function start_or_refresh(){
 			serpent_manager.reset(serpent_reader);
 		}
 		serpent_manager.create_objects_in_the_scene();	
-		buttons_generator = new buttonsGenerator(serpent_manager, mesh_array, document);  
-		buttons_generator.create_buttons(); 
-		set_planes_position(serpent_manager); 	 
-		scene_manager.locate_camera();			
+		buttons_generator = new buttonsGenerator(serpent_manager, mesh_array, cut_manager, scene_manager, document);  
+		buttons_generator.create_buttons(); 	 
+		scene_manager.set_bbox(serpent_manager); 
+		scene_manager.locate_camera();	
+		cut_manager.set_planes_position(); 		
 		scene_manager.render();
 			
 	} else if(code_choice == "TRIPOLI"){
@@ -124,10 +128,10 @@ function start_or_refresh(){
 			openMC_manager.remove_points_from_the_scene(); // a corriger car là il y a peu de mesh dans la scene qui peut être enlevé.	
 	
 		}
-		console.log(openMC_manager.z_cut);
-		openMC_manager.generate_points();	
-		openMC_manager.add_points_to_the_scene();
+		//console.log(openMC_manager.z_cut);
+		openMC_manager.create_objects_in_the_scene();
 		
+		//scene_manager.set_bbox(openMC_manager); 
 		scene_manager.locate_camera();	
 		scene_manager.render();		
 	}

@@ -15,6 +15,8 @@ class sceneManager {
 		this.size_display;
 		
 		this.right_click = false;
+		this.bbox;
+
 	}
 		
 
@@ -86,14 +88,18 @@ class sceneManager {
 		this.render();
 	}
 
+	set_bbox(code_manager){
+		this.bbox = new THREE.Box3().setFromObject(code_manager.group_array[0]);
+	}
+	
 
 	locate_camera(){
-		
 		this.camera.position.x = 0;
 		this.camera.position.y = 0;
-		//this.camera.position.y = 2* bbox_min_y;
-		//this.camera.position.z = 3*bbox_max_z;
-		this.camera.position.z = 200;
+		
+		//this.camera.position.y = (this.bbox.max.y - this.bbox.min.y)/2;
+		//this.camera.position.z = 3*this.bbox.max.z;
+		this.camera.position.z = 100;
 		this.controls.update();
 		this.render();
 	}

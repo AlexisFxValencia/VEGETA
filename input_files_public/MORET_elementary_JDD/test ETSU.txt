@@ -1,0 +1,11 @@
+    MODU 0 
+      * Types decription 
+
+      TYPE 1 BOIT 10 10 10
+      TYPE 2 BOIT 5 5  5
+
+      * Volume : reflecteur_eau (LATEC name)  
+      VOLU reflecteur_eau 0 1 fuel 0.0 0.0 0.0 
+
+      * Volume : alveole_ext (LATEC name)  
+      VOLU alveole_ext reflecteur_eau 2 steel 12 0.0 0.0 ETSU 1 reflecteur_eau 

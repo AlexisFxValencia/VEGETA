@@ -1,0 +1,8 @@
+
+surf 1 cuboid 0.00 5.00 0.00 5.00 0.00 80.0 % eau - motif contient l'AC + l'eau autour
+
+surf 2 cuboid 0.00 4.50 0.00 4.50 0.00 80.0 % alu - conteneur alu
+
+cell volu1		0 	eau			-1		2
+
+

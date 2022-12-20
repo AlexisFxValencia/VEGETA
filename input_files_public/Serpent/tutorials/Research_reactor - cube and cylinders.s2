@@ -1,0 +1,70 @@
+% --- Research reactor input for Serpent tutorial
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% We'll start from a simple water geometry %
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+% --- Our reactor model will fit inside a cubic surface with an edge length of 100 cm
+
+surf sCUBE cube 0.0 0.0 0.0 100.0
+/******** Radial boundaries of the core **************/
+
+% --- Outer radius of the support plates and core
+
+surf sCYL1 cylz 0.0 0.0 26
+
+% --- Inner radius of the graphite reflector
+
+surf sCYL2 cylz 0.0 0.0 30
+
+% --- Outer radius of the graphite reflector
+
+surf sCYL3 cylz 0.0 0.0 60
+
+% --- Outer radius of the geometry
+
+surf sCYL4 cylz 0.0 0.0 100
+
+/******** Radial cells of the reactor ****************/
+
+% --- Notice that these cells are part of the universe "reactor"
+
+cell cRadialCore     reactor water      -sCYL1
+cell cRadialWater1   reactor water       sCYL1 -sCYL2
+cell cRadialGraphite reactor graphite    sCYL2 -sCYL3
+cell cRadialWater2   reactor water       sCYL3 -sCYL4
+cell cRadialOutside  reactor outside     sCYL4
+
+% --- Cell cIN is now filled with reactor    
+
+cell cIN  0 fill reactor -sCUBE
+
+% --- Cell cOUT is defined as an outside cell
+
+cell cOUT 0 outside  sCUBE
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Link additional input files here %
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+% --- Link the materials file to this input
+ 
+include "materials"
+
+/******************
+ * Run parameters *
+ ******************/
+
+% --- Neutron population: 10000 neutrons per cycle, 100 active / 50 inactive cycles
+
+set pop 10000 100 50
+
+% --- Geometry plots
+
+% --- XY-plot
+
+plot 3 200 200 0 -100 100 -100 100
+
+% --- XZ-plot
+
+plot 2 200 200 0 -100 100 -100 100

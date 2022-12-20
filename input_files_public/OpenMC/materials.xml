@@ -1,0 +1,127 @@
+<?xml version='1.0' encoding='utf-8'?>
+<materials>
+  <material id="1" name="albore" volume="113.92">
+    <density units="sum" />
+    <nuclide ao="0.000298747" name="B10" />
+    <nuclide ao="0.00120292" name="B11" />
+    <nuclide ao="0.0595678" name="Al27" />
+  </material>
+  <material id="2" name="aluminium">
+    <density units="sum" />
+    <nuclide ao="0.0602622" name="Al27" />
+  </material>
+  <material id="3" name="water">
+    <density units="sum" />
+    <nuclide ao="0.0667607" name="H1" />
+    <nuclide ao="0.0333804" name="O16" />
+    <sab name="c_H_in_H2O" />
+  </material>
+  <material depletable="true" id="4" name="fuel01" volume="18.544">
+    <density units="sum" />
+    <nuclide ao="0.0316044" name="Al27" />
+    <nuclide ao="0.00747838" name="Si28" />
+    <nuclide ao="0.000379726" name="Si29" />
+    <nuclide ao="0.000250032" name="Si30" />
+    <nuclide ao="0.00332113" name="U235" />
+    <nuclide ao="0.00886642" name="U238" />
+  </material>
+  <material depletable="true" id="5" name="fuel02" volume="18.544">
+    <density units="sum" />
+    <nuclide ao="0.0316044" name="Al27" />
+    <nuclide ao="0.00747838" name="Si28" />
+    <nuclide ao="0.000379726" name="Si29" />
+    <nuclide ao="0.000250032" name="Si30" />
+    <nuclide ao="0.00332113" name="U235" />
+    <nuclide ao="0.00886642" name="U238" />
+  </material>
+  <material depletable="true" id="6" name="fuel03" volume="18.544">
+    <density units="sum" />
+    <nuclide ao="0.0316044" name="Al27" />
+    <nuclide ao="0.00747838" name="Si28" />
+    <nuclide ao="0.000379726" name="Si29" />
+    <nuclide ao="0.000250032" name="Si30" />
+    <nuclide ao="0.00332113" name="U235" />
+    <nuclide ao="0.00886642" name="U238" />
+  </material>
+  <material depletable="true" id="7" name="fuel04" volume="18.544">
+    <density units="sum" />
+    <nuclide ao="0.0316044" name="Al27" />
+    <nuclide ao="0.00747838" name="Si28" />
+    <nuclide ao="0.000379726" name="Si29" />
+    <nuclide ao="0.000250032" name="Si30" />
+    <nuclide ao="0.00332113" name="U235" />
+    <nuclide ao="0.00886642" name="U238" />
+  </material>
+  <material depletable="true" id="8" name="fuel05" volume="18.544">
+    <density units="sum" />
+    <nuclide ao="0.0316044" name="Al27" />
+    <nuclide ao="0.00747838" name="Si28" />
+    <nuclide ao="0.000379726" name="Si29" />
+    <nuclide ao="0.000250032" name="Si30" />
+    <nuclide ao="0.00332113" name="U235" />
+    <nuclide ao="0.00886642" name="U238" />
+  </material>
+  <material depletable="true" id="9" name="fuel06" volume="18.544">
+    <density units="sum" />
+    <nuclide ao="0.0316044" name="Al27" />
+    <nuclide ao="0.00747838" name="Si28" />
+    <nuclide ao="0.000379726" name="Si29" />
+    <nuclide ao="0.000250032" name="Si30" />
+    <nuclide ao="0.00332113" name="U235" />
+    <nuclide ao="0.00886642" name="U238" />
+  </material>
+  <material depletable="true" id="10" name="fuel07" volume="18.544">
+    <density units="sum" />
+    <nuclide ao="0.0316044" name="Al27" />
+    <nuclide ao="0.00747838" name="Si28" />
+    <nuclide ao="0.000379726" name="Si29" />
+    <nuclide ao="0.000250032" name="Si30" />
+    <nuclide ao="0.00332113" name="U235" />
+    <nuclide ao="0.00886642" name="U238" />
+  </material>
+  <material depletable="true" id="11" name="fuel08" volume="18.544">
+    <density units="sum" />
+    <nuclide ao="0.0316044" name="Al27" />
+    <nuclide ao="0.00747838" name="Si28" />
+    <nuclide ao="0.000379726" name="Si29" />
+    <nuclide ao="0.000250032" name="Si30" />
+    <nuclide ao="0.00332113" name="U235" />
+    <nuclide ao="0.00886642" name="U238" />
+  </material>
+  <material depletable="true" id="12" name="fuel09" volume="18.544">
+    <density units="sum" />
+    <nuclide ao="0.0316044" name="Al27" />
+    <nuclide ao="0.00747838" name="Si28" />
+    <nuclide ao="0.000379726" name="Si29" />
+    <nuclide ao="0.000250032" name="Si30" />
+    <nuclide ao="0.00332113" name="U235" />
+    <nuclide ao="0.00886642" name="U238" />
+  </material>
+  <material depletable="true" id="13" name="fuel10" volume="18.544">
+    <density units="sum" />
+    <nuclide ao="0.0316044" name="Al27" />
+    <nuclide ao="0.00747838" name="Si28" />
+    <nuclide ao="0.000379726" name="Si29" />
+    <nuclide ao="0.000250032" name="Si30" />
+    <nuclide ao="0.00332113" name="U235" />
+    <nuclide ao="0.00886642" name="U238" />
+  </material>
+  <material depletable="true" id="14" name="fuel11" volume="18.544">
+    <density units="sum" />
+    <nuclide ao="0.0316044" name="Al27" />
+    <nuclide ao="0.00747838" name="Si28" />
+    <nuclide ao="0.000379726" name="Si29" />
+    <nuclide ao="0.000250032" name="Si30" />
+    <nuclide ao="0.00332113" name="U235" />
+    <nuclide ao="0.00886642" name="U238" />
+  </material>
+  <material depletable="true" id="15" name="fuel12" volume="18.544">
+    <density units="sum" />
+    <nuclide ao="0.0316044" name="Al27" />
+    <nuclide ao="0.00747838" name="Si28" />
+    <nuclide ao="0.000379726" name="Si29" />
+    <nuclide ao="0.000250032" name="Si30" />
+    <nuclide ao="0.00332113" name="U235" />
+    <nuclide ao="0.00886642" name="U238" />
+  </material>
+</materials>

@@ -1,7 +1,8 @@
 class moretMeshCreator {
-	constructor (mesh_tools){
+	constructor (mesh_tools, cut_manager){
 		this.infinity = 1000;
 		this.mesh_tools = mesh_tools;
+		this.cut_manager = cut_manager;
 	}
 	
 	create_meshes(){
@@ -16,7 +17,7 @@ class moretMeshCreator {
 				color: color_material,
 				//map:texture,
 				side: THREE.DoubleSide,
-				clippingPlanes: [ x_plane, y_plane, z_plane ],
+				clippingPlanes: [ this.cut_manager.x_plane, this.cut_manager.y_plane, this.cut_manager.z_plane ],
 				clipShadows: true
 			} );
 			material.name = this.get_material_name(volume);	

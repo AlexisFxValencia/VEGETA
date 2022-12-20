@@ -23,10 +23,19 @@ debuger reseau d'hexa d'hexa où les matériaux ne sont pas bien identifiés.
 
 lire et parser un project.xml
 
+v 76 01 12 22
+- openMC : can plot any intersection of plans.
+- openMC : can plot simple spheres and any intersection of spheres.
+
+v 75 30 11 22
+- starting to recreate an intersection library for openMC
+
 
 v 74 16 11 22
 - new feature : beginning of adding an open MC cut plotting ability
-
+- separation of public and private input files
+- cutManager is now a class. 
+- debug cut plans when centering the meshes.
 
 v 73 28 10 22
 - debug : meshes are created even if the volumes are in the wrong order (container 

@@ -1,10 +1,12 @@
 
 class buttonsGenerator {
-    constructor(code_manager, mesh_array, documentHTML) {
+    constructor(code_manager, mesh_array, cut_manager, scene_manager, documentHTML) {
 		this.code_manager = code_manager;
 		this.mesh_array = mesh_array;
 		this.number_of_buttons = mesh_array.length;
 		this.document = documentHTML;
+		this.cut_manager = cut_manager;
+		this.scene_manager = scene_manager;
 	}
 
 	create_buttons(){
@@ -137,18 +139,20 @@ class buttonsGenerator {
 			this.input.type = "checkbox";
 			this.input.addEventListener("click",function(){center_all(this)}, false);
 			
-			let code_manager_2 = this.code_manager;
+			
 
+			let that = this;
 			function center_all(){
-				let bbox = new THREE.Box3().setFromObject(code_manager_2.group_array[0]);
+				let bbox = new THREE.Box3().setFromObject(that.code_manager.group_array[0]);
 				let v_center = new THREE.Vector3( 0, 1, 0 );
 				bbox.getCenter(v_center);	
-				code_manager_2.group_array[0].translateX(-v_center.x);
-				code_manager_2.group_array[0].translateY(-v_center.y);
-				code_manager_2.group_array[0].translateZ(-v_center.z);
+				that.code_manager.group_array[0].translateX(-v_center.x);
+				that.code_manager.group_array[0].translateY(-v_center.y);
+				that.code_manager.group_array[0].translateZ(-v_center.z);
 
-				set_planes_position(code_manager_2);
-				scene_manager.render();
+				that.scene_manager.set_bbox(that.code_manager);
+				that.cut_manager.set_planes_position();
+				that.scene_manager.render();
 					
 			}
 			

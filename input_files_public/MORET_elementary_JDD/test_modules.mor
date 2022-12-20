@@ -1,0 +1,23 @@
+MODU 0
+TYPE 1 SPHE 3 0 0
+VOLU 201 0 1 EAU 3 3 3
+VOLU 202 0 1 EAU 3 -3 3
+VOLU 203 0 1 EAU -3 3 3
+VOLU 204 0 1 EAU -3 -3 3
+
+MODU 1
+TYPE 2 SPHE 1.0 0 0
+VOLU 201 1 2 fuel 9 9 3
+VOLU 202 1 2 fuel 9 7 3
+VOLU 203 202 2 fuel 7 9 3
+VOLU 204 203 2 EAU 7 7 3
+
+   COMP EAU CONC
+       H1-H2O 6.67607E-02
+	   O16    3.33804E-02
+   ENDC
+   
+   
+   
+   
+**** Rendu : 2 groupes de 4 sphères côte à côte

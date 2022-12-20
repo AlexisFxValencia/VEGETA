@@ -1,13 +1,13 @@
 
 class moretManager {
-    constructor(moret_reader, mesh_tools, documentHTML) {
+    constructor(moret_reader, mesh_tools, cut_manager, documentHTML) {
 		this.modu_array = moret_reader.modu_array;
 		this.document = documentHTML;
 		this.group_array = [];
 		this.fill_group_array();
 
-		this.mesh_creator = new moretMeshCreator(mesh_tools);
-		this.lattice_creator = new moretLatticeCreator(this.mesh_creator, mesh_tools);
+		this.mesh_creator = new moretMeshCreator(mesh_tools, cut_manager);
+		this.lattice_creator = new moretLatticeCreator(this.mesh_creator, mesh_tools, cut_manager);
 		this.mesh_transformer = new moretMeshTransformer(this.mesh_creator, mesh_tools);
 		this.module_creator = new moretModuleCreator(this.mesh_creator, mesh_tools);
 	}

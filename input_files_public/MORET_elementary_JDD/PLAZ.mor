@@ -1,0 +1,133 @@
+
+%% TEST 1 : 
+GEOM
+MODU 0 
+TYPE 1 PLAZ 2 3
+VOLU 2 0 1 1 3.0 3.0 3.0
+
+ENDG
+
+
+
+%% TEST 2 :  2 plans parallèles par rapport au plan horizontal
+GEOM
+MODU 0 
+TYPE 1 PLAZ 22 24
+VOLU 20 0 1 1 0.0 0.0 0.0
+
+TYPE 2 PLAZ -24 -22
+VOLU 30 0 2 1 0.0 0.0 0.0
+
+ENDG
+
+
+
+%% TEST 3 : 1 plan supérieur et 2 supérieur --> on voit 2 boite côte à côte à la cote Z = 30
+GEOM
+MODU 0 
+TYPE 1 PLAZ SUPE 30
+VOLU 2 0 1 1 3.0 3.0 0.0
+
+
+TYPE 2 PLAZ INFE 30
+VOLU 3 0 2 1 3.0 3.0 0.0
+
+ENDG
+
+
+
+%% TEST 4 : On veut une demi-sphere ecrasee par le plan inférieur
+
+%% TEST 1 : 
+GEOM
+MODU 0 
+TYPE 1 PLAZ SUPE 30
+VOLU 20 0 1 1 0.0 0.0 0.0
+
+TYPE 2 SPHE 300 
+VOLU 30 0 2 1 110.0 0.0 0.0 
+
+TYPE 3 PLAZ INFE 30
+VOLU 40 0 3 1 0.0 0.0 0.0 SUPE 1 30
+
+
+
+ENDG
+
+
+
+%% TEST 5 : more complex
+GEOM
+MODU 0 
+TYPE 1 PLAZ 80 160
+VOLU 20 0 1 1 0.0 0.0 0.0 
+TYPE 5 PLAZ 160 320
+VOLU 50 0 5 1 0.0 0.0 0.0 
+
+TYPE 2 SPHE 300 
+VOLU 30 0 2 1 110.0 0.0 0.0
+
+TYPE 3 PLAZ INFE 30
+VOLU 40 0 3 1 0.0 0.0 0.0 
+
+
+
+ENDG
+
+
+
+%% TEST 6 : en X
+GEOM
+MODU 0 
+TYPE 1 PLAX 80 160
+VOLU 20 0 1 1 0.0 0.0 0.0 
+TYPE 5 PLAX 160 320
+VOLU 50 0 5 1 0.0 0.0 0.0 
+
+TYPE 2 SPHE 300 
+VOLU 30 0 2 1 110.0 0.0 0.0
+
+TYPE 3 PLAX INFE 30
+VOLU 40 0 3 1 0.0 0.0 0.0 
+
+
+
+ENDG
+
+
+
+%% TEST 7 : en Y
+GEOM
+MODU 0 
+TYPE 1 PLAY 80 160
+VOLU 20 0 1 1 0.0 0.0 0.0 
+TYPE 5 PLAY 160 320
+VOLU 50 0 5 1 0.0 0.0 0.0 
+
+TYPE 2 SPHE 300 
+VOLU 30 0 2 1 110.0 0.0 0.0
+
+TYPE 3 PLAY INFE 30
+VOLU 40 0 3 1 0.0 0.0 0.0 
+
+
+
+ENDG
+
+%% TEST 8 : en Y avec un SUPE
+GEOM
+MODU 0 
+TYPE 1 PLAY 80 160
+VOLU 20 0 1 1 0.0 0.0 0.0 
+
+
+TYPE 2 SPHE 300 
+VOLU 30 0 2 1 110.0 0.0 0.0
+
+TYPE 3 PLAY INFE 30
+VOLU 40 0 3 1 0.0 0.0 0.0 
+
+TYPE 5 PLAY 160 320
+VOLU 50 0 5 1 0.0 0.0 0.0 SUPE 1 30
+
+ENDG
