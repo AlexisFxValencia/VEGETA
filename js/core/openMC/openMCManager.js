@@ -1,9 +1,11 @@
 class openMCManager {
-    constructor (mesh_tools, openMC_reader){
-        this.mesh_tools = mesh_tools;
+    constructor (scene_manager, openMC_reader){
+        this.scene_manager = scene_manager;
+        this.mesh_tools = new meshTools();
         this.openMC_reader = openMC_reader;
         this.z_cut = 0;
         this.group_array = [];
+        this.mesh_creator = new openMCMeshCreator();
     }
 
     create_objects_in_the_scene(){
@@ -19,7 +21,8 @@ class openMCManager {
 
 
     create_objects(){
-        for (let mycell of openMC_reader.cell_array){
+        console.log("create_objects");
+        for (let mycell of this.openMC_reader.cell_array){
             let mate = this.openMC_reader.mate_array.find(mate => mate.id === mycell.material);
             mycell.color = mate.color;
             
@@ -35,13 +38,17 @@ class openMCManager {
                 mycell.compute_z_limits(this.openMC_reader.surface_array);
                 */
                this.create_cell_mesh(mycell);
+               this.mesh_creator.mesh_array.push(mycell);
             }
         }
     }
 
     create_cell_mesh(mycell){
+        console.log("create_cell_mesh");
         let local_surfaces = [];
         let local_signs = [];
+
+        //console.log(mycell);
 
         for (let cell_surface of mycell.surfaces_array ){
             let surface = this.openMC_reader.surface_array.find(plane_1 => plane_1.id === cell_surface[0]);
@@ -61,7 +68,7 @@ class openMCManager {
             const mesh = new THREE.Mesh( geometry, material );
             mesh.name = mycell.id;
             mesh.material.name = mycell.material;
-            scene_manager.scene.add(mesh);
+            this.scene_manager.scene.add(mesh);
        
         } else if (this.are_only_spheres_in(local_surfaces)){
             console.log("creating the true mesh of cell n°", mycell.id);
@@ -71,8 +78,8 @@ class openMCManager {
             const mesh = new THREE.Mesh( geometry, material );
             mesh.name = mycell.id;
             mesh.material.name = mycell.material;
-            scene_manager.scene.add(mesh);
-        }
+            this.scene_manager.scene.add(mesh);
+        } 
 
 
         
@@ -92,7 +99,7 @@ class openMCManager {
     }
     
     are_only_spheres_in(local_spheres){
-        console.log(local_spheres);
+        //console.log(local_spheres);
         let to_return = true;
         for (let sphere of local_spheres){
             if (sphere.type != "sphere"){
@@ -200,16 +207,22 @@ class openMCManager {
 
 
     add_points_to_the_scene(){
+        console.log("add_point_to_the_scene");
         let group = new THREE.Group();
         group.name = "group_" + this.group_array.length;
         this.group_array.push(group);
 
-        for (let mycell of openMC_reader.cell_array){
+        for (let mycell of this.openMC_reader.cell_array){
+            console.log(mycell);
+            if (mycell.points == []){
+                mycell.generate_points();
+            }
+
             mycell.generate_mesh();
-            //scene_manager.scene.add(mycell.mesh);
+            //this.scene_manager.scene.add(mycell.mesh);
             group.add(mycell.mesh);
         }
-        scene_manager.scene.add(group);
+        this.scene_manager.scene.add(group);
         
     }
 
@@ -226,7 +239,7 @@ class openMCManager {
         var mesh = new THREE.Mesh(geometry, material);		
         mesh.position.set(0, 0, 0); 
         
-        scene_manager.scene.add(mesh);
+        this.scene_manager.scene.add(mesh);
         */
 
         var n = 1000000;
@@ -258,7 +271,7 @@ class openMCManager {
         });
     
         let p = new THREE.Points(geometry, material);
-        scene_manager.scene.add(p);
+        this.scene_manager.scene.add(p);
         
     }
     

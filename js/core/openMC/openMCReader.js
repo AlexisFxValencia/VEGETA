@@ -1,7 +1,7 @@
 
 class openMCReader{
-	constructor(mesh_tools){
-		this.mesh_tools = mesh_tools;
+	constructor(){
+		this.mesh_tools = new meshTools();
 		this.surface_array = [];
 		this.cell_array = [];
 		this.mate_array = [];
@@ -80,6 +80,16 @@ class openMCReader{
 				sphere_1.type = type;
 				this.surface_array.push(sphere_1);
 			}
+
+			if (type == 'z-cylinder'){
+				console.log(coeff_list);
+				let x_center = parseFloat(coeff_list[0]);
+				let y_center = parseFloat(coeff_list[1]);
+				let radius = parseFloat(coeff_list[2]);
+				let cylinder_1 = new cylinder(radius, x_center, y_center, "z");
+				cylinder_1.id = id;
+				this.surface_array.push(cylinder_1);
+			}
 			
 
 		}
@@ -100,7 +110,13 @@ class openMCReader{
 			}
 			
 			let region = cells[i].attributes.region.nodeValue;
-			let universe = cells[i].attributes.universe.nodeValue;
+			//let universe = cells[i].attributes.universe.nodeValue;
+			let universe;
+			if (cells[i].attributes.universe != undefined){
+				universe = cells[i].attributes.universe.nodeValue;
+			} else{
+				universe = 1;
+			}
 			
 			//console.log("cell : ", id, " material : ", material, "name : ", name, " region : ", region, "universe : ", universe);
 			
@@ -133,7 +149,7 @@ class openMCReader{
 
 	parsing_mates(){
 		let temp_array = [];
-		for (let mycell of openMC_reader.cell_array){
+		for (let mycell of this.cell_array){
 			let id_mate = mycell.material;
 			let color_cell = this.mesh_tools.attribute_material_color(mycell.name);
 			let obj = {id : id_mate, color : color_cell};

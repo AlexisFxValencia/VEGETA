@@ -1,0 +1,10 @@
+MODU 0
+
+TYPE 8 CYLZ 5.0 10.0
+VOLU 8 0 8 2		0 0 0
+  
+TYPE 9 CYLZ 5.0 5.0
+VOLU 9 8 9 10		0 0 1
+
+FINM 
+ 	

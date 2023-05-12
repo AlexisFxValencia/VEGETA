@@ -1,11 +1,10 @@
 class serpentManager {
-    constructor (serpent_reader, mesh_array, mesh_tools, documentHTML){
+    constructor (scene_manager, serpent_reader){
+        this.scene_manager = scene_manager;
         this.surf_array = serpent_reader.surf_array;
         this.universe_array = serpent_reader.universe_array;
         this.group_array = [];
-		this.mesh_array = mesh_array;
-        this.smc = new serpentMeshCreator(mesh_tools);
-        this.document = documentHTML;
+        this.mesh_creator = new serpentMeshCreator(serpent_reader, this.group_array);
     }
 
     
@@ -13,26 +12,26 @@ class serpentManager {
         this.fill_group_array();  
 
         for (let group of this.group_array){
-            this.smc.create_cells_of_the_universe(group.name);
-            this.smc.create_filled_cells_of_the_universe(group.name);
-            scene_manager.scene.add(group);
+            this.mesh_creator.create_cells_of_the_universe(group.name);
+            this.mesh_creator.create_filled_cells_of_the_universe(group.name);
+            this.scene_manager.scene.add(group);
         }
         
         
-        this.smc.create_pins_of_the_universe();
-        this.smc.intersect_pins();
-        this.smc.create_circular_lattices();
-        this.smc.create_cartesian_lattices();
+        this.mesh_creator.create_pins_of_the_universe();
+        this.mesh_creator.intersect_pins();
+        this.mesh_creator.create_circular_lattices();
+        this.mesh_creator.create_cartesian_lattices();
 
         /*
         for (let group of this.group_array){
             if (group.name != "0"){
-                this.smc.intersect_universe(groupe.name);
+                this.mesh_creator.intersect_universe(groupe.name);
             }
         }
         */
         
-        this.smc.intersect_universe("reactor");
+        this.mesh_creator.intersect_universe("reactor");
     }
     
 

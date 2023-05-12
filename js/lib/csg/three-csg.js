@@ -95,6 +95,9 @@ CSG.fromMesh = function(mesh,objectIndex) {
     return csg;
 }
 
+
+
+
 let nbuf3=(ct)=>{
     return{
         top:0,

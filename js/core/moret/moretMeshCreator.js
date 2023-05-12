@@ -1,14 +1,22 @@
 class moretMeshCreator {
-	constructor (mesh_tools, cut_manager){
+	constructor (moret_reader, mesh_tools, cut_manager, group_array){
+		this.group_array = group_array;
+		this.moret_reader = moret_reader;
 		this.infinity = 1000;
 		this.mesh_tools = mesh_tools;
 		this.cut_manager = cut_manager;
+		this.mesh_array = [];
+		this.labeled_bsp_array = [];
 	}
 	
 	create_meshes(){
 		console.log("Creating 3D meshes...");
-		for (let volume of moret_reader.volu_array){
-			let type = moret_reader.type_array.find(el => el[0] == volume[2] && el[5] == volume[7]);
+		for (let volume of this.moret_reader.volu_array){
+			let type = this.moret_reader.type_array.find(el => el[0] == volume.id_type && el[5] == volume.id_modu);
+
+			if (type == undefined){
+				console.log("type ", volume.id_modu, volume.id_type, "not found !", "It's for the volume : ", volume.id);
+			}//console.log(type)
 			let color_material = this.get_new_color(volume);					
 			//let texture = this.mesh_tools.generate_texture();									
 			//export manager work with MeshPhongMaterial.
@@ -22,30 +30,108 @@ class moretMeshCreator {
 			} );
 			material.name = this.get_material_name(volume);	
 
-											
 			let mesh = this.create_one_mesh(type, material);
+			
+			mesh.name = volume.id_modu + " " + volume.id;
+			this.rotate_mesh(mesh, volume);
+			
+			this.add_labeled_bsp(mesh, false);
 
 			let [x_obj, y_obj, z_obj] = this.get_volume_relative_position(volume);
-			mesh.position.set(x_obj, y_obj, z_obj);					
-			let id_modu = volume[7];
-			let id_volu = volume[0];				
-			mesh.name = id_modu + " " + id_volu;
+			//if (mesh.geometry.type = "ConeGeometry"){
+				//mesh.translateZ(-0.5*this.infinity/10);
+				//mesh.position.z -= 0.5*this.infinity/10;
+				//z_obj -= 0.5*this.infinity/10;
+			//}
+			
+			mesh.position.set(x_obj, y_obj, z_obj);	
+			
+					
 
-			mesh_array.push(mesh);		
+			this.mesh_array.push(mesh);		
 			this.add_cell_to_its_container(volume, mesh);
-			//console.log("moret mesh created :", mesh.name);
+			console.log("moret mesh :", mesh);
+			mesh.updateMatrix();
+			
+
+			
 		}
 	}
 
+
+	rotate_mesh(mesh, volume){ // voir si on veut faire tourner les enfants...
+		for (let rotation of this.moret_reader.rota_array){
+			if (volume.id_type == rotation[1] && volume.id_modu == rotation[0]){ //égalité sur les id_type et les id_modules
+					this.rotate_one_mesh(mesh, volume, rotation);		
+			}
+		}		
+		
+	}
+	
+	rotate_one_mesh(mesh, volume, rotation){
+		let axis = new THREE.Vector3(1, 0, 0);
+		let vector = new THREE.Vector3(1, 0, 0);
+		let theta = 0;
+		
+		if (rotation[4] != 0){ // X rotation
+			theta = this.mesh_tools.toRadians(rotation[4]);
+			console.log(rotation);
+			console.log("theta", theta);
+			console.log(Math.sin(theta));
+			axis = new THREE.Vector3(0, 1, 0);
+			vector = new THREE.Vector3(0, Math.cos(theta), Math.sin(theta));
+		} else if (rotation[6] != 0){ //Y
+			theta = this.mesh_tools.toRadians(rotation[6]);
+			axis = new THREE.Vector3(0, 0, 1);
+			vector = new THREE.Vector3(Math.sin(theta), 0, Math.cos(theta));
+		} else if (rotation[8] != 0){ //Z
+			theta = this.mesh_tools.toRadians(rotation[8]);
+			axis = new THREE.Vector3(1, 0, 0);
+			vector = new THREE.Vector3(Math.cos(theta), Math.sin(theta), 0);
+		} 			
+		var quaternion = new THREE.Quaternion(); 
+		quaternion.setFromUnitVectors(axis, vector);
+		const matrix = new THREE.Matrix4();
+		matrix.makeRotationFromQuaternion( quaternion ); //--> transfo qui ne s'applique PAS aux enfants de moret_cell.
+		
+		mesh.geometry.applyMatrix4(matrix);
+	}
+
+	add_labeled_bsp(mesh, is_hole){
+		//Adding to the BSP ARRAY
+		const labeled_bsp = {
+			name: mesh.name,
+			bsp: CSG.fromMesh(mesh),
+			matrix: mesh.matrix, 
+			material: mesh.material,
+			is_hole: is_hole,
+		};
+		this.labeled_bsp_array.push(labeled_bsp);
+	}
+
+	search_labeled_bsp(name, is_hole){
+		for (let labeled_bsp of this.labeled_bsp_array){
+			if (labeled_bsp.name == name && labeled_bsp.is_hole == is_hole){
+				return labeled_bsp;
+			}
+		}
+	}
+
+	delete_labeled_bsp(name){
+		this.labeled_bsp_array = this.labeled_bsp_array.filter(function(labeled_bsp) {
+			return labeled_bsp.name != name;
+		  });
+	}
+
 	get_material_name(volume){
-		if (moret_reader.apo_2_array[0] == undefined){
-			return volume[3];
+		if (this.moret_reader.apo_2_array[0] == undefined){
+			return volume.id_mate;
 		} else {
-			console.log("apo2 material found !");
-			let apo_2_line = moret_reader.apo_2_array.find(el => el[0] === volume[3]);
+			//console.log("apo2 material found !");
+			let apo_2_line = this.moret_reader.apo_2_array.find(el => el[0] === volume.id_mate);
 			let apo_2_name = apo_2_line[1];
-			console.log(volume[3] + " " + apo_2_name);
-			return volume[3] + " " + apo_2_name;
+			console.log("found APOLLO2 material : ", volume.id_mate + " " + apo_2_name);
+			return volume.id_mate + " " + apo_2_name;
 		}
 		
 	}
@@ -105,6 +191,7 @@ class moretMeshCreator {
 			var mesh = this.mesh_tools.ellipsoid_z_mesh_creator(a, b, c );
 
 		} else if (type[1] =="PLAX" || type[1] =="PLAY" || type[1] =="PLAZ"){
+			
 			let dx = this.infinity;
 			let dy = this.infinity;
 			let dz = this.infinity;
@@ -126,10 +213,12 @@ class moretMeshCreator {
 			
 			let vector = new THREE.Vector3(1, 0, 0);
 			this.mesh_tools.rotate_mesh(mesh, vector);
+			
 
 
 		} else if (type[1] == "MPLA"){	
-			console.log("creating MPLA");			
+			console.log("creating MPLA");
+			//console.log(type);			
 			for (let i=0; i < type[2].length; i++){
 				let mpla_array = type[2][i];
 				//console.log(mpla_array);
@@ -180,8 +269,9 @@ class moretMeshCreator {
 			}
 			mesh.material.transparent = true;
 			mesh.material.opacity = 0;
-			mesh.material.needsUpdate = true;
-			
+			mesh.material.needsUpdate = true;	
+			console.log(mesh);
+					
 
 		}else if (type[1] =="CYLI"){
 			let rayon = type[2];
@@ -215,12 +305,13 @@ class moretMeshCreator {
 			} else if (type[2] == 'ANGL'){
 				let angle = this.mesh_tools.toRadians(type[3]);
 				let tan = Math.tan(angle);
-				let height = this.infinity/10;
+				let height = this.infinity/10;				
 				let radius = height * tan; 
 				geometry = new THREE.ConeGeometry( radius, height, 32 );
 			}		
 
 			var mesh = new THREE.Mesh( geometry, material);
+			
 
 			if (type[1] == "CONX"){
 				let vector = new THREE.Vector3(1, 0, 0);
@@ -235,13 +326,12 @@ class moretMeshCreator {
 	}
 
 	position_PLA(){
-		for (let type of moret_reader.type_array){
+		for (let type of this.moret_reader.type_array){
 			if (type[1] == "PLAX" || type[1] =="PLAY" || type[1] =="PLAZ"){
-				for (let volume of moret_reader.volu_array){
-					if (volume[2] == type[0] && volume[7] == type[5]){ //égalité sur les id_type et les id_modules
+				for (let volume of this.moret_reader.volu_array){
+					if (volume.id_type == type[0] && volume.id_modu == type[5]){ 
 						let shift = 0.0;
 						if (type[2] == "SUPE"){
-							console.log("coucou2");
 							shift = this.infinity/2 + type[3];		
 						} else if(type[2] == "INFE"){
 							shift = - this.infinity/2 + type[3];
@@ -250,17 +340,17 @@ class moretMeshCreator {
 							let alt_2 = type[3];
 							shift = (alt_1 + alt_2)/2;
 						}
-						let id_modu = volume[7]
-						let id_volu = volume[0];					
-						var pla_mesh = this.mesh_tools.search_object(id_modu + " " + id_volu, moret_manager);
-						//console.log("mesh", mesh);
+						let id_modu = volume.id_modu
+						let id = volume.id;					
+						var pla_mesh = this.mesh_tools.search_object(id_modu + " " + id, this.group_array);
 						
 						if (type[1] == "PLAX"){									
 							pla_mesh.position.x += shift; 
 						} else if (type[1] == "PLAY"){									
 							pla_mesh.position.y += shift; 
 						} else if (type[1] == "PLAZ"){									
-							pla_mesh.position.z += shift; 
+							pla_mesh.position.z += shift;
+							console.log("shift", shift) ;
 						}
 
 						pla_mesh.material.transparent = true;
@@ -276,17 +366,17 @@ class moretMeshCreator {
 
 	position_MPLA(){
 		console.log("positioning MPLA");
-		for (let type of moret_reader.type_array){
+		for (let type of this.moret_reader.type_array){
 			if (type[1] == "MPLA"){
-				for (let volume of moret_reader.volu_array){
-					if (volume[2] == type[0] && volume[7] == type[5]){ //égalité sur les id_type et les id_modules
+				for (let volume of this.moret_reader.volu_array){
+					if (volume.id_type == type[0] && volume.id_modu == type[5]){ //égalité sur les id_type et les id_modules
 						//let mpla_array = type[2][0];
 						//let x_a = mpla_array[0];
 						//let y_a = mpla_array[1];
 						//let z_a = mpla_array[2];
-						let id_modu = volume[7]
-						let id_volu = volume[0];					
-						let mpla_mesh = this.mesh_tools.search_object(id_modu + " " + id_volu, moret_manager);
+						let id_modu = volume.id_modu
+						let id = volume.id;					
+						let mpla_mesh = this.mesh_tools.search_object(id_modu + " " + id, this.group_array);
 						//mpla_mesh.position.set(x_a, y_a, z_a);
 
 						let vector_I = type[3][0];
@@ -315,33 +405,27 @@ class moretMeshCreator {
 
 	add_cell_to_its_container(volume, moret_cell){	
 		//console.log("adding cell to its container");
-		let id_modu = volume[7];
-		let id_cont = volume[1];
-		let col_id_volu = moret_reader.volu_array.map(function(value,index) { return value[0]; });	
+		let id_modu = volume.id_modu;
+		let id_cont = volume.id_cont;
+		let col_id_volu = this.moret_reader.volu_array.map(function(value,index) { return value.id});	
 		// partie qui trouve le conteneur de volu_array[i] pour lui rajouter la moret_cell nouvellement créée. 
 		
 		
 		if (id_cont == 0){ // on ajoute au module en cours
-			let group_searched = this.mesh_tools.search_object(id_modu, moret_manager);		
+			let group_searched = this.mesh_tools.search_object(id_modu, this.group_array);		
 			group_searched.add(moret_cell);
 			//console.log("group added");
-		} else if ( id_cont == id_modu){ //si le conteneur est dans la liste des modules
-			//console.log("moret_cell", moret_cell);
-			
-			let local_volu_array = moret_reader.volu_array.filter(el => el[7] === volume[7]);
-			//console.log("local_volu_array",local_volu_array);
-			
-			let volume_container = local_volu_array.find(el => el[0] === id_cont);
-			//console.log("volume_container", volume_container);
-			//console.log("volume", volume);
+		} else if ( id_cont == id_modu){ //si le conteneur est dans la liste des modules		
+			let local_volu_array = this.moret_reader.volu_array.filter(el => el.id_modu === volume.id_modu);
+			let volume_container = local_volu_array.find(el => el.id === id_cont);
 			
 			if (volume_container == undefined || Object.is(volume, volume_container)){
-				group_searched = this.mesh_tools.search_object(id_modu, moret_manager);
+				group_searched = this.mesh_tools.search_object(id_modu, this.group_array);
 				group_searched.add(moret_cell);
 				//console.log("group added");
 			}else{
-				for (let k = 0; k < moret_manager.group_array.length; k++){
-					var container = moret_manager.group_array[k].getObjectByName(id_modu + " " + volume_container[0]);
+				for (let k = 0; k < this.group_array.length; k++){
+					var container = this.group_array[k].getObjectByName(id_modu + " " + volume_container.id);
 					if (container != undefined){
 						container.add(moret_cell);
 						//console.log("volu added 1");
@@ -350,10 +434,9 @@ class moretMeshCreator {
 				} 
 			}
 		
-			//moret_manager.group_array[id_cont].add(moret_cell); //on ajoute la cellule au groupe associé du module.
 		} else if (col_id_volu.includes(id_cont)){ //sinon, c'est que le conteneur est un volume			
-			for (let k = 0; k < moret_manager.group_array.length; k++){
-				var container = moret_manager.group_array[k].getObjectByName(id_modu + " " + id_cont);
+			for (let k = 0; k < this.group_array.length; k++){
+				var container = this.group_array[k].getObjectByName(id_modu + " " + id_cont);
 				if (container != undefined){
 					container.add(moret_cell);
 					//console.log("volu added 2");
@@ -364,21 +447,19 @@ class moretMeshCreator {
 	}
 
 	get_volume_relative_position(volume){
-		let x_obj = volume[4];
-		let y_obj = volume[5];
-		let z_obj = volume[6];
+		let x_obj = volume.x;
+		let y_obj = volume.y;
+		let z_obj = volume.z;
 		let x_cont = 0;
 		let y_cont = 0;
 		let z_cont = 0;	
-		let id_cont = volume[1];
+		let id_cont = volume.id_cont;
 		if (id_cont == 0){ //correctif pour les id_modules à 0 pour des volumes dans d'autres modules que le n°0 (convention d'écriture).
-			id_cont = volume[7];
+			id_cont = volume.id_modu;
 		}
-		let id_modu = volume[7];
-		let col_id_volu = moret_reader.volu_array.map(function(value,index1) { return value[0]; });
-		//console.log("volu_array", moret_reader.volu_array);
-		//console.log("col_id_volu", col_id_volu);
-		if (moret_reader.modu_array.includes(id_cont) && id_cont == volume[7]){ //on considère qu'un module est à l'origine.
+		let id_modu = volume.id_modu;
+		let col_id_volu = this.moret_reader.volu_array.map(function(value,index1) { return value.id; });
+		if (this.moret_reader.modu_array.includes(id_cont) && id_cont == volume.id_modu){ //on considère qu'un module est à l'origine.
 			//console.log("id_cont " + id_cont + " (it is a module)");
 			x_cont = 0;
 			y_cont = 0;
@@ -386,33 +467,31 @@ class moretMeshCreator {
 				
 		} else if (col_id_volu.includes(id_cont)){
 			for (let i = 0; i < col_id_volu.length; i++){ 
-				if (moret_reader.volu_array[i][0] == id_cont && moret_reader.volu_array[i][7] == id_modu){
-					x_cont = moret_reader.volu_array[i][4];
-					y_cont = moret_reader.volu_array[i][5];
-					z_cont = moret_reader.volu_array[i][6];
+				if (this.moret_reader.volu_array[i].id == id_cont && this.moret_reader.volu_array[i].id_modu == id_modu){
+					x_cont = this.moret_reader.volu_array[i].x;
+					y_cont = this.moret_reader.volu_array[i].y;
+					z_cont = this.moret_reader.volu_array[i].z;
 				}
 			}	
 		}	
-		//console.log(volume[0] + " [x_obj, y_obj, z_obj] "+[x_obj, y_obj, z_obj]);
-		//console.log(volume[0] + " [x_cont, y_cont, z_cont] "+[x_cont, y_cont, z_cont]);
-		//console.log(volume[0] + " [x_obj - x_cont, y_obj - y_cont, z_obj - z_cont] "+[x_obj - x_cont, y_obj - y_cont, z_obj - z_cont]);
 		return [x_obj - x_cont, y_obj - y_cont, z_obj - z_cont];
+
 	}
 
 	
 	get_new_color(volume){	
-		for (let mate of moret_reader.mate_array){
-			if (mate[0] == volume[3]){ //mate[0] = id_mate of material, volume[3] = id_mate of the volume)
+		for (let mate of this.moret_reader.mate_array){
+			if (mate[0] == volume.id_mate){ //mate[0] = id_mate of material, volume.id_mate = id_mate of the volume)
 				let color_material = mate[1];
-				//console.log("color of volume found", volume[0], mate[0]);
+				//console.log("color of volume found", volume.id, mate[0]);
 				return color_material;
 			} 
 		}
 		//let color_material = this.mesh_tools.getRandomColor();
 
-		let id_mate = volume[3];
+		let id_mate = volume.id_mate;
 		let color_material = this.mesh_tools.attribute_material_color(id_mate);
-		moret_reader.mate_array.push([id_mate, color_material]);
+		this.moret_reader.mate_array.push([id_mate, color_material]);
 
 		return color_material;
 	}

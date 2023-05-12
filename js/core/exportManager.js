@@ -1,6 +1,9 @@
+class exportManager{
+    constructor(){
 
+    }
 
-function export_dae(){
+export_dae(code_choice, group_array){
 	var link = document.createElement( 'a' );
 	link.style.display = 'none';
 	document.body.appendChild( link );
@@ -11,9 +14,9 @@ function export_dae(){
 	// Parse the input and generate the ply output
 	let result;
 	if (code_choice == "MORET"){
-		result = exporter.parse(moret_manager.group_array[0]); 
+		result = exporter.parse(group_array[0]); 
 	} else if (code_choice == "SERPENT"){
-		result = exporter.parse(serpent_manager.group_array[0]); 
+		result = exporter.parse(group_array[0]); 
 	}
 	
 	saveString( result.data, 'essai.dae' );
@@ -46,7 +49,7 @@ function export_dae(){
 }
 
 
-function export_obj(){
+export_obj(group_array){
 	var link = document.createElement( 'a' );
 	link.style.display = 'none';
 	document.body.appendChild( link );
@@ -55,7 +58,7 @@ function export_obj(){
 	const exporter = new OBJExporter();
 
 	// Parse the input and generate the ply output
-	const result = exporter.parse(moret_manager.group_array[0] ); 
+	const result = exporter.parse(group_array[0] ); 
 	saveString( result, 'essai.obj' );
 
 	function save( blob, filename ) {
@@ -81,7 +84,7 @@ function export_obj(){
 
 
 
-function export_stl(){
+export_stl(code_choice, group_array){
 	var link = document.createElement( 'a' );
 	link.style.display = 'none';
 	document.body.appendChild( link );
@@ -91,14 +94,14 @@ function export_stl(){
 	const exporter = new STLExporter();
 
 	// Parse the input and generate the ply output
-	//console.log(code_manager.group_array[0][0]);
-	//const result = exporter.parse(code_manager.group_array[0][0]); //upAxis: 'Y_UP', unitName: 'millimeter', unitMeter: 0.001
+	//console.log(group_array[0][0]);
+	//const result = exporter.parse(group_array[0][0]); //upAxis: 'Y_UP', unitName: 'millimeter', unitMeter: 0.001
 	
 	let result;
 	if (code_choice == "MORET"){
-		result = exporter.parse(moret_manager.group_array[0]); 
+		result = exporter.parse(group_array[0]); 
 	} else if (code_choice == "SERPENT"){
-		result = exporter.parse(serpent_manager.group_array[0]); 
+		result = exporter.parse(group_array[0]); 
 	}
 	
 	
@@ -122,7 +125,7 @@ function export_stl(){
 
 
 
-function export_ply(){	
+export_ply(code_choice, group_array){	
 	const link = document.createElement( 'a' );
 	link.style.display = 'none';
 	document.body.appendChild( link );
@@ -133,9 +136,9 @@ function export_ply(){
 	// Parse the input and generate the ply output	
 	let result_array;
 	if (code_choice == "MORET"){
-		result_array = exporter.parse_2(moret_manager.group_array[0]); 
+		result_array = exporter.parse_2(group_array[0]); 
 	} else if (code_choice == "SERPENT"){
-		result_array = exporter.parse(serpent_manager.group_array[0]); 
+		result_array = exporter.parse(group_array[0]); 
 	}
 	
 
@@ -145,7 +148,7 @@ function export_ply(){
 
 	/*
 	function generate_exported_group(){
-		let exported_group = moret_manager.group_array[0].clone(true);
+		let exported_group = group_array[0].clone(true);
 		console.log("exported_group before remove transparent mesh", exported_group);
 		remove_transparent_meshes(exported_group);
 		console.log("exported_group after", exported_group);
@@ -201,5 +204,7 @@ function export_ply(){
 
 	}
 
+
+}
 
 }

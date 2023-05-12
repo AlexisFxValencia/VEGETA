@@ -2,7 +2,7 @@
 <html>
 	<head>
 		<meta charset="utf-8">
-		<title>JDD viewer - Neutronics input 3D plotting </title>
+		<title>VEGETA - Visualizer & Exporter for GEometries of Tridimentional Aspect </title>
 		<link href="style.css" rel="stylesheet" type="text/css">
 		<link href="transparentbutton.css" rel="stylesheet" type ="text/css">
 	</head>
@@ -22,14 +22,18 @@
 					<option value="MORET">MORET 5</option>
 					<option value="OpenMC">OpenMC</option>
 					<option value="SERPENT">SERPENT 2</option>
-					<option value="SERPENT">MCNP</option>
-					<option value="TRIPOLI">TRIPOLI 4</option>
+					<!--<option value="SERPENT">MCNP</option>
+					<option value="TRIPOLI">TRIPOLI 4</option>-->
 					
 				</select>
+				<!--
 				<input type="button" id = "dae_button" value="Export to dae" onclick= "export_dae()" />
 				<input type="button" id = "stl_button" value="Export to .stl" onclick= "export_stl()" />
 				<input type="button" id = "obj_button" value="Export to .obj" onclick= "export_obj()" />				
-				<input type="button" id = "ply_button" value="Export to .ply" onclick= "export_ply()" />				
+				<input type="button" id = "ply_button" value="Export to .ply" onclick= "export_ply()" />	
+				-->
+				<div id="export_zone">
+				</div>	
 			</span>
 			<div>
 				<div>
@@ -49,7 +53,7 @@
 			<input type="file" id="uploader">			
 			<br>
 			<br>
-			<textarea id="textareabox">Paste your input text here and click on "Plot" </textarea>            
+			<textarea id="input_box">Paste your input text here and click on "Plot" </textarea>            
 			<br>
 			<input type="button" id = "start_button" value="Plot" onclick= "start_or_refresh()" />
 			<br>
@@ -87,6 +91,7 @@
 
 
 				<script src="js/core/openMC/openMCManager.js"></script>
+				<script src="js/core/openMC/openMCMeshCreator.js"></script>
 				<script src="js/core/openMC/openMCReader.js"></script>
 				<script src="js/core/openMC/surface.js"></script>
 				<script src="js/core/openMC/cell.js"></script>
@@ -99,7 +104,7 @@
 				
 
 
-				<<script src="js/core/cutManager.js"></script>
+				<script src="js/core/cutManager.js"></script>
 				<script src="js/core/sceneManager.js"></script>
 				<script src="js/core/exportManager.js"></script>
 				<script src="js/core/buttonsGenerator.js"></script>
@@ -113,11 +118,7 @@
 				<script src="js/lib/export-lib/STLExporter.js"></script>
 				<script src="js/lib/export-lib/OBJExporter.js"></script>
 				<script src="js/lib/export-lib/PLYExporter.js"></script>
-			</div>
-		
-		<script>
-			var firstStart = true;
-		</script>
+			</div>	
 		
 	</div>
 	</body>

@@ -5,10 +5,29 @@ class cylinder{
         this.radius = radius;
         this.radius_squared = radius * radius;
         this.id;
-        this.type = type;      
+        this.type = type;    
+
+        this.n_detail_theta = 70; 
+        this.n_height = 100;
+        this.points = []; 
+        this.z_center = 0;
         
 	}
 
+    generate_points(){
+        let points_1 =[];
+        for ( let i = 0; i < this.n_detail_theta; i++ ){
+            let theta = i * Math.PI/this.n_detail_theta;
+            for ( let j = 0; j < this.n_height; j++ ){
+                let x_1 = this.radius * Math.sin(theta) + this.x_center;
+                let y_1 = this.radius * Math.sin(theta) + this.y_center;
+                let z_1 = j + this.z_center - this.n_height/2;
+                let vect_coord_1 = new THREE.Vector3( x_1, y_1, z_1 );
+                points_1.push(vect_coord_1);
+            }
+        }
+        this.points = points_1;
+    }
 
     includes(tested_vector, sign){
         if (this.type == "z"){
@@ -35,6 +54,13 @@ class cylinder{
             }
         }
         
+    }
+
+    generate_mesh(){
+        const material = new THREE.MeshBasicMaterial( { color: this.color } );
+        const geometry = new ConvexGeometry(this.points);
+        const mesh = new THREE.Mesh( geometry, material );
+        return mesh;
     }
 
 

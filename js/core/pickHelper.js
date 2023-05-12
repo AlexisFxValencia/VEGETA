@@ -109,9 +109,9 @@ class PickHelper {
         //this.intersection = null;
 
         let checkboxes = document.getElementsByClassName("transparent_mesh_button");
-				console.log(checkboxes);
-        console.log(this.pickedObject)
-        console.log(this.pickedObject.name)
+				//console.log(checkboxes);
+        //console.log(this.pickedObject);
+        //console.log(this.pickedObject.name);
 
 				for(var i = 0; i < checkboxes.length; i++) {
           if (checkboxes[i].label == "transparent_mesh_button_" + this.pickedObject.name){

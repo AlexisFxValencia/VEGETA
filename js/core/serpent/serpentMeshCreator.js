@@ -1,52 +1,55 @@
 class serpentMeshCreator {
-    constructor (mesh_tools){
+    constructor (serpent_reader, group_array){
+        this.serpent_reader = serpent_reader;
+        this.group_array = group_array;
         this.infinity = 200;
-        this.mesh_tools = mesh_tools;
+        this.mesh_tools = new meshTools();
+        this.mesh_array = [];
     }
 
     create_cells_of_the_universe(wanted_universe){
         console.log("create_cells_of_the_universe");
-        for(let cell of serpent_reader.cell_array){
+        for(let cell of this.serpent_reader.cell_array){
             let cell_universe = cell[0][1];
             if (cell_universe == wanted_universe){
                 let mesh = this.create_one_mesh(cell);  
                 let group= this.search_group(cell_universe);
                 group.add(mesh);
-                mesh_array.push(mesh);
+                this.mesh_array.push(mesh);
             }              
         }
     }
 
     create_filled_cells_of_the_universe(wanted_universe){
         console.log("create_filled_cells_of_the_universe");
-        for(let cell of serpent_reader.filled_cell_array){
+        for(let cell of this.serpent_reader.filled_cell_array){
             let cell_universe = cell[0][1];
             if (cell_universe == wanted_universe){
                 let mesh = this.create_one_mesh(cell);  
                 let group= this.search_group(cell_universe);
                 group.add(mesh);
-                mesh_array.push(mesh);
+                this.mesh_array.push(mesh);
             }           
         }
     }
 
     create_pins_of_the_universe(){
         console.log("creating pins of the universe.");
-        for(let cell of serpent_reader.filled_cell_array){
+        for(let cell of this.serpent_reader.filled_cell_array){
             let filling_material = cell[0][2];
             //console.log(cell);
             //console.log(filling_material);
-            if (serpent_reader.pin_name_list.includes(filling_material)){
+            if (this.serpent_reader.pin_name_list.includes(filling_material)){
                 console.log("creating pin : ", cell);
                 this.create_pins(cell);
             }  else {
-                for (let lattice of serpent_reader.cartesian_lattice_array){
+                for (let lattice of this.serpent_reader.cartesian_lattice_array){
                     if (lattice[0][0] == filling_material){
                         console.log("creating pin : ", cell);
                         this.create_pins(cell);
                     } 
                 }
-                for (let lattice of serpent_reader.circular_lattice_array){
+                for (let lattice of this.serpent_reader.circular_lattice_array){
                     if (lattice[0][0] == filling_material){
                         console.log("creating pin : ", cell);
                         this.create_pins(cell);
@@ -58,7 +61,7 @@ class serpentMeshCreator {
     }
 
     create_pins(cell){
-        for (let pin of serpent_reader.pin_array){
+        for (let pin of this.serpent_reader.pin_array){
             this.create_one_pin(pin, cell);        
         }
     }
@@ -101,7 +104,7 @@ class serpentMeshCreator {
                     //console.log("parent_mesh : ", parent_mesh);
                     parent_mesh.add(mesh);
                 }                
-                mesh_array.push(mesh);
+                this.mesh_array.push(mesh);
                 index++;
                 
             }
@@ -112,7 +115,7 @@ class serpentMeshCreator {
 
     intersect_universe(intersector_universe){
         let intersector_group = this.search_group(intersector_universe);
-        for(let cell of serpent_reader.filled_cell_array){
+        for(let cell of this.serpent_reader.filled_cell_array){
             let cell_universe = cell[0][1];
             let filling_universe = cell[0][2];      
                 
@@ -180,14 +183,14 @@ class serpentMeshCreator {
     }
 
     create_surf_meshes(){
-        for (let surf of serpent_reader.surf_array){           
+        for (let surf of this.serpent_reader.surf_array){           
             let material = new THREE.MeshBasicMaterial({
                 color : this.mesh_tools.getRandomColor(),
             });
             let mesh = this.create_elementary_mesh(surf, material);         
             scene_manager.scene.add(mesh);                        
         }
-        //console.log(mesh_array);
+        //console.log(this.mesh_array);
     }
 
 
@@ -243,14 +246,14 @@ class serpentMeshCreator {
 			this.mesh_tools.rotate_mesh(mesh, vector);
             mesh.position.set(x, y, 0); 	
         } 
-        mesh_array.push(mesh);
+        this.mesh_array.push(mesh);
         return mesh;
     }
 
 
     
     intersect_pins(){
-        for (let pin of serpent_reader.pin_array){
+        for (let pin of this.serpent_reader.pin_array){
             this.intersect_one_pin(pin);         
         }
     }
@@ -273,7 +276,7 @@ class serpentMeshCreator {
     }
 
     get_new_color(cell){	
-		for (let mate of serpent_reader.mate_array){
+		for (let mate of this.serpent_reader.mate_array){
 			if (mate[0] == cell[0][2]){
 				let color = mate[1];
 				//console.log("color of cell found", cell[0][0], mate[0]);
@@ -283,12 +286,12 @@ class serpentMeshCreator {
 		}
         let id_mate = cell[0][2];
         let color = this.mesh_tools.attribute_material_color(id_mate);
-        serpent_reader.mate_array.push([id_mate, color]);
+        this.serpent_reader.mate_array.push([id_mate, color]);
         return color;
         
         /*
 		let color_material = this.mesh_tools.getRandomColor();		
-		serpent_reader.mate_array.push([id_mate, color_material]);
+		this.serpent_reader.mate_array.push([id_mate, color_material]);
 
 		return color_material;
         */
@@ -307,7 +310,7 @@ class serpentMeshCreator {
 
     search_surface(surface_name){
         //console.log("searching :", surface_name);
-        let surface = serpent_reader.surf_array.find(el => el[0] === surface_name);               
+        let surface = this.serpent_reader.surf_array.find(el => el[0] === surface_name);               
          if (surface != undefined){
                 return surface;
         } else {
@@ -316,7 +319,7 @@ class serpentMeshCreator {
     }
 
     search_group(group_name){
-        let group = serpent_manager.group_array.find(el => el.name === group_name);               
+        let group = this.group_array.find(el => el.name === group_name);               
          if (group != undefined){
                 return group;
         } else {
@@ -325,15 +328,15 @@ class serpentMeshCreator {
     }
 
     search_pin_in_array(pin_name){
-        for (let pin of serpent_reader.pin_array){
+        for (let pin of this.serpent_reader.pin_array){
             this.create_one_pin(pin, cell);        
         }
     }
 
     create_cartesian_lattices(){
         console.log("create_cartesian_lattices");
-        if (serpent_reader.cartesian_lattice_array[0] != undefined){
-        for (let lattice of serpent_reader.cartesian_lattice_array){
+        if (this.serpent_reader.cartesian_lattice_array[0] != undefined){
+        for (let lattice of this.serpent_reader.cartesian_lattice_array){
             let universe = lattice[0][0];
             let x0 = lattice[0][1];
             let y0 = lattice[0][2];
@@ -348,7 +351,7 @@ class serpentMeshCreator {
             
             for (let [y_index, row] of lattice[1].entries()){
                 for (let [x_index, pin_name] of row.entries()){
-                    if (serpent_reader.pin_name_list.includes(pin_name)){
+                    if (this.serpent_reader.pin_name_list.includes(pin_name)){
                         let pin_id = pin_name + " " + "0";
                         //console.log("pin_id", pin_id);
                         let model_cell = this.search_object(pin_id);
@@ -365,7 +368,7 @@ class serpentMeshCreator {
     
                             console.log('intersection of : ', model_cell.parent.name, 'by', cell.name);
                             //this.mesh_tools.geometrical_substraction(model_cell.parent, cell);
-                            let cylinder = serpent_reader.pin_array.find(el => el[0][0] === pin_name);
+                            let cylinder = this.serpent_reader.pin_array.find(el => el[0][0] === pin_name);
                             //console.log("cylinder", cylinder);
                             let pin_max_radius = cylinder[0][2];
                             //console.log("pin_max_radius", pin_max_radius);
@@ -395,8 +398,8 @@ class serpentMeshCreator {
 
     create_circular_lattices(){
         console.log("create_circular_lattices");
-        if (serpent_reader.circular_lattice_array[0] != undefined){
-        for (let lattice of serpent_reader.circular_lattice_array){
+        if (this.serpent_reader.circular_lattice_array[0] != undefined){
+        for (let lattice of this.serpent_reader.circular_lattice_array){
             let universe = lattice[0][0];
             let x0 = lattice[0][1];
             let y0 = lattice[0][2];
@@ -412,7 +415,7 @@ class serpentMeshCreator {
                 let angle = ring[2];
                 //console.log("angle", ring,  angle);
                 for (let i = 3; i < 3 + ns; i++){
-                    if (serpent_reader.pin_name_list.includes(ring[i])){
+                    if (this.serpent_reader.pin_name_list.includes(ring[i])){
                         let pin_id = ring[i] + " " + "0";
                         //console.log("pin_id", pin_id);
                         let model_cell = this.search_object(pin_id);
@@ -429,7 +432,7 @@ class serpentMeshCreator {
                         
                         console.log('intersection of : ', model_cell.parent.name, 'by', cell.name);
                         //this.mesh_tools.geometrical_substraction(model_cell.parent, cell);
-                        let cylinder = serpent_reader.pin_array.find(el => el[0][0] === ring[i]);
+                        let cylinder = this.serpent_reader.pin_array.find(el => el[0][0] === ring[i]);
                         //console.log("cylinder", cylinder);
                         let pin_max_radius = cylinder[0][2];
                         //console.log("pin_max_radius", pin_max_radius);

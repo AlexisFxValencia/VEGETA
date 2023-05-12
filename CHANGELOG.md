@@ -1,3 +1,7 @@
+- réduire le nombre de recherche arborescentes search_object
+- réunir les intersect_etsu, intersect_supe,...
+- optimiser les intersections pour les réseaux. 
+
 à faire :
 les unions
 rajout de l'export des couleurs dans l'export vers dae. A priori il faut rajouter une texture.
@@ -22,6 +26,54 @@ le bouton qui sert à rendre les mesh transparents/les rendres visibles rend vis
 debuger reseau d'hexa d'hexa où les matériaux ne sont pas bien identifiés.
 
 lire et parser un project.xml
+
+
+
+
+v 81 11 05 23
+- improved volu, hole, dism data structure.
+- holes use container_bsp_substraction
+
+v 80 10 05 23
+- ETSU/TRUN reading simplification.
+- SUPE reading simplification.
+- ETSU/TRUN corrected.
+- hexagonal lattices corrected.
+- improved performances by precalculating BSP (cloud points) for CSG : ETSU and INTE and SUPE.
+- improved performances for parent intersections
+- translation function for the CSG/BSP
+- mesh rotated when created
+- bsp translation instead of mesh translation before CSG operations.
+- improved BOX reading
+
+v 79 29 04 23
+- correction when a line begins by a number : it is now linked to the previous line.  
+- buttongenerator correction
+- buttongenerator now implements exportManager (which is now an object) and create the export buttons.
+
+v 78 28 04 23
+- header title corrected
+- improved input textarea name
+- improved xml reading
+- changed some var to let
+- improved main modularity
+- for more simplicity, moret_reader is not a global object anymore (now is a let)
+- moret_manager : var to let
+- simplification : mesh_tools created inside objects needing it
+- scene manager : var to let
+- transparency button latency corrected
+- main.js : moret & serpent & openMC generation simplification
+- manager simplification.
+- generate_controls simplification
+- buttons_generator : var to let
+- mesh_array not global but inside each mesh_creators
+- ETSU improved
+- OBLI added
+
+v 77 27 04 23
+- added LBOX
+- reading "MODU" word improved
+
 
 v 76 01 12 22
 - openMC : can plot any intersection of plans.

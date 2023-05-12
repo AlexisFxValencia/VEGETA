@@ -1,7 +1,7 @@
 
 class serpentReader{
-    constructor(mesh_tools){
-        this.mesh_tools = mesh_tools;
+    constructor(){
+        this.mesh_tools = new meshTools();
         this.universe_array = [];
         this.surf_array = [];
         this.cell_array = [];
@@ -79,7 +79,7 @@ class serpentReader{
             let temp_array = [];
             let pin_name = line_array[1];
             //console.log("pin_name",pin_name);
-            let col_id_mate = serpent_reader.mate_array.map(function(value,index) { return value[0]; });	
+            let col_id_mate = this.mate_array.map(function(value,index) { return value[0]; });	
             //console.log("col_id_mate", col_id_mate);
             let j = 1;
             let material;
@@ -122,8 +122,8 @@ class serpentReader{
     }
 
     fill_pin_name_list(){
-        if (serpent_reader.pin_array[0] != undefined){
-            this.pin_name_list = serpent_reader.pin_array.map(function(value,index1) { return value[0][0]; });
+        if (this.pin_array[0] != undefined){
+            this.pin_name_list = this.pin_array.map(function(value,index1) { return value[0][0]; });
         }		
     }
 

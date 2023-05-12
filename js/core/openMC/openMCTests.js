@@ -1,6 +1,6 @@
 class openMCTests {
-    constructor (mesh_tools){
-        this.mesh_tools = mesh_tools;
+    constructor (){
+        this.mesh_tools = new meshTools();
     }
 
 

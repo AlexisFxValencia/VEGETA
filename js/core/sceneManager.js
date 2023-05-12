@@ -31,8 +31,8 @@ class sceneManager {
 		this.scene.add( new THREE.AmbientLight( 0x999999 ) );
 		this.camera = new THREE.PerspectiveCamera( 55, window.innerWidth*0.7/ window.innerHeight, 0.1, 5000 );
 		
-		var container = document.getElementById( "maDivDroite" );
-		document.body.appendChild( container );
+		let container = document.getElementById( "maDivDroite" );
+		//document.body.appendChild( container );
 
 		this.renderer = new THREE.WebGLRenderer();
 		this.renderer.setSize( window.innerWidth*0.7, window.innerHeight);
@@ -44,14 +44,14 @@ class sceneManager {
 
 		this.add_axes_helper();
 
-		var light = new THREE.DirectionalLight( 0xffffff );
+		let light = new THREE.DirectionalLight( 0xffffff );
 		light.position.set( 0, 1, 1 ).normalize();
 		this.scene.add(light);
 
 		window.addEventListener( 'resize', onWindowResize );
-		var camera1 = this.camera;
-		var renderer1 = this.renderer;
-		var scene1 = this.scene;		
+		let camera1 = this.camera;
+		let renderer1 = this.renderer;
+		let scene1 = this.scene;		
 		function onWindowResize() {
 			camera1.aspect = window.innerWidth / window.innerHeight;
 			camera1.updateProjectionMatrix();
@@ -105,12 +105,12 @@ class sceneManager {
 	}
 
 
-	generate_controls(code_manager){
+	generate_controls(group_array){
 		this.controls = new THREE.OrbitControls( this.camera, this.renderer.domElement );
 		
 		//this.controls.enablePan = false;
 		
-		var that = this;		
+		let that = this;		
 		this.controls.addEventListener( 'change', render2);
 		function render2(){
 			that.renderer.render( that.scene, that.camera );
@@ -120,7 +120,7 @@ class sceneManager {
 
 		document.addEventListener('keydown',sendKeyDown);
 		function sendKeyDown(event){
-			var code = event.code;
+			let code = event.code;
 			if (code=='ArrowRight') keyMoveRight();
 			if (code=='ArrowLeft') keyMoveLeft();
 			if (code=='ArrowUp') keyMoveUp();
@@ -129,27 +129,23 @@ class sceneManager {
 		}
 				
 		function keyMoveRight() {			
-			//moret_manager.group_array[0].position.x += 5;
-			for (let group of code_manager.group_array){
+			for (let group of group_array){
 				group.position.x += 5;
 			}
 			
 		}		
 		function keyMoveLeft() {
-			//moret_manager.group_array[0].position.x -= 5;
-			for (let group of code_manager.group_array){
+			for (let group of group_array){
 				group.position.x -= 5;
 			}
 		}		
 		function keyMoveUp() {
-			//moret_manager.group_array[0].position.y += 5;
-			for (let group of code_manager.group_array){
+			for (let group of group_array){
 				group.position.y += 5;
 			}
 		}		
 		function keyMoveDown() {
-			//moret_manager.group_array[0].position.y -= 5;
-			for (let group of code_manager.group_array){
+			for (let group of group_array){
 				group.position.y -= 5;
 			}
 		}

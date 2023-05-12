@@ -76,9 +76,12 @@ class meshTools{
 
 			//Il faut translater la cellule moret avec soustraction car la librairie CSG utilise les attributs position des objets (comme si c'était des positions absolues)
 			// Or un Mesh Three JS retient les liens de parentalité des Mesh et utilise donc leur coordonnées locales (ie par rapport au parent)
+			
+			
 			moret_cell.translateX(container.position.x);
 			moret_cell.translateY(container.position.y);
 			moret_cell.translateZ(container.position.z);
+			
 			
 			container.updateMatrix();
 			moret_cell.updateMatrix();
@@ -88,9 +91,11 @@ class meshTools{
 			let mesh_mother_sub = CSG.toMesh( bsp_mother_sub, container.matrix, container.material );	
 			container.geometry = mesh_mother_sub.geometry;
 			
+			
 			moret_cell.translateX( - container.position.x);
 			moret_cell.translateY( - container.position.y);
 			moret_cell.translateZ( - container.position.z);
+						
 
 			//console.log("end substraction");
 			//console.log("container", container);
@@ -103,6 +108,20 @@ class meshTools{
 		}
 		*/
 	}
+
+	container_bsp_substraction(vector, container, bsp_son){		
+		if (container != undefined && container.geometry != undefined){		
+			container.updateMatrix();
+			let bsp_mother = CSG.fromMesh(container);  
+			bsp_son.translate(vector.x, vector.y, vector.z)                  
+			let bsp_mother_sub = bsp_mother.subtract(bsp_son);	
+			bsp_son.translate(-vector.x, -vector.y, -vector.z)                      
+		
+			let mesh_mother_sub = CSG.toMesh( bsp_mother_sub, container.matrix, container.material );	
+			container.geometry = mesh_mother_sub.geometry;
+			container.updateMatrix();
+	}
+}
 
 	toDegrees (radians) {
 		return radians * (180 / Math.PI);
@@ -172,10 +191,10 @@ class meshTools{
 		return texture;
 	}
 
-	search_object(name, code_manager){
+	search_object(name, group_array){
 		//console.log("searched object name : ", name);
-		//console.log("code_manager.group_array : ", code_manager.group_array);
-		for (let group of code_manager.group_array){
+		//console.log("group_array : ", group_array);
+		for (let group of group_array){
 			let object = group.getObjectByName(name);
 			if (object != undefined){
 				//console.log(name, "found");	
@@ -185,5 +204,7 @@ class meshTools{
 		console.log(name, "not found");	
 		
 	}
+
+	
 
 }

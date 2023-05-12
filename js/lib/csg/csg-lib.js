@@ -69,6 +69,17 @@ class CSG {
         csg.polygons.forEach(p=>p.flip());
         return csg;
     }
+
+    translate(t_x, t_y, t_z){
+        for (let polygon of this.polygons){
+            for (let i = 0; i< 3; i++){
+                polygon.vertices[i].pos.x += t_x;
+                polygon.vertices[i].pos.y += t_y;
+                polygon.vertices[i].pos.z += t_z;
+            }
+            
+        }
+    }
 }
 
 // Construct a CSG solid from a list of `Polygon` instances.
@@ -77,6 +88,11 @@ CSG.fromPolygons=function(polygons) {
     csg.polygons = polygons;
     return csg;
 }
+
+
+
+
+
 
 // # class Vector
 
