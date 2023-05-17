@@ -12,17 +12,17 @@ class moretMeshCreator {
 	create_meshes(){
 		console.log("Creating 3D meshes...");
 		for (let volume of this.moret_reader.volu_array){
-			let type = this.moret_reader.type_array.find(el => el[0] == volume.id_type && el[5] == volume.id_modu);
+			let type = this.moret_reader.type_array.find(el => el.id === volume.id_type && el.id_modu === volume.id_modu);
 
 			if (type == undefined){
 				console.log("type ", volume.id_modu, volume.id_type, "not found !", "It's for the volume : ", volume.id);
 			}//console.log(type)
-			let color_material = this.get_new_color(volume);					
+			let color = this.get_color(volume);					
 			//let texture = this.mesh_tools.generate_texture();									
 			//export manager work with MeshPhongMaterial.
 			//no need for texture.
 			let material = new THREE.MeshPhongMaterial( {
-				color: color_material,
+				color: color,
 				//map:texture,
 				side: THREE.DoubleSide,
 				clippingPlanes: [ this.cut_manager.x_plane, this.cut_manager.y_plane, this.cut_manager.z_plane ],
@@ -38,11 +38,15 @@ class moretMeshCreator {
 			this.add_labeled_bsp(mesh, false);
 
 			let [x_obj, y_obj, z_obj] = this.get_volume_relative_position(volume);
-			//if (mesh.geometry.type = "ConeGeometry"){
-				//mesh.translateZ(-0.5*this.infinity/10);
-				//mesh.position.z -= 0.5*this.infinity/10;
-				//z_obj -= 0.5*this.infinity/10;
-			//}
+			/*
+			if (type.shape == "CONX"){
+				x_obj -= 0.5*this.infinity/10;
+			}if (type.shape == "CONY"){
+				y_obj -= 0.5*this.infinity/10;
+			}if (type.shape == "CONZ"){
+				z_obj -= 0.5*this.infinity/10;
+			}
+			*/
 			
 			mesh.position.set(x_obj, y_obj, z_obj);	
 			
@@ -50,7 +54,7 @@ class moretMeshCreator {
 
 			this.mesh_array.push(mesh);		
 			this.add_cell_to_its_container(volume, mesh);
-			console.log("moret mesh :", mesh);
+			//console.log("moret mesh :", mesh);
 			mesh.updateMatrix();
 			
 
@@ -59,36 +63,33 @@ class moretMeshCreator {
 	}
 
 
-	rotate_mesh(mesh, volume){ // voir si on veut faire tourner les enfants...
-		for (let rotation of this.moret_reader.rota_array){
-			if (volume.id_type == rotation[1] && volume.id_modu == rotation[0]){ //égalité sur les id_type et les id_modules
-					this.rotate_one_mesh(mesh, volume, rotation);		
+	rotate_mesh(mesh, volu){ // voir si on veut faire tourner les enfants...
+		if (this.moret_reader.rota_array.length != 0){
+			let rota = this.moret_reader.rota_array.find(rota => rota.id_modu === volu.id_modu && rota.id_type === volu.id_type);
+			if (rota != undefined){
+				this.rotate_one_mesh(mesh, rota);
+			} else{				
+				//console.log("rota of module : ", volu.id_modu, "type : ", volu.id_type, "is undefined ");
 			}
 		}		
-		
 	}
 	
-	rotate_one_mesh(mesh, volume, rotation){
+	rotate_one_mesh(mesh, rota){
 		let axis = new THREE.Vector3(1, 0, 0);
-		let vector = new THREE.Vector3(1, 0, 0);
-		let theta = 0;
-		
-		if (rotation[4] != 0){ // X rotation
-			theta = this.mesh_tools.toRadians(rotation[4]);
-			console.log(rotation);
-			console.log("theta", theta);
-			console.log(Math.sin(theta));
-			axis = new THREE.Vector3(0, 1, 0);
-			vector = new THREE.Vector3(0, Math.cos(theta), Math.sin(theta));
-		} else if (rotation[6] != 0){ //Y
-			theta = this.mesh_tools.toRadians(rotation[6]);
-			axis = new THREE.Vector3(0, 0, 1);
-			vector = new THREE.Vector3(Math.sin(theta), 0, Math.cos(theta));
-		} else if (rotation[8] != 0){ //Z
-			theta = this.mesh_tools.toRadians(rotation[8]);
-			axis = new THREE.Vector3(1, 0, 0);
-			vector = new THREE.Vector3(Math.cos(theta), Math.sin(theta), 0);
-		} 			
+		let vector = new THREE.Vector3(1, 0, 0);			
+		for (let rotation of rota.elementary_rotations){
+			let theta = this.mesh_tools.toRadians(rotation.theta);
+			if (rotation.type == "X"){
+				axis = new THREE.Vector3(0, 1, 0);
+				vector = new THREE.Vector3(0, Math.cos(theta), Math.sin(theta));
+			} else if (rotation.type == "Y"){
+				axis = new THREE.Vector3(0, 0, 1);
+				vector = new THREE.Vector3(Math.sin(theta), 0, Math.cos(theta));
+			} else if (rotation.type == "Z"){
+				axis = new THREE.Vector3(1, 0, 0);
+				vector = new THREE.Vector3(Math.cos(theta), Math.sin(theta), 0);
+			}
+		}
 		var quaternion = new THREE.Quaternion(); 
 		quaternion.setFromUnitVectors(axis, vector);
 		const matrix = new THREE.Matrix4();
@@ -137,73 +138,70 @@ class moretMeshCreator {
 	}
 
 	create_one_mesh(type, material){
-		if (type[1] =="BOX"){
-			let dx = type[2];
-			let dy = type[3];
-			let dz = type[4];
+		if (type.shape =="BOX"){
+			let dx = type.parameters.dx;
+			let dy = type.parameters.dy;
+			let dz = type.parameters.dz;
 			var geometry = new THREE.BoxGeometry(dx, dy, dz);
 			var mesh = new THREE.Mesh( geometry, material );					
-		} else if (type[1] =="SPHE"){
-			let rayon = type[2];
-			var geometry = new THREE.SphereGeometry(rayon, 32, 16 );	
+		} else if (type.shape =="SPHE"){
+			let radius = type.parameters.radius;
+			var geometry = new THREE.SphereGeometry(radius, 32, 16 );	
 			var mesh = new THREE.Mesh( geometry, material );			
-		} else if (type[1] =="CYLX"){
-			let rayon = type[2];
-			let height = type[3];
-			var geometry = new THREE.CylinderGeometry(rayon, rayon, height, 32 );	
+		} else if (type.shape =="CYLX"){
+			let radius = type.parameters.radius;
+			let height = type.parameters.height;
+			var geometry = new THREE.CylinderGeometry(radius, radius, height, 32 );	
 			var mesh = new THREE.Mesh( geometry, material );	
 			let vector = new THREE.Vector3(1, 0, 0);
 			this.mesh_tools.rotate_mesh(mesh, vector);
 
-		} else if (type[1] =="CYLY"){
-			let rayon = type[2];
-			let height = type[3];
-			var geometry = new THREE.CylinderGeometry(rayon, rayon, height, 32 );	
+		} else if (type.shape =="CYLY"){
+			let radius = type.parameters.radius;
+			let height = type.parameters.height;
+			var geometry = new THREE.CylinderGeometry(radius, radius, height, 32 );	
 			var mesh = new THREE.Mesh( geometry, material );				
-		} else if (type[1] =="CYLZ"){
-			let rayon = type[2];
-			let height = type[3];
-			var geometry = new THREE.CylinderGeometry(rayon, rayon, height, 32 );	
+		} else if (type.shape =="CYLZ"){
+			let radius = type.parameters.radius;
+			let height = type.parameters.height;
+			var geometry = new THREE.CylinderGeometry(radius, radius, height, 32 );	
 			var mesh = new THREE.Mesh( geometry, material );	
 			let vector = new THREE.Vector3(0, 0, 1);
 			this.mesh_tools.rotate_mesh(mesh, vector);
 
-		} else if (type[1] =="HEXX" || type[1] =="HEXY" || type[1] =="HEXZ"){
-			let side = type[2];
-			let height = type[3];
-			let azimuth = type[4];
+		} else if (type.shape =="HEXX" || type.shape =="HEXY" || type.shape =="HEXZ"){
+			let side = type.parameters.side;
+			let height = type.parameters.height;
+			let azimuth = type.parameters.azimuth;
 			//console.log(side, height, azimuth);
 			var mesh = this.mesh_tools.hexprism_z_mesh_creator(side, height, azimuth );
-			if (type[1] =="HEXX"){
+			if (type.shape =="HEXX"){
 				let vector = new THREE.Vector3(1, 0, 0);
 				this.mesh_tools.rotate_mesh(mesh, vector);
 			} 
-			if(type[1] =="HEXY"){
+			if(type.shape =="HEXY"){
 				let vector = new THREE.Vector3(0, 1, 0);
 				this.mesh_tools.rotate_mesh(mesh, vector);				
 			} 
 			
-		} else if (type[1] =="ELLI"){
-			let a = parseFloat(type[2]);
-			let b = parseFloat(type[3]);
-			let c = parseFloat(type[4]);
-			console.log(a, b, c);
+		} else if (type.shape =="ELLI"){
+			let a = type.parameters.a;
+			let b = type.parameters.b;
+			let c = type.parameters.c;
 			var mesh = this.mesh_tools.ellipsoid_z_mesh_creator(a, b, c );
 
-		} else if (type[1] =="PLAX" || type[1] =="PLAY" || type[1] =="PLAZ"){
-			
+		} else if (type.shape =="PLAX" || type.shape =="PLAY" || type.shape =="PLAZ"){
 			let dx = this.infinity;
 			let dy = this.infinity;
 			let dz = this.infinity;
-			if (type[2] != "SUPE" && type[2] != "INFE"){
-				console.log("number!");
-				let alt_1 = parseFloat(type[2]);
-				let alt_2 = type[3];
-				if (type[1] == "PLAX"){				
+			if (type.parameters.supe_or_inf_or_alt_1 != "SUPE" && type.parameters.supe_or_inf_or_alt_1 != "INFE"){
+				let alt_1 = parseFloat(type.parameters.supe_or_inf_or_alt_1);
+				let alt_2 = type.parameters.alt_2;
+				if (type.shape == "PLAX"){				
 					dx = alt_2 - alt_1;
-				} else if (type[1] == "PLAY"){				
+				} else if (type.shape == "PLAY"){				
 					dy = alt_2 - alt_1;
-				}else if (type[1] == "PLAZ"){				
+				}else if (type.shape == "PLAZ"){				
 					dz = alt_2 - alt_1;
 				}							
 			}
@@ -216,26 +214,17 @@ class moretMeshCreator {
 			
 
 
-		} else if (type[1] == "MPLA"){	
+		} else if (type.shape == "MPLA"){	
 			console.log("creating MPLA");
-			//console.log(type);			
-			for (let i=0; i < type[2].length; i++){
-				let mpla_array = type[2][i];
-				//console.log(mpla_array);
-				let v_a = new THREE.Vector3( mpla_array[0], mpla_array[1], mpla_array[2]);
-				let v_b = new THREE.Vector3( mpla_array[3], mpla_array[4], mpla_array[5]);
-				let v_c = new THREE.Vector3( mpla_array[6], mpla_array[7], mpla_array[8]);
-				//console.log("vectors...");
-				//console.log("v_a :", v_a);
-				//console.log("v_b :", v_b);
+			for (let i=0; i < type.parameters.planes_list.length; i++){
+				let plane = type.parameters.planes_list[i];
+				let v_a = plane.point_a;
+				let v_b = plane.point_b;
+				let v_c = plane.point_c;
 				let v_ab = v_b.sub(v_a);	
-				let v_ac = v_c.sub(v_a);			
-				//console.log("v_ab :",v_ab);
-				//console.log("v_ac :",v_ac);
+				let v_ac = v_c.sub(v_a);	
 				let v_k = v_ab.cross(v_ac);
-				//console.log(v_k);
 				let v_norm = v_k.normalize();
-				//console.log(v_norm);
 				let distance_plane_origin = v_a.dot(v_norm);
 				//console.log(distance_plane_origin);
 	
@@ -270,19 +259,19 @@ class moretMeshCreator {
 			mesh.material.transparent = true;
 			mesh.material.opacity = 0;
 			mesh.material.needsUpdate = true;	
-			console.log(mesh);
+			//console.log(mesh);
 					
 
-		}else if (type[1] =="CYLI"){
-			let rayon = type[2];
-			let x_a = type[3];
-			let y_a = type[4];
-			let z_a = type[6];
-			let x_b = type[7];
-			let y_b = type[8];
-			let z_b = type[9];
+		}else if (type.shape =="CYLI"){
+			let radius = type.parameters.radius;
+			let x_a = type.parameters.x_a;
+			let y_a = type.parameters.y_a;
+			let z_a = type.parameters.z_a;
+			let x_b = type.parameters.x_b;
+			let y_b = type.parameters.y_b;
+			let z_b = type.parameters.z_b;
 			let height = this.infinity;
-			var geometry = new THREE.CylinderGeometry(rayon, rayon, height, 32 );	
+			var geometry = new THREE.CylinderGeometry(radius, radius, height, 32 );	
 			var mesh = new THREE.Mesh( geometry, material );
 			let v1 = x_b - x_a;
 			let v2 = y_b - y_a;
@@ -293,30 +282,46 @@ class moretMeshCreator {
 			mesh.material.opacity = 0;
 			mesh.material.needsUpdate = true;
 
-		}else if (type[1] =="CONX" || type[1] =="CONY" || type[1] =="CONZ"){
+		}else if (type.shape =="CONX" || type.shape =="CONY" || type.shape =="CONZ"){
 			console.log('creation of cone geometry');
-			console.log(type[2]);
 			let geometry;
-			if (type[2] == 'TAN'){
-				let tan = type[3];
+			if (type.parameters.angle_or_tan == 'TAN'){
+				let tan = type.parameters.tan;
 				let height = this.infinity/10;
 				let radius = height * tan; 
 				geometry = new THREE.ConeGeometry( radius, height, 32 );
-			} else if (type[2] == 'ANGL'){
-				let angle = this.mesh_tools.toRadians(type[3]);
+			} else if (type.parameters.angle_or_tan == 'ANGL'){
+				let angle = this.mesh_tools.toRadians(type.parameters.angle);
 				let tan = Math.tan(angle);
 				let height = this.infinity/10;				
 				let radius = height * tan; 
 				geometry = new THREE.ConeGeometry( radius, height, 32 );
+
+				/* // PARTIE A TRAVAILLER pour avoir les cones la bonne hauteur directement via sa geometrie.
+				if (type.shape =="CONZ"){
+					console.log("geometry", geometry);
+					//cf . https://dustinpfister.github.io/2021/06/07/threejs-buffer-geometry-attributes-position/
+					const position = geometry.getAttribute('position');
+					//let n = position.array.length;
+					let n = geometry.index.count;
+					console.log("my n", n);
+					for (let vertIndex = 0; vertIndex < n; vertIndex++){
+						let posIndex = geometry.index.array[vertIndex] * 3;
+						position.array[posIndex + 2] -= 0.5*height;
+					}
+					position.needsUpdate = true;						
+				}
+				*/
+				
 			}		
 
 			var mesh = new THREE.Mesh( geometry, material);
 			
 
-			if (type[1] == "CONX"){
+			if (type.shape == "CONX"){
 				let vector = new THREE.Vector3(1, 0, 0);
 				this.mesh_tools.rotate_mesh(mesh, vector);
-			} else if(type[1] == "CONZ"){
+			} else if(type.shape == "CONZ"){
 				let vector = new THREE.Vector3(0, 0, 1);
 				this.mesh_tools.rotate_mesh(mesh, vector);
 			}
@@ -327,30 +332,31 @@ class moretMeshCreator {
 
 	position_PLA(){
 		for (let type of this.moret_reader.type_array){
-			if (type[1] == "PLAX" || type[1] =="PLAY" || type[1] =="PLAZ"){
+			if (type.shape == "PLAX" || type.shape =="PLAY" || type.shape =="PLAZ"){
 				for (let volume of this.moret_reader.volu_array){
-					if (volume.id_type == type[0] && volume.id_modu == type[5]){ 
+					if (volume.id_type == type.id && volume.id_modu == type.id_modu){
 						let shift = 0.0;
-						if (type[2] == "SUPE"){
-							shift = this.infinity/2 + type[3];		
-						} else if(type[2] == "INFE"){
-							shift = - this.infinity/2 + type[3];
+						if (type.parameters.supe_or_inf_or_alt_1 == "SUPE"){
+							shift = this.infinity/2 + type.parameters.alt_2;		
+						} else if(type.parameters.supe_or_inf_or_alt_1 == "INFE"){
+							shift = - this.infinity/2 + type.parameters.alt_2;
 						} else{
-							let alt_1 = parseFloat(type[2]);
-							let alt_2 = type[3];
+							let alt_1 = parseFloat(type.parameters.supe_or_inf_or_alt_1);
+							let alt_2 = type.parameters.alt_2;
 							shift = (alt_1 + alt_2)/2;
+							console.log(alt_1, alt_2);
 						}
-						let id_modu = volume.id_modu
-						let id = volume.id;					
-						var pla_mesh = this.mesh_tools.search_object(id_modu + " " + id, this.group_array);
+										
+						let pla_name = volume.id_modu + " " + volume.id
+						var pla_mesh = this.mesh_tools.search_object(pla_name, this.group_array);
 						
-						if (type[1] == "PLAX"){									
+						if (type.shape == "PLAX"){									
 							pla_mesh.position.x += shift; 
-						} else if (type[1] == "PLAY"){									
+						} else if (type.shape == "PLAY"){									
 							pla_mesh.position.y += shift; 
-						} else if (type[1] == "PLAZ"){									
+						} else if (type.shape == "PLAZ"){									
 							pla_mesh.position.z += shift;
-							console.log("shift", shift) ;
+							console.log("shift", shift);
 						}
 
 						pla_mesh.material.transparent = true;
@@ -367,34 +373,24 @@ class moretMeshCreator {
 	position_MPLA(){
 		console.log("positioning MPLA");
 		for (let type of this.moret_reader.type_array){
-			if (type[1] == "MPLA"){
+			if (type.shape == "MPLA"){
 				for (let volume of this.moret_reader.volu_array){
-					if (volume.id_type == type[0] && volume.id_modu == type[5]){ //égalité sur les id_type et les id_modules
-						//let mpla_array = type[2][0];
-						//let x_a = mpla_array[0];
-						//let y_a = mpla_array[1];
-						//let z_a = mpla_array[2];
+					if (volume.id_type == type.id && volume.id_modu == type.id_modu){ //égalité sur les id_type et les id_modules
 						let id_modu = volume.id_modu
 						let id = volume.id;					
 						let mpla_mesh = this.mesh_tools.search_object(id_modu + " " + id, this.group_array);
-						//mpla_mesh.position.set(x_a, y_a, z_a);
-
-						let vector_I = type[3][0];
-						let x_I = vector_I[0];
-						let y_I = vector_I[1];
-						let z_I = vector_I[2];
-						//console.log("x_I", x_I);
-						//console.log("y_I", y_I);
-						//console.log("z_I", z_I);
-
+						let vector_I = type.parameters.vector_I;
+						let x_I = vector_I.x;
+						let y_I = vector_I.y;
+						let z_I = vector_I.z;
 						let [x_obj, y_obj, z_obj] = this.get_volume_relative_position(volume);
-						//console.log("x_obj", x_obj);
-						//console.log("y_obj", y_obj);
-						//console.log("z_obj", z_obj);
-
 						mpla_mesh.translateX(x_obj - x_I);
 						mpla_mesh.translateY(y_obj - y_I);
 						mpla_mesh.translateZ(z_obj - z_I);
+						console.log(x_I);
+
+						console.log("[x_obj, y_obj, z_obj]", [x_obj, y_obj, z_obj]);
+						console.log("vector_I", vector_I);
 					}
 				}
 			}
@@ -403,98 +399,66 @@ class moretMeshCreator {
 	}
 
 
-	add_cell_to_its_container(volume, moret_cell){	
+	add_cell_to_its_container(volu, moret_cell){	
 		//console.log("adding cell to its container");
-		let id_modu = volume.id_modu;
-		let id_cont = volume.id_cont;
-		let col_id_volu = this.moret_reader.volu_array.map(function(value,index) { return value.id});	
-		// partie qui trouve le conteneur de volu_array[i] pour lui rajouter la moret_cell nouvellement créée. 
-		
-		
+		let id_modu = volu.id_modu;
+		let id_cont = volu.id_cont;	
+		let group = this.group_array.find(group => group.name == id_modu);	
 		if (id_cont == 0){ // on ajoute au module en cours
-			let group_searched = this.mesh_tools.search_object(id_modu, this.group_array);		
-			group_searched.add(moret_cell);
-			//console.log("group added");
-		} else if ( id_cont == id_modu){ //si le conteneur est dans la liste des modules		
-			let local_volu_array = this.moret_reader.volu_array.filter(el => el.id_modu === volume.id_modu);
-			let volume_container = local_volu_array.find(el => el.id === id_cont);
-			
-			if (volume_container == undefined || Object.is(volume, volume_container)){
-				group_searched = this.mesh_tools.search_object(id_modu, this.group_array);
-				group_searched.add(moret_cell);
-				//console.log("group added");
+			group.add(moret_cell);
+		} else if ( id_cont == id_modu){ 	
+			let container_volu = this.moret_reader.volu_array.find(el => el.id_modu === volu.id_modu && el.id === id_cont);
+			if (container_volu != undefined){
+				let container = group.getObjectByName(id_modu + " " + id_cont);
+				container.add(moret_cell);	
 			}else{
-				for (let k = 0; k < this.group_array.length; k++){
-					var container = this.group_array[k].getObjectByName(id_modu + " " + volume_container.id);
-					if (container != undefined){
-						container.add(moret_cell);
-						//console.log("volu added 1");
-						break;
-					} 
-				} 
-			}
-		
-		} else if (col_id_volu.includes(id_cont)){ //sinon, c'est que le conteneur est un volume			
-			for (let k = 0; k < this.group_array.length; k++){
-				var container = this.group_array[k].getObjectByName(id_modu + " " + id_cont);
-				if (container != undefined){
-					container.add(moret_cell);
-					//console.log("volu added 2");
-					break;
-				} 
-			}
+				group.add(moret_cell);			
+			}		
+		}else{
+			let container = group.getObjectByName(id_modu + " " + id_cont);			
+			container.add(moret_cell);
 		}
 	}
 
 	get_volume_relative_position(volume){
-		let x_obj = volume.x;
-		let y_obj = volume.y;
-		let z_obj = volume.z;
-		let x_cont = 0;
-		let y_cont = 0;
-		let z_cont = 0;	
 		let id_cont = volume.id_cont;
 		if (id_cont == 0){ //correctif pour les id_modules à 0 pour des volumes dans d'autres modules que le n°0 (convention d'écriture).
 			id_cont = volume.id_modu;
 		}
-		let id_modu = volume.id_modu;
-		let col_id_volu = this.moret_reader.volu_array.map(function(value,index1) { return value.id; });
-		if (this.moret_reader.modu_array.includes(id_cont) && id_cont == volume.id_modu){ //on considère qu'un module est à l'origine.
-			//console.log("id_cont " + id_cont + " (it is a module)");
-			x_cont = 0;
-			y_cont = 0;
-			z_cont = 0;
-				
-		} else if (col_id_volu.includes(id_cont)){
-			for (let i = 0; i < col_id_volu.length; i++){ 
-				if (this.moret_reader.volu_array[i].id == id_cont && this.moret_reader.volu_array[i].id_modu == id_modu){
-					x_cont = this.moret_reader.volu_array[i].x;
-					y_cont = this.moret_reader.volu_array[i].y;
-					z_cont = this.moret_reader.volu_array[i].z;
-				}
-			}	
+		if (this.moret_reader.modu_array.includes(id_cont) && id_cont === volume.id_modu){ //si le conteneur est le module
+			return [volume.x, volume.y, volume.z];
+		} else { // le conteneur est donc un volume
+			let container_volu = this.moret_reader.volu_array.find(el => el.id_modu === volume.id_modu && el.id === id_cont);
+			if (container_volu == undefined){
+				console.log("container_volu is undefined");
+			}
+			return [volume.x - container_volu.x, volume.y - container_volu.y, volume.z - container_volu.z];
 		}	
-		return [x_obj - x_cont, y_obj - y_cont, z_obj - z_cont];
+		
 
 	}
 
 	
-	get_new_color(volume){	
+	get_color(volume){	
 		for (let mate of this.moret_reader.mate_array){
-			if (mate[0] == volume.id_mate){ //mate[0] = id_mate of material, volume.id_mate = id_mate of the volume)
-				let color_material = mate[1];
-				//console.log("color of volume found", volume.id, mate[0]);
-				return color_material;
+			if (mate.id_mate == volume.id_mate){
+				let color = mate.color;
+				return color;
 			} 
 		}
-		//let color_material = this.mesh_tools.getRandomColor();
-
 		let id_mate = volume.id_mate;
-		let color_material = this.mesh_tools.attribute_material_color(id_mate);
-		this.moret_reader.mate_array.push([id_mate, color_material]);
+		let color = this.mesh_tools.attribute_material_color(id_mate);
+		let mate = {
+			id_mate: id_mate,
+			color: color,
+		};
+		this.moret_reader.mate_array.push(mate);
 
-		return color_material;
+		return color;
 	}
+
+
+	
 
 }
 

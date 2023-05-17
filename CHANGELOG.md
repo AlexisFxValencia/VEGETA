@@ -5,7 +5,6 @@
 à faire :
 les unions
 rajout de l'export des couleurs dans l'export vers dae. A priori il faut rajouter une texture.
-rajouter les LBOX
 rajout du drag and drop
 ameliorer button main transparent par rapport aux trous et aux formes infinies.
 air button
@@ -17,8 +16,6 @@ curseur sur volume : xmin, xmax, ymin, ymax,
 vecteurs unitaires x, y, z
 equivalent de intersect_parents_lattice pour les réseaux hexa
 
-corriger jonctions benchmark TA
-
 pb de coupe lorsque je commence par déplacer le volume avec les flèches directionnelles dès qu'il a été généré.
 
 le bouton qui sert à rendre les mesh transparents/les rendres visibles rend visible aussi les trous, il faudrait l'empecher.
@@ -28,7 +25,29 @@ debuger reseau d'hexa d'hexa où les matériaux ne sont pas bien identifiés.
 lire et parser un project.xml
 
 
+v 83 17 05 23
+- improved ROTA data structure
+- improved MATE data structure
+- get_volume_relative_position simplification
+- add_cell_to_its_container simplification
+- create hole mesh simplification
+- added execution time measurement
+- huge performances improvement : less CSG/BSP conversion when substracting to containers
+- same performance improvement for SUPE/ECRA
+- same performance improvement for TRUN/ETSU
+- improved TYPE data structure
+- export buttons correction 
 
+v 82 16 05 23
+-improved ETSU/TRUN data structure
+-improved ECRA/SUPE data structure
+-improved INTE data structure
+- add_cell_to_its_container simplification
+- add_holes_and_intersect_first_module simplification
+- add_holes_and_intersect_secondary_modules simplification
+- separation of adding holes and intersecting holes
+- add_cell_to_its_container simplification
+- new : TRUN, SUPE and INTE for holes!
 
 v 81 11 05 23
 - improved volu, hole, dism data structure.

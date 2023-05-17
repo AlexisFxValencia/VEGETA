@@ -134,12 +134,12 @@ class moretLatticeCreator{
 		let local_volu_array = this.moret_reader.volu_array.filter(el => el.id_modu === id_modu);
 		let local_msec_array = this.moret_reader.msec_lattice_array.filter(el => el[0] === id_modu && el[1] === id_mpri);		
 		let volume_mpri = local_volu_array.find(el => el.id === id_mpri);
-		let local_type_array = this.moret_reader.type_array.filter(el => el[5] === id_modu);
+		let local_type_array = this.moret_reader.type_array.filter(el => el.id_modu === id_modu);
 		console.log("local_type_array", local_type_array);
-		let hexagone = local_type_array.find(el => el[0] === volume_mpri.id_type);
-		let side = hexagone[2];
+		let hexagone = local_type_array.find(el => el.id === volume_mpri.id_type);
+		let side = hexagone.parameters.side;
 		let h = Math.cos(Math.PI/6) * side;
-		let height = hexagone[3];
+		let height = hexagone.parameters.height;
 
 		let [x_obj, y_obj, z_obj] = this.mesh_creator.get_volume_relative_position(volume_mpri);
 		
@@ -211,19 +211,19 @@ class moretLatticeCreator{
 
 	find_hex_index(x, y, z, x_0, y_0, z_0, hexagone){
 		let hex_vector = new THREE.Vector3(x - x_0, y - y_0, z - z_0);
-		let side = hexagone[2];		
+		let side = hexagone.parameters.side;		
 		let vector_x;
 		let vector_y;
 		let vector_z;
-		if (hexagone[1] == "HEXX"){
+		if (hexagone.shape == "HEXX"){
 			vector_x = new THREE.Vector3(0, 1, 0);
 			vector_y = new THREE.Vector3(0, 0, -1);
 			vector_z = new THREE.Vector3(1, 0, 0);
-		} else if (hexagone[1] == "HEXY"){
+		} else if (hexagone.shape == "HEXY"){
 			vector_x = new THREE.Vector3(0, 0, -1);
 			vector_y = new THREE.Vector3(1, 0, 0);
 			vector_z = new THREE.Vector3(0, 1, 0);
-		} else if (hexagone[1] == "HEXZ"){
+		} else if (hexagone.shape == "HEXZ"){
 			vector_x = new THREE.Vector3(1, 0, 0);
 			vector_y = new THREE.Vector3(0, 1, 0);
 			vector_z = new THREE.Vector3(0, 0, 1);
@@ -302,7 +302,7 @@ class moretLatticeCreator{
 
 	clone_mesh(volume, x_index, y_index, z_index){
 		//console.log("cloning mesh : ", volume);
-		let type = this.moret_reader.type_array.find(el => el[0] == volume.id_type && el[5] == volume.id_modu);
+		let type = this.moret_reader.type_array.find(el => el.id == volume.id_type && el.id_modu == volume.id_modu);
 		let [x_obj, y_obj, z_obj] = this.mesh_creator.get_volume_relative_position(volume);
 		let id_modu = volume.id_modu;
 		let id = volume.id;
@@ -314,7 +314,10 @@ class moretLatticeCreator{
 		
 		// A RAJOUTER POUR DES COULEURS ALEATOIRES / NE PAS SUPPRIMER						
 		//moret_latice_cell.material.color.setHex(Math.random() * 0xffffff );				
-		let [dx, dy, dz] = [type[2], type[3], type[4]];
+		let dx = type.parameters.dx;
+		let dy = type.parameters.dy;
+		let dz = type.parameters.dz;
+
 		x_obj = x_obj + x_index*dx;
 		y_obj = y_obj + y_index*dy;
 		z_obj = z_obj + z_index*dz;					
@@ -450,10 +453,10 @@ class moretLatticeCreator{
 		if (volume != undefined){
 			let [dx, dy, dz] = [0, 0, 0];			
 			for (let type of this.moret_reader.type_array){
-				if(volume.id_type == type[0]){
-					dx = type[2];
-					dy = type[3];
-					dz = type[4];
+				if(volume.id_type == type.id){
+					dx = type.parameters.dx;
+					dy = type.parameters.dy;
+					dz = type.parameters.dz;
 				}
 			}
 			var box_geometry = new THREE.BoxGeometry(nx*dx, ny*dy, nz*dz);	

@@ -10,6 +10,7 @@ class buttonsGenerator {
 
 	create_buttons(){
 		this.remove_transparency_buttons();
+		this.remove_export_buttons();
 		this.generate_grid_transparent_button();	
 		this.generate_all_transparent_button();	
 		this.generate_center_button();	
@@ -266,6 +267,11 @@ class buttonsGenerator {
 	
 	remove_transparency_buttons(){
 		let myNode = document.getElementById('buttons_zone');
+		myNode.innerHTML = '';
+	}
+
+	remove_export_buttons(){
+		let myNode = document.getElementById('export_zone');
 		myNode.innerHTML = '';
 	}
 	

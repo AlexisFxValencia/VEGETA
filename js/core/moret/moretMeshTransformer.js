@@ -4,54 +4,44 @@ class moretMeshTransformer{
         this.mesh_creator = mesh_creator;
 		this.mesh_tools = mesh_tools;
 		this.group_array = group_array;
+		this.labeled_bsp_array = []; 
     }
 
 
 
 intersect_etsu(){
 	console.log("starting intersecting ETSU");
-	for (let line of this.moret_reader.trun_array){
-		let id_modu = line[0];
-		let id = line[1];
-		let truncated_mesh = this.mesh_tools.search_object(id_modu + " " + id, this.group_array);
+	for (let trun of this.moret_reader.trun_array){
+		let truncated_mesh = this.mesh_tools.search_object(trun.id_modu + " " + trun.id, this.group_array);
 		if (truncated_mesh == undefined){
 			console.log("truncated_mesh undefined");
-		}
-		let nb_truncater = 	line[2];
-		for (let index =  3; index < 3 + nb_truncater; index++){
-			let id_truncater_volu = line[index];
-
-			let bsp_mother = this.mesh_creator.search_labeled_bsp(id_modu + " " + id_truncater_volu, false).bsp;
-			if (bsp_mother == undefined){
-				let truncater_mesh = this.mesh_tools.search_object(id_modu + " " + id_truncater_volu, this.group_array);
-				bsp_mother = CSG.fromMesh(truncater_mesh);
+		}		
+		for (let id_truncater of trun.truncater_objects){
+			let truncater_name = trun.id_modu + " " + id_truncater;
+			if (trun.for_hole){
+				truncater_name += " hole";
 			}
-			if (bsp_mother != undefined){
-				
-				let truncater_mesh = this.mesh_tools.search_object(id_modu + " " + id_truncater_volu, this.group_array);
-				let vector_truncater = new THREE.Vector3();
-				truncater_mesh.getWorldPosition(vector_truncater);				
-				let vector_truncated = new THREE.Vector3();
-				truncated_mesh.getWorldPosition(vector_truncated);
-				vector_truncated.sub(truncated_mesh.position);
-				vector_truncater.sub(vector_truncated);
+			let bsp_truncater = this.mesh_creator.search_labeled_bsp(truncater_name, trun.for_hole).bsp;
+			if (bsp_truncater == undefined){
+				let truncater_mesh = this.mesh_tools.search_object(truncater_name, this.group_array);
+				bsp_truncater = CSG.fromMesh(truncater_mesh);
+			}
 
-				this.etsu_geometrical_intersect(vector_truncater, bsp_mother, truncated_mesh);
-
-				
-				
-			} else{				
-				console.log("bsp_mother undefined");
-			}					
+			let truncater_mesh = this.mesh_tools.search_object(truncater_name, this.group_array);
+			let vector_truncater = new THREE.Vector3();
+			truncater_mesh.getWorldPosition(vector_truncater);				
+			let vector_truncated = new THREE.Vector3();
+			truncated_mesh.getWorldPosition(vector_truncated);
+			vector_truncated.sub(truncated_mesh.position);
+			vector_truncater.sub(vector_truncated);
+			
+			let labeled_bsp_mother = this.labeled_bsp_array.find(labeled_bsp => labeled_bsp.name === truncated_mesh.name)
+			if (labeled_bsp_mother == undefined){
+				this.add_labeled_bsp(truncated_mesh);
+				labeled_bsp_mother = this.labeled_bsp_array.find(labeled_bsp => labeled_bsp.name === truncated_mesh.name);
+			}								
+			this.bsp_intersection(vector_truncater, labeled_bsp_mother, bsp_truncater);							
 		}
-	}
-}
-
-print_bsp_vertices(bsp){
-	for (let polygon of bsp.polygons){
-		console.log(polygon.vertices[0].pos.x, polygon.vertices[0].pos.y, polygon.vertices[0].pos.z);
-		//console.log(polygon.vertices[1].pos.x, polygon.vertices[1].pos.y, polygon.vertices[2].pos.z);
-		//console.log(polygon.vertices[2].pos.x, polygon.vertices[1].pos.y, polygon.vertices[2].pos.z);
 	}
 }
 
@@ -59,23 +49,24 @@ print_bsp_vertices(bsp){
 intersect_supe(){
 	console.log("starting intersecting SUPE");
 	for (let supe of this.moret_reader.supe_array){
-		let id_modu = supe[0];
-		let id = supe[1];
-
-		let bsp_truncater = this.mesh_creator.search_labeled_bsp(id_modu + " " + id, false).bsp;
+		let truncater_name = supe.id_modu + " " + supe.id;
+		if (supe.for_hole){
+			truncater_name += " hole";
+		} 				
+		let bsp_truncater = this.mesh_creator.search_labeled_bsp(truncater_name, supe.for_hole).bsp;
 		if (bsp_truncater == undefined){
-			let truncater_mesh = this.mesh_tools.search_object(id_modu + " " + id, this.group_array);
+			let truncater_mesh = this.mesh_tools.search_object(truncater_name, this.group_array);
 			truncater_mesh.updateMatrix();
 			bsp_truncater = CSG.fromMesh(truncater_mesh ); 
 		}
-		let nb_truncated = 	supe[2];
-		for (let index =  3; index < 3 + nb_truncated; index++){
-			let id_truncated_volu = supe[index];
-
-			let truncated_mesh = this.mesh_tools.search_object(id_modu + " " + id_truncated_volu, this.group_array);
+		let nb_truncated = 	supe.nb_truncated;
+		for (let i = 0; i < nb_truncated; i++){
+			let id_truncated = supe.truncated_objects[i];
+			let truncated_name = supe.id_modu + " " + id_truncated;
+			let truncated_mesh = this.mesh_tools.search_object(truncated_name, this.group_array);
 
 			if (bsp_truncater != undefined){				
-				let truncater_mesh = this.mesh_tools.search_object(id_modu + " " + id, this.group_array);
+				let truncater_mesh = this.mesh_tools.search_object(truncater_name, this.group_array);
 				let vector_truncater = new THREE.Vector3();
 				truncater_mesh.getWorldPosition(vector_truncater);
 
@@ -83,9 +74,15 @@ intersect_supe(){
 				truncated_mesh.getWorldPosition(vector_truncated);
 
 				vector_truncated.sub(truncated_mesh.position);
-				vector_truncater.sub(vector_truncated);
+				vector_truncater.sub(vector_truncated);		
 
-				this.supe_geometrical_substraction(vector_truncater, bsp_truncater, truncated_mesh);	
+				let labeled_bsp_mother = this.labeled_bsp_array.find(labeled_bsp => labeled_bsp.name === truncated_mesh.name)
+				if (labeled_bsp_mother == undefined){
+					this.add_labeled_bsp(truncated_mesh);
+					labeled_bsp_mother = this.labeled_bsp_array.find(labeled_bsp => labeled_bsp.name === truncated_mesh.name);
+				}								
+				this.bsp_substraction(vector_truncater, labeled_bsp_mother, bsp_truncater);
+				
 			}	
 
 		}
@@ -95,66 +92,47 @@ intersect_supe(){
 intersect_inte(){
 	console.log("starting intersecting INTE");
 	for (let inte of this.moret_reader.inte_array){
-		let id_modu = inte[0];
-		let id = inte[1];
-		let nb_intersected = inte[2];
-		let bsp_mother = this.mesh_creator.search_labeled_bsp(id_modu + " " + id, false).bsp;
-		if (bsp_mother == undefined){
-			let intersector_mesh = this.mesh_tools.search_object(id_modu + " " + id, this.group_array);
-			bsp_mother = CSG.fromMesh(intersector_mesh);
+		let id_modu = inte.id_modu;
+		let id = inte.id;
+		let nb_intersected = inte.nb_intersected;
+		let intersector_name = id_modu + " " + id;
+		if (inte.for_hole){
+			intersector_name += " hole";
+		}
+
+		let bsp_intersector = this.mesh_creator.search_labeled_bsp(intersector_name, inte.for_hole).bsp;
+		if (bsp_intersector == undefined){
+			let intersector_mesh = this.mesh_tools.search_object(intersector_name, this.group_array);
+			bsp_intersector = CSG.fromMesh(intersector_mesh);
 		
 		}
-		if (bsp_mother != undefined){
-			for (let index =  3; index < 3 + nb_intersected; index++){
-				let id_intersected_volu = inte[index];
-				let intersected_mesh = this.mesh_tools.search_object(id_modu + " " + id_intersected_volu, this.group_array);				
-				
-				let vector_truncater = new THREE.Vector3();
-				let intersector_mesh = this.mesh_tools.search_object(id_modu + " " + id, this.group_array);
-				intersector_mesh.getWorldPosition(vector_truncater);	
+		for (let i =  0; i < nb_intersected; i++){
+			let id_intersected = inte.intersected_objects[i];
+			let intersected_mesh = this.mesh_tools.search_object(id_modu + " " + id_intersected, this.group_array);				
+			
+			let vector_truncater = new THREE.Vector3();
+			let intersector_mesh = this.mesh_tools.search_object(id_modu + " " + id, this.group_array);
+			intersector_mesh.getWorldPosition(vector_truncater);	
 
-				let vector_truncated = new THREE.Vector3();
-				intersected_mesh.getWorldPosition(vector_truncated);
+			let vector_truncated = new THREE.Vector3();
+			intersected_mesh.getWorldPosition(vector_truncated);
 
-				vector_truncated.sub(intersected_mesh.position);
-				vector_truncater.sub(vector_truncated);
-				
-				this.etsu_geometrical_intersect(vector_truncater, bsp_mother, intersected_mesh);
+			vector_truncated.sub(intersected_mesh.position);
+			vector_truncater.sub(vector_truncated);
+			
+			let labeled_bsp_mother = this.labeled_bsp_array.find(labeled_bsp => labeled_bsp.name === intersected_mesh.name)
+			if (labeled_bsp_mother == undefined){
+				this.add_labeled_bsp(intersected_mesh);
+				labeled_bsp_mother = this.labeled_bsp_array.find(labeled_bsp => labeled_bsp.name === intersected_mesh.name);
+			}								
+			this.bsp_intersection(vector_truncater, labeled_bsp_mother, bsp_intersector);							
 
 
-			}
-		} else{				
-			console.log("bsp_mother undefined");
-		}	
-	}
+		}
+	} 
+	
 }
 
-
-
-supe_geometrical_substraction(vector, bsp_truncater, truncated_mesh){
-	console.log("supe_geometrical_substraction used !");
-	let bsp_truncated = CSG.fromMesh(truncated_mesh);	
-	bsp_truncater.translate(vector.x, vector.y, vector.z);			
-	let bsp_result = bsp_truncated.subtract(bsp_truncater);
-	bsp_truncater.translate(-vector.x, -vector.y, -vector.z);
-
-	let mesh_result = CSG.toMesh( bsp_result, truncated_mesh.matrix, truncated_mesh.material );				
-	truncated_mesh.geometry = mesh_result.geometry;
-	truncated_mesh.updateMatrix();
-}
-
-
-etsu_geometrical_intersect(vector, bsp_truncater, truncated_mesh){
-	console.log("etsu_geometrical_intersect used !");
-	let bsp_truncated = CSG.fromMesh(truncated_mesh );   
-	bsp_truncater.translate(vector.x, vector.y, vector.z);
-	let bsp_result = bsp_truncated.intersect(bsp_truncater);
-
-	bsp_truncater.translate(-vector.x, -vector.y, -vector.z);
-	let mesh_result = CSG.toMesh( bsp_result, truncated_mesh.matrix, truncated_mesh.material );				
-	truncated_mesh.geometry = mesh_result.geometry;
-	truncated_mesh.updateMatrix();
-}
 
 get_position_to_add(mesh){
 	let vector_world = new THREE.Vector3();
@@ -170,32 +148,66 @@ get_position_to_add(mesh){
 intersect_parents(){
 	console.log("starting intersecting parents");
 	for (let volume of this.moret_reader.volu_array){		
-		let id_modu = volume.id_modu;
-		let id = volume.id;		
-		let mesh_son = this.mesh_tools.search_object(id_modu + " " + id, this.group_array);
-		let labeled_bsp_son = this.mesh_creator.search_labeled_bsp(id_modu + " " + id, false)
-		let bsp_son;
+		let name = volume.id_modu + " " + volume.id;
+		//let group = this.group_array.find(group => group.name = volume.id_modu);
+		//let mesh_son = group.getObjectByName(name);
+		let mesh_son = this.mesh_tools.search_object(name, this.group_array);
+		let labeled_bsp_son = this.mesh_creator.labeled_bsp_array.find(labeled_bsp => labeled_bsp.name === name && labeled_bsp.is_hole === false)
 		if (labeled_bsp_son != undefined && mesh_son != undefined){
-			bsp_son = labeled_bsp_son.bsp;
 			let vector_son = new THREE.Vector3();
 			mesh_son.getWorldPosition(vector_son);
-
 			let vector_parent = new THREE.Vector3();
 			mesh_son.parent.getWorldPosition(vector_parent);
 			vector_parent.sub(mesh_son.parent.position);
 			vector_son.sub(vector_parent);
-			this.mesh_tools.container_bsp_substraction(vector_son, mesh_son.parent, bsp_son);			
-		}
 
-		
-	
-
+			if (mesh_son.parent != undefined && mesh_son.parent.geometry != undefined){		
+				let labeled_bsp_mother = this.labeled_bsp_array.find(labeled_bsp => labeled_bsp.name === mesh_son.parent.name)
+				if (labeled_bsp_mother == undefined){
+					this.add_labeled_bsp(mesh_son.parent);
+					labeled_bsp_mother = this.labeled_bsp_array.find(labeled_bsp => labeled_bsp.name === mesh_son.parent.name);
+				}								
+				this.bsp_substraction(vector_son, labeled_bsp_mother, labeled_bsp_son.bsp);
+			}	
+		}	
+			
 	}
 }
 
+bsp_substraction(vector, labeled_bsp_mother, bsp_son){		
+	bsp_son.translate(vector.x, vector.y, vector.z);
+	labeled_bsp_mother.bsp = labeled_bsp_mother.bsp.subtract(bsp_son);
+	bsp_son.translate(-vector.x, -vector.y, -vector.z);
+}
+
+bsp_intersection(vector, labeled_bsp_mother, bsp_son){
+	bsp_son.translate(vector.x, vector.y, vector.z);
+	labeled_bsp_mother.bsp = labeled_bsp_mother.bsp.intersect(bsp_son);
+	bsp_son.translate(-vector.x, -vector.y, -vector.z);
+}
+
+add_labeled_bsp(mesh){
+	let labeled_bsp = {
+		name: mesh.name,
+		bsp: CSG.fromMesh(mesh),
+		matrix: mesh.matrix, 
+		material: mesh.material,
+		is_hole: false,
+	};
+	this.labeled_bsp_array.push(labeled_bsp);
+}
 
 
+update_geometries(){
+	console.log("updating geometries after CSG");
+	for (let labeled_bsp of this.labeled_bsp_array){
+		let mesh = this.mesh_tools.search_object(labeled_bsp.name, this.group_array);
+		let processed_mesh = CSG.toMesh(labeled_bsp.bsp, labeled_bsp.matrix, labeled_bsp.material);
+		mesh.geometry = processed_mesh.geometry;
+		mesh.updateMatrix();
+	}
 
+}
 
 
 }

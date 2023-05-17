@@ -157,7 +157,7 @@ class moretReader{
 
 	modu_reading(text){
 		var text_modu_array = text.split("MODU");
-		console.log("text_modu_array : ", text_modu_array);
+		//console.log("text_modu_array : ", text_modu_array);
 		//correctif au cas où on met un JDD partiel sans nom de module, le module standard est 0
 		if (text_modu_array.length < 2){
 			var new_text_modu_array = ['MODU 0'].concat(text_modu_array);
@@ -167,8 +167,7 @@ class moretReader{
 
 		text_modu_array.shift();
 		for(let j = 0; j < text_modu_array.length ; j++){
-			//let module_name = text_modu_array[j].trim().charAt(0); // attention ne marchera pas si plus de 9 modules.
-			console.log("mon module splité : ", text_modu_array[j].trim().split(" ")[0]);
+			//console.log("mon module splité : ", text_modu_array[j].trim().split(" ")[0]);
 			let module_name = text_modu_array[j].trim();
 			module_name = module_name.replace(/\n+/gm, ' ');
 			module_name = module_name.split(" ")[0]; //fonctionne avec un nombre quelconque de modules
@@ -177,7 +176,6 @@ class moretReader{
 
 			this.lattice_reading(text_modu_array[j], module_name);
 			this.lattice_reading_hex(text_modu_array[j], module_name);
-			//this.mpla_reading(text_modu_array[j], module_name);
 			
 			let lines = text_modu_array[j].split('\n');
 			for(let i = 0; i < lines.length ; i++){
@@ -239,7 +237,7 @@ class moretReader{
 	}
 
 
-	hole_reading(line, id_parent_module){
+	hole_reading(line, module_name){
 		line = line.trim();
 		let line_array = line.split(/\s+/);
 		if(line_array[0]=="HOLE" || line_array[0]=="TROU"){
@@ -251,10 +249,26 @@ class moretReader{
 				x: parseFloat(line_array[5]), 
 				y: parseFloat(line_array[6]), 
 				z: parseFloat(line_array[7]), 
-				id_modu: id_parent_module,
+				id_modu: module_name,
 			};
-			this.hole_array.push(hole);
+			this.hole_array.push(hole);		
 		
+			
+			let index_trun = line_array.indexOf('TRUN');
+			if (index_trun != -1){
+				this.trun_reading(line_array, module_name, hole.id, index_trun, true);
+			}
+				
+			let index_supe = line_array.indexOf('SUPE');
+			if ( index_supe != -1){
+				this.supe_reading(line_array, module_name, hole.id, index_supe, true);
+			}
+			
+			let index_inte = line_array.indexOf('INTE');
+			if ( index_inte != -1){
+				this.inte_reading(line_array, module_name, hole.id, index_inte, true);
+			}	
+			
 		}
 	}
 
@@ -277,61 +291,70 @@ class moretReader{
 
 			let index_trun = line_array.indexOf('TRUN');
 			if (index_trun != -1){
-				this.trun_reading(line_array, module_name, volu.id, index_trun);
+				this.trun_reading(line_array, module_name, volu.id, index_trun, false);
 			}
 			
 			let index_supe = line_array.indexOf('SUPE');
 			if ( index_supe != -1){
-				this.supe_reading(line_array, module_name, volu.id, index_supe);
+				this.supe_reading(line_array, module_name, volu.id, index_supe, false);
 			}
 			
 			let index_inte = line_array.indexOf('INTE');
 			if ( index_inte != -1){
-				this.inte_reading(line_array, module_name, volu.id, index_inte);
+				this.inte_reading(line_array, module_name, volu.id, index_inte, false);
 			}						
 		}
 		//console.log("this.trun_array", this.trun_array);
 		
 	}
 
-	trun_reading(line_array, module_name, id, index_trun){		
-		let trun_line = [];
+	trun_reading(line_array, module_name, id, index_trun, for_hole){				
 		let nb_truncater = parseInt(line_array[index_trun + 1], 10);
-		trun_line.push(module_name);
-		trun_line.push(id);
-		trun_line.push(nb_truncater);	
-		for (let index = index_trun + 2; index < index_trun + 2 + nb_truncater; index++){
-			trun_line.push(line_array[index]);	
+		let truncater_objects = [];
+		for (let i = index_trun + 2; i < index_trun + 2 + nb_truncater; i++){
+			truncater_objects.push(line_array[i]);	
 		}
-		this.trun_array.push(trun_line);
-		//console.log("line_trun_array", trun_line);
+		const trun = {
+			id : id,
+			id_modu: module_name,
+			nb_truncater: nb_truncater,
+			truncater_objects: truncater_objects,
+			for_hole: for_hole
+		};
+		this.trun_array.push(trun);
 	}
 
 
-	supe_reading(line_array, module_name, id, index_supe){
-		let supe_line = [];
+	supe_reading(line_array, module_name, id, index_supe, for_hole){
 		let nb_truncated = parseInt(line_array[index_supe + 1], 10);
-		supe_line.push(module_name);
-		supe_line.push(id);
-		supe_line.push(nb_truncated);	
-		for (let index = index_supe + 2; index < index_supe + 2 + nb_truncated; index++){
-			supe_line.push(line_array[index]);	
+		let truncated_objects = [];
+		for (let i = index_supe + 2; i < index_supe + 2 + nb_truncated; i++){
+			truncated_objects.push(line_array[i]);	
 		}
-		this.supe_array.push(supe_line);
-		//console.log("line_supe_array", supe_line);
+		const supe = {
+			id : id,
+			id_modu: module_name,
+			nb_truncated: nb_truncated,
+			truncated_objects: truncated_objects,
+			for_hole: for_hole
+		};
+		this.supe_array.push(supe);
 	}
 
-	inte_reading(line_array, module_name, id, index_inte){
-		let inte_line = [];
+	inte_reading(line_array, module_name, id, index_inte, for_hole){
 		let nb_intersected = parseInt(line_array[index_inte + 1], 10);
-		inte_line.push(module_name);
-		inte_line.push(id);
-		inte_line.push(nb_intersected);	
-		for (let index = index_inte + 2; index < index_inte + 2 + nb_intersected; index++){
-			inte_line.push(line_array[index]);	
+		let intersected_objects = [];
+		for (let i = index_inte + 2; i < index_inte + 2 + nb_intersected; i++){
+			intersected_objects.push(line_array[i]);	
 		}
-		this.inte_array.push(inte_line);
-		console.log("line_inte_line", inte_line);
+		const inte = {
+			id : id,
+			id_modu: module_name,
+			nb_intersected: nb_intersected,
+			intersected_objects: intersected_objects,
+			for_hole: for_hole
+		};
+		this.inte_array.push(inte);
 	}
 
 
@@ -339,36 +362,53 @@ class moretReader{
 		line = line.trim();
 		let line_array = line.split(/\s+/);
 		if (line_array[0]=="TYPE"){
+			let parameters;
+			let shape;
+			let id_type;
 			if (line_array[2]=="BOX" || line_array[2] == "BOIT" || line_array[2] == "BOITE"){
-				//alert("box !")
-				let id_type = line_array[1];
+				id_type = line_array[1];
 				let dx = 2*parseFloat(line_array[3]);
 				let dy = 2*parseFloat(line_array[4]);
 				let dz = 2*parseFloat(line_array[5]);
-				this.type_array.push([id_type, "BOX", dx, dy, dz, module_name]);
+				parameters = {
+					dx: dx,
+					dy: dy,
+					dz: dz,
+				}
+				shape = "BOX";				
+
 			} else if (line_array[2]=="LBOX" || line_array[2] == "LBOITE"){
-				//alert("box !")
-				let id_type = line_array[1];
+				id_type = line_array[1];
 				let dx = parseFloat(line_array[3]);
 				let dy = parseFloat(line_array[4]);
 				let dz = parseFloat(line_array[5]);
-				this.type_array.push([id_type, "BOX", dx, dy, dz, module_name]);
+				parameters = {
+					dx: dx,
+					dy: dy,
+					dz: dz,
+				}
+				shape = "BOX";	
 			} else if (line_array[2]=="SPHE"){
-				//alert("Sphere !")
-				let id_type = line_array[1];
-				let rayon = parseFloat(line_array[3]);
-				this.type_array.push([id_type, "SPHE", rayon, 0, 0, module_name]);
+				id_type = line_array[1];
+				let radius = parseFloat(line_array[3]);
+				parameters = {
+					radius: radius,
+				}
+				shape = "SPHE";	
 			} else if (line_array[2]=="CYLX" || line_array[2]=="CYLY" || line_array[2]=="CYLZ"){
-				//alert("Cylinder !")
-				let id_type = line_array[1];
-				let type_cyl = line_array[2]; // ="CYLX" par exemple.
-				let rayon = parseFloat(line_array[3]);
+				id_type = line_array[1];
+				let type_cyl = line_array[2]; // ="CYLX" for example.
+				let radius = parseFloat(line_array[3]);
 				let height = 2*parseFloat(line_array[4]);
-				this.type_array.push([id_type, type_cyl, rayon, height, 0, module_name]);
+				parameters = {
+					radius: radius,
+					height: height,
+					type_cyl: type_cyl,
+				}
+				shape = type_cyl;	
 			} else if (line_array[2]=="HEXX" || line_array[2]=="HEXY" || line_array[2]=="HEXZ"){
-				//alert("hex prism !")
-				let id_type = line_array[1];
-				let type_hex = line_array[2]; // ="HEXX" par exemple.
+				id_type = line_array[1];
+				let type_hex = line_array[2]; // ="HEXX" for example.
 				let side = parseFloat(line_array[3]);
 				let height = 2*parseFloat(line_array[4]);
 				let azimuth = parseFloat(line_array[5]);
@@ -378,26 +418,39 @@ class moretReader{
 					height = 2*parseFloat(line_array[index_diam + 2]);
 					azimuth = parseFloat(line_array[index_diam + 3]);
 				}				
-				this.type_array.push([id_type, type_hex, side, height, azimuth, module_name]);
-				
+				parameters = {
+					type_hex: type_hex,
+					side: side,
+					height: height,
+					azimuth: azimuth
+				}
+				shape = type_hex;	
+
 			} else if (line_array[2]=="ELLI"){			
-			let id_type = line_array[1];
+			id_type = line_array[1];
 			let a = parseFloat(line_array[3]);
 			let b = parseFloat(line_array[4]);
 			let c = parseFloat(line_array[5]);
-			//console.log("[id_type, ELLI, a, b, c, module_name]", [id_type, "ELLI", a, b, c, module_name]);
-			this.type_array.push([id_type, "ELLI", a, b, c, module_name]);
+			parameters = {
+				a: a,
+				b: b,
+				c: c,
+			}
+			shape = "ELLI";
 
 			} else if (line_array[2]=="PLAX" || line_array[2]=="PLAY" || line_array[2]=="PLAZ"){
-				//alert("PLA !")
-				let id_type = line_array[1];
+				id_type = line_array[1];
 				let type_pla = line_array[2]; // ="PLAX" for example.
 				let supe_or_inf_or_alt_1 = line_array[3];
 				let alt_2 = parseFloat(line_array[4]);
-				this.type_array.push([id_type, type_pla, supe_or_inf_or_alt_1, alt_2, 0, module_name]);
-				//console.log("[id_type, type_pla, supe_or_inf_or_alt_1, alt_2, 0, module_name]", [id_type, type_pla, supe_or_inf_or_alt_1, alt_2, 0, module_name]);
+				parameters = {
+					type_pla: type_pla,
+					supe_or_inf_or_alt_1: supe_or_inf_or_alt_1,
+					alt_2: alt_2,
+				}
+				shape = type_pla;
 			} else if (line_array[2] == "CYLI" || line_array[2] == "CYLQ"){
-				let id_type = line_array[1];
+				id_type = line_array[1];
 				let radius = parseFloat(line_array[3]);
 				let x_a = parseFloat(line_array[4]);
 				let y_a = parseFloat(line_array[5]);
@@ -405,24 +458,56 @@ class moretReader{
 				let x_b = parseFloat(line_array[7]);
 				let y_b = parseFloat(line_array[8]);
 				let z_b = parseFloat(line_array[9]);
-				this.type_array.push([id_type, "CYLI" ,radius, x_a, y_a, module_name, z_a, x_b, y_b, z_b ]);
+				parameters = {
+					radius: radius,
+					x_a: x_a,
+					y_a: y_a,
+					z_a: z_a,
+					x_b: x_b,
+					y_b: y_b,
+					z_b: z_b,
+				}
+				shape = "CYLI";
 				
 			}else if (line_array[2]=="CONX" || line_array[2]=="CONY" || line_array[2]=="CONZ"){
-				let id_type = line_array[1];
+				id_type = line_array[1];
 				let type_cone = line_array[2];
 				if (line_array.includes('ANGL')){
 					let angle = parseFloat(line_array[4]);
-					this.type_array.push([id_type, type_cone, 'ANGL', angle, 0, module_name]);
+					parameters = {
+						type_cone: type_cone,
+						angle_or_tan: 'ANGL',
+						angle: angle,
+					}
+					shape = type_cone;
 				
 				} else{
 					let tan = parseFloat(line_array[3]);
-					this.type_array.push([id_type, type_cone, 'TAN', tan, 0, module_name]);
+					parameters = {
+						type_cone: type_cone,
+						angle_or_tan: 'TAN',
+						tan: tan,
+					}
+					shape = type_cone;
 				}
 			} else if(line_array[2] == "MPLA" || line_array[2] == "PPLA"){
-				this.mpla_reading(line_array, module_name); 
+				id_type = line_array[1];
+				shape = "MPLA";
+				parameters = this.mpla_reading(line_array); 
 			}else{
 			//alert("nada");
 			}
+
+			const type = {
+				id: id_type, 
+				id_modu: module_name,
+				shape: shape, 
+				parameters:parameters,
+			};
+			this.type_array.push(type);
+
+
+
 			let index_rota = line_array.indexOf('ROTA');		
 			if ( index_rota != -1){
 				let id_type = line_array[1];
@@ -443,29 +528,59 @@ class moretReader{
 
 	rota_reading(line_array, module_name, id_type, index_rota){
 		let nb_rotations = parseInt(line_array[index_rota + 1], 10);
-		var e = ["X","Y","Z"];
-		let theta = [0, 0, 0];
-		
-
+		let elementary_rotations = [];
 		for (let n = 0; n < nb_rotations + 1; n++){
 			let index = 2*n + index_rota + 2;
 			if (line_array[index] == "X"){
-				theta[0] = parseFloat(line_array[index + 1]);
+				let theta_x = parseFloat(line_array[index + 1]);
+				let rotation = {
+					type: 'X',
+					theta: theta_x,
+				}
+				elementary_rotations.push(rotation);
 			} else if (line_array[index] == "Y"){
-				theta[1] = parseFloat(line_array[index + 1]);
+				let theta_y = parseFloat(line_array[index + 1]);
+				let rotation = {
+					type: 'Y',
+					theta: theta_y,
+				};
+				elementary_rotations.push(rotation);
 			} else if (line_array[index] == "Z"){
-				theta[2] = parseFloat(line_array[index + 1]);
+				let theta_z = parseFloat(line_array[index + 1]);
+				let rotation = {
+					type: 'Z',
+					theta: theta_z,
+				};
+				elementary_rotations.push(rotation);
 			}
 		}
-		this.rota_array.push([module_name, id_type, nb_rotations, e[0], theta[0], e[1], theta[1], e[2], theta[2]]);
+		let rota = {
+			id_type : id_type,
+			id_modu: module_name,
+			nb_rotations: nb_rotations,
+			elementary_rotations: elementary_rotations,
+		};
+		this.rota_array.push(rota);
+
 		//console.log("rota_array",this.rota_array);
 
 	}
 
 	obli_reading(line_array, module_name, id_type, index_obli){
-		var e = ["X","Y","Z"];
 		let theta_z = parseFloat(line_array[index_obli + 1]);
-		this.rota_array.push([module_name, id_type, 1, e[0], 0, e[1], 0, e[2], theta_z]);
+		let rotation = {
+			type: 'Z',
+			theta: theta_z,
+		};
+		let elementary_rotations = [];
+		elementary_rotations.push(rotation);
+		let rota = {
+			id_type : id_type,
+			id_modu: module_name,
+			nb_rotations: 1,
+			elementary_rotations: elementary_rotations,
+		};
+		this.rota_array.push(rota);
 	}
 
 
@@ -473,15 +588,23 @@ class moretReader{
 		line = line.trim();
 		let line_array = line.split(/\s+/);
 		if (line_array[0]=="COMP" || line_array[0]=="COMPO"){
-			let id_mate = line_array[1];
-			let color = this.mesh_tools.attribute_material_color(id_mate);
-			this.mate_array.push([id_mate, color]);					
+			let id_mate = line_array[1];	
+			let color = this.mesh_tools.attribute_material_color(id_mate);			
+			let mate = {
+				id_mate: id_mate,
+				color: color,
+			};
+			this.mate_array.push(mate);	
 		}	
 		
 		if (line_array[0]=="APO2"){
 			let id_mate = line_array[1];
 			let color = this.mesh_tools.attribute_material_color(id_mate);
-			this.mate_array.push([id_mate, color]);					
+			let mate = {
+				id_mate: id_mate,
+				color: color,
+			};
+			this.mate_array.push(mate);				
 		}
 	}
 
@@ -704,90 +827,47 @@ class moretReader{
 	}
 	
 
-	mpla_reading(line_array, module_name){
+	mpla_reading(line_array){
 		console.log("mpla reading...");		
-		let mpla_temporary_array = [];
-		let id_type = line_array[1];
+		let planes_list = [];
 		let p = parseInt(line_array[3]);
 		let offset = 4;
 		for (let i = 0; i < p; i++){
-			let x_a = parseFloat(line_array[9 * i + 0 + offset]);
-			let y_a = parseFloat(line_array[9 * i + 1 + offset]);
-			let z_a = parseFloat(line_array[9 * i + 2 + offset]);
-			let x_b = parseFloat(line_array[9 * i + 3 + offset]);
-			let y_b = parseFloat(line_array[9 * i + 4 + offset]);
-			let z_b = parseFloat(line_array[9 * i + 5 + offset]);
-			let x_c = parseFloat(line_array[9 * i + 6 + offset]);
-			let y_c = parseFloat(line_array[9 * i + 7 + offset]);
-			let z_c = parseFloat(line_array[9 * i + 8 + offset]);
-			mpla_temporary_array.push([x_a,y_a,z_a,x_b,y_b,z_b,x_c,y_c,z_c]);
+			let point_a = new THREE.Vector3();
+			let point_b = new THREE.Vector3();
+			let point_c = new THREE.Vector3();
+			point_a.x = parseFloat(line_array[9 * i + 0 + offset]);
+			point_a.y = parseFloat(line_array[9 * i + 1 + offset]);
+			point_a.z = parseFloat(line_array[9 * i + 2 + offset]);
+			point_b.x = parseFloat(line_array[9 * i + 3 + offset]);
+			point_b.y = parseFloat(line_array[9 * i + 4 + offset]);
+			point_b.z= parseFloat(line_array[9 * i + 5 + offset]);
+			point_c.x = parseFloat(line_array[9 * i + 6 + offset]);
+			point_c.y = parseFloat(line_array[9 * i + 7 + offset]);
+			point_c.z = parseFloat(line_array[9 * i + 8 + offset]);
+			let plane = {
+				point_a: point_a,
+				point_b: point_b,
+				point_c: point_c,
+			};
+			planes_list.push(plane);
 		}
 
-		let vector_I = [];
-		let x_I = parseFloat(line_array[9*p + offset + 0]);
-		let y_I = parseFloat(line_array[9*p + offset + 1]);
-		let z_I = parseFloat(line_array[9*p + offset + 2]);					
-		vector_I.push([x_I,y_I,z_I]);
+		let vector_I = new THREE.Vector3();
+		vector_I.x = parseFloat(line_array[9*p + offset + 0]);
+		vector_I.y = parseFloat(line_array[9*p + offset + 1]);
+		vector_I.z = parseFloat(line_array[9*p + offset + 2]);	
 
-		this.type_array.push([id_type, "MPLA", mpla_temporary_array, vector_I, 0 , module_name]);
-		//console.log(line_array);
-		//console.log(mpla_temporary_array);
-		console.log("this.type_array", this.type_array);
+		let parameters = {
+			planes_list: planes_list,
+			vector_I: vector_I,
+		}		
+		return parameters;
 		
-
-
-			/*
-			let lines = text.split('\n');			
-			for(let i = 0; i < lines.length ; i++){
-				if (lines[i].includes("MPLA")|| lines[i].includes("PPLA")){					
-					let mpla_temporary_array = [];
-					let line_array = lines[i].trim().split(/\s+/);
-					let id_type = line_array[1];
-					//console.log("line_array", line_array);
-					let p = parseFloat(line_array[3]);
-					//console.log("p :", p);
-					
-					let x_a = parseFloat(line_array[4]);
-					let y_a = parseFloat(line_array[5]);
-					let z_a = parseFloat(line_array[6]);
-					let x_b = parseFloat(line_array[7]);
-					let y_b = parseFloat(line_array[8]);
-					let z_b = parseFloat(line_array[9]);
-					let x_c = parseFloat(line_array[10]);
-					let y_c = parseFloat(line_array[11]);
-					let z_c = parseFloat(line_array[12]);
-					mpla_temporary_array.push([x_a,y_a,z_a,x_b,y_b,z_b,x_c,y_c,z_c]);
-					for (let j = 1; j < p; j++){
-						line_array = lines[i+j].trim().split(/\s+/);
-						//console.log("line_array", line_array);
-						x_a = parseFloat(line_array[0]);
-						y_a = parseFloat(line_array[1]);
-						z_a = parseFloat(line_array[2]);
-						x_b = parseFloat(line_array[3]);
-						y_b = parseFloat(line_array[4]);
-						z_b = parseFloat(line_array[5]);
-						x_c = parseFloat(line_array[6]);
-						y_c = parseFloat(line_array[7]);
-						z_c = parseFloat(line_array[8]);
-						mpla_temporary_array.push([x_a,y_a,z_a,x_b,y_b,z_b,x_c,y_c,z_c]);
-					}
-					line_array = lines[i + p].trim().split(/\s+/);
-					let vector_I = [];
-					let x_I = parseFloat(line_array[0]);
-					let y_I = parseFloat(line_array[1]);
-					let z_I = parseFloat(line_array[2]);					
-					vector_I.push([x_I,y_I,z_I]);
-
-					//console.log("mpla_temporary_array", mpla_temporary_array);
-
-					this.type_array.push([id_type, "MPLA", mpla_temporary_array, vector_I, 0 , module_name])
-					//[id_type, "BOX", dx, dy, dz, module_name]
-				}
-			} 				
-			//console.log("this.type_array", this.type_array);
-			*/
 		
 	}
+	
+
 	
 
 

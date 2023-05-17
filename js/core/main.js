@@ -21,6 +21,7 @@ fileSelector.addEventListener('change', (event) => {
 
 
 function start_or_refresh(){	
+	const startTime = performance.now();
 	code_choice = document.getElementById("code-select").value;		
 	if (code_choice == "MORET"){
 		generate_moret_rendering();		
@@ -33,6 +34,10 @@ function start_or_refresh(){
 	} else if(code_choice == "MCNP"){
 		alert("sorry, MCNP not available for now, work in progress...");
 	} 
+	
+	const endTime = performance.now();
+	const executionTime = endTime - startTime;
+	console.log("Execution time :", executionTime/1000, "sec");
 }
 
 function generate_moret_rendering(){

@@ -7,9 +7,17 @@ class moretModuleCreator {
         //this.
     }
 
-    add_holes_and_intersect(hole){
+    create_hole_meshes(){
+        if (this.moret_reader.hole_array[0] != undefined){
+            console.log("add_holes_first_module");
+            for (let hole of this.moret_reader.hole_array){
+                this.create_one_hole(hole);
+            }
+        }
+    }
+    create_one_hole(hole){
         for (let type of this.moret_reader.type_array){
-            if(hole.id_type == type[0] && hole.id_modu == type[5]){
+            if(hole.id_type == type.id && hole.id_modu == type.id_modu){
                 let material_moret= new THREE.MeshBasicMaterial( { color: 0xffffff } );
                 //On crée la cellule moret
                 let mesh_hole = this.mesh_creator.create_one_mesh(type, material_moret);
@@ -21,32 +29,45 @@ class moretModuleCreator {
                 //on donne un nom à la cellule moret.
                 let id_parent_modu = hole.id_modu;
                 let id_hole = hole.id;				
-                mesh_hole.name = id_parent_modu + " " + id_hole;
-                this.mesh_creator.mesh_array.push(mesh_hole);
+                mesh_hole.name = id_parent_modu + " " + id_hole + " hole";
+                this.mesh_creator.mesh_array.push(mesh_hole);               
                 
-                let bsp_son = CSG.fromMesh(mesh_hole);
 
                 mesh_hole.material.transparent = true;
                 mesh_hole.material.opacity = 0;
                 mesh_hole.material.needsUpdate = true;
 
-                
+                this.mesh_creator.add_labeled_bsp(mesh_hole, true);
+
                 this.mesh_creator.add_cell_to_its_container(hole, mesh_hole);
-                let vector_son = new THREE.Vector3();
-		        mesh_hole.getWorldPosition(vector_son);
-
-                let vector_parent = new THREE.Vector3();
-                mesh_hole.parent.getWorldPosition(vector_parent);
-                vector_parent.sub(mesh_hole.parent.position);
-                vector_son.sub(vector_parent);
-                this.mesh_tools.container_bsp_substraction(vector_son, mesh_hole.parent, bsp_son);
-                
-
             }
         }
         
     }
+
+    intersect_one_hole(hole){
+        let name = hole.id_modu + " " + hole.id + " hole";
+        console.log(name);
+        let mesh_hole = this.mesh_tools.search_object(name, this.group_array);
+        
+        let vector_son = new THREE.Vector3();
+        mesh_hole.getWorldPosition(vector_son);
+
+        let vector_parent = new THREE.Vector3();
+        mesh_hole.parent.getWorldPosition(vector_parent);
+        vector_parent.sub(mesh_hole.parent.position);
+        vector_son.sub(vector_parent);
+        let labeled_bsp_son = this.mesh_creator.labeled_bsp_array.find(labeled_bsp => labeled_bsp.name === name && labeled_bsp.is_hole === true)
+		if (labeled_bsp_son != undefined && mesh_hole != undefined){
+            this.mesh_tools.container_bsp_substraction(vector_son, mesh_hole.parent, labeled_bsp_son.bsp);
+        }
     
+        
+        
+    }
+    
+   
+
     
     get_hole_relative_position(hole){
         //console.log("hole", hole);
@@ -98,9 +119,8 @@ class moretModuleCreator {
             if (model_module != undefined){
                 let cloned_module = model_module.clone(true);
                 cloned_module.position.set(0,0,0);
-                let id_parent_modu = hole.id_modu;
-                let id_hole = hole.id;	
-                let hole_mesh = this.mesh_tools.search_object(id_parent_modu + " " + id_hole, this.group_array);			
+                let name = hole.id_modu + " " + hole.id + " hole";
+                let hole_mesh = this.mesh_tools.search_object(name, this.group_array);			
                 let vector2 = new THREE.Vector3();
                 hole_mesh.getWorldPosition(vector2);
                 hole_mesh.add(cloned_module);
@@ -124,11 +144,6 @@ class moretModuleCreator {
     
             //let vector = mesh_position.sub(group_position);
             let vector = group_position.sub(mesh_position);
-            /*
-            console.log("vector",vector);
-            console.log("mesh before translation", mesh);
-            console.log("vector.x", vector.x);
-            */
             
             mesh.translateX(vector.x);
             mesh.translateY(vector.y);
@@ -140,37 +155,40 @@ class moretModuleCreator {
     }
     
     
-    add_holes_and_intersect_first_module(){
+
+
+
+    intersect_holes_first_module(hole){
         if (this.moret_reader.hole_array[0] != undefined){
-            console.log("add_holes_and_intersect_first_module");
-            for (let hole of this.moret_reader.hole_array){
-                if (hole.id_modu == this.moret_reader.modu_array[0]){
-                    //console.log("this hole is added to the first module :", hole);
-                    this.add_holes_and_intersect(hole);
-                }		
+            console.log("intersect_holes_first_module");
+
+            let first_module_holes = this.moret_reader.hole_array.filter(hole => hole.id_modu === this.moret_reader.modu_array[0])
+            for (let hole of first_module_holes){
+                this.intersect_one_hole(hole);
             }
         }
     }
 
-    add_holes_and_intersect_secondary_modules(){
+    intersect_holes_secondary_modules(){
         if (this.moret_reader.hole_array[0] != undefined){
-            console.log("add_holes_and_intersect_first_module");
-            for (let hole of this.moret_reader.hole_array){
-                if (hole.id_modu != this.moret_reader.modu_array[0]){
-                    this.add_holes_and_intersect(hole);
-                }		
+            console.log("intersect_holes_secondary_modules");
+            let secondary_modules_holes = this.moret_reader.hole_array.filter(hole => hole.id_modu != this.moret_reader.modu_array[0])
+            for (let hole of secondary_modules_holes){
+                this.intersect_one_hole(hole);
             }
         }
     }
+
+
 
     add_module_to_its_hole_first_module(){	
         if (this.moret_reader.hole_array[0] != undefined){
-            console.log("add_module_to_its_hole_first_module");
+            console.log("add_module_to_its_hole_first_module");    
             for (let hole of this.moret_reader.hole_array){
                 if (hole.id_modu == this.moret_reader.modu_array[0]){
                     this.add_module_to_its_hole(hole);
                 }		
-            }	
+            }           
         }
     }
 

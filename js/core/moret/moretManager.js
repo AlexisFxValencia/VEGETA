@@ -17,12 +17,14 @@ class moretManager {
 		console.log("Creation of objects in the scene");
 		this.mesh_creator.create_meshes();
 		this.mesh_creator.position_PLA();		
-		this.mesh_creator.position_MPLA();					
+		this.mesh_creator.position_MPLA();			
+		this.module_creator.create_hole_meshes();			
 		this.mesh_transformer.intersect_etsu();
 		this.mesh_transformer.intersect_supe();
 		this.mesh_transformer.intersect_inte();
 		
 		this.mesh_transformer.intersect_parents();
+		this.mesh_transformer.update_geometries();
 
 		
 
@@ -33,12 +35,13 @@ class moretManager {
 		this.lattice_creator.create_lattices_secondary_modules_hex();
 		this.lattice_creator.remove_first_mpri_cell_secondary_modules();	
 		this.lattice_creator.remove_first_msec_cell_secondary_modules();	
-		this.module_creator.add_holes_and_intersect_secondary_modules();
+		
+		this.module_creator.intersect_holes_secondary_modules();
 		this.module_creator.add_module_to_its_hole_secondary_modules();
 		
 
 		//FIRST MODULE CREATION (lattices included)
-		this.module_creator.add_holes_and_intersect_first_module();
+		this.module_creator.intersect_holes_first_module();
 		this.module_creator.add_module_to_its_hole_first_module();
 		this.lattice_creator.intersect_parents_lattice_first_module();		
 		this.lattice_creator.create_lattices_first_module();

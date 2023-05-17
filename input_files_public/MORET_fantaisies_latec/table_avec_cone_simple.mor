@@ -1,0 +1,11 @@
+  GEOM
+    MODU 0 
+      TYPE 7 BOIT 20.0 20.0 20.0 
+      TYPE 8 CONZ ANGL 45.0 
+        ROTA 1 X 3.0  
+
+      VOLU boite 0 7 3 50.0 50.0 70.0   
+      VOLU moncone boite 8 4 50.0 50.0 70.0 
+        ETSU  1 boite 
+    FINM
+  FING
