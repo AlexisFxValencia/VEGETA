@@ -143,7 +143,7 @@ export_ply(code_choice, group_array){
 	
 
 	
-	saveString( result_array, 'essai.ply' );
+	saveString( result_array, 'VEGETA_export.ply' );
 	
 
 	/*

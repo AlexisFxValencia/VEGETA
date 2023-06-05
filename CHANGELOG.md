@@ -1,4 +1,3 @@
-- réduire le nombre de recherche arborescentes search_object
 - réunir les intersect_etsu, intersect_supe,...
 - optimiser les intersections pour les réseaux. 
 
@@ -23,6 +22,55 @@ le bouton qui sert à rendre les mesh transparents/les rendres visibles rend vis
 debuger reseau d'hexa d'hexa où les matériaux ne sont pas bien identifiés.
 
 lire et parser un project.xml
+
+-pb : drag and drop rend invisible un volume.
+
+prise en compte des matériaux openMC
+refresh openMC avec des cylindres ne passe pas, comme s'il oubliait cylinder.js
+bug pin x et y non à l'origine.
+
+
+nom du fichier d'exprt .ply
+debugger export .stl, supprimer les autres exports ?
+
+pb : le glisser fait disparaître les objets
+veut-on vraiment que la grille disparaisse avec un clic droit?
+
+auto-détection de code.
+
+Pb : réseaux dont on peut supprimer par clic droit toutes les cellules, il faudrait laisser
+cette possibilité en option. 
+
+
+Pb cone MORET
+openMc : Lattice Carré et HEX
+openMC : Opérations booléennes cellules
+
+créer une flèche de retour en haut a gauche dans la partie aide.
+
+placement camera openMC bof 
+On sent que pb de mémoire quand chargement de plusieurs jdd volumineux à la suite. --> libérer ram
+
+v 86 03 06 23
+- openMC : improved box mesh (defined by 6 planes) location.
+- openMC : intersection by any plane (not only x, y, z planes)
+- openMC : export .ply is now available
+- new feature : neutronic code autodetector
+- removed export types other than .ply (they don't currently work)
+- changed ply export name to VEGETA_export.ply
+- GUI improvements
+
+v 85 02 06 23
+- openMC : generate cells bounded by planes and cylinders.
+- openMC : transparency buttons generation for openMC repaired
+- openMC : mesh generation simplification
+- openMC : same color for same material when generating meshes.
+
+
+v 84 31 05 23
+- openMC : cells defined by z-cylinder (with same center) and z-planes.
+- openMC : beginning of translation between openMC and MORET. 
+- all codes : improved camera positioning.
 
 
 v 83 17 05 23

@@ -6,6 +6,7 @@ class plane{
         this.d = d;
         this.id;
         this.type;
+        this.temp_sign;
 	}
 
     includes(tested_vector, sign){

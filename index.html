@@ -19,13 +19,15 @@
 				</p>
 				<!--<p> Input Data (only MORET 5 for now): </p>-->
 				<select name="code" id="code-select">
-					<option value="MORET">MORET 5</option>
+					<option value="auto-detect">Auto-detect neutronic code</option>
 					<option value="OpenMC">OpenMC</option>
-					<option value="SERPENT">SERPENT 2</option>
+					<!--<option value="SERPENT">SERPENT 2</option>-->
+					<option value="MORET">MORET 5</option>
 					<!--<option value="SERPENT">MCNP</option>
 					<option value="TRIPOLI">TRIPOLI 4</option>-->
 					
 				</select>
+			<h3></h3>
 				<!--
 				<input type="button" id = "dae_button" value="Export to dae" onclick= "export_dae()" />
 				<input type="button" id = "stl_button" value="Export to .stl" onclick= "export_stl()" />
@@ -58,68 +60,75 @@
 			<input type="button" id = "start_button" value="Plot" onclick= "start_or_refresh()" />
 			<br>
 			<br>
-			<h3><a  href="help.html">I need help</a></h3>
+			
 			<div id="buttons_zone">
 			</div>
 		</div>
 
 		<div>
+			<script src ="js/core/main.js"></script>
+			<script src="js/lib/three.js"></script>
+			<script src ="js/lib/OrbitControls.js"></script>
+			<script src ="js/lib/ConvexHull.js"></script>
+			<script src ="js/lib/ConvexGeometry.js"></script>
+			
+			<script src ="js/lib/earcut.js"></script>
+			<script src ="js/lib/delaunator/utils.js"></script>
+			<script src ="js/lib/delaunator/orient2d.js"></script>
+			<script src ="js/lib/delaunator/delaunator.js"></script>
+
+
+
+			<script src="js/core/moret/moretReader.js"></script>
+			<script src="js/core/moret/moretMeshCreator.js"></script>		
+			<script src="js/core/moret/moretMeshTransformer.js"></script>
+			<script src="js/core/moret/moretManager.js"></script>
+			<script src="js/core/moret/moretLatticeCreator.js"></script>
+			<script src="js/core/moret/moretModuleCreator.js"></script>
+
+			<script src="js/core/serpent/serpentReader.js"></script>
+			<script src="js/core/serpent/serpentMeshCreator.js"></script>
+			<script src="js/core/serpent/serpentManager.js"></script>
+
+
+			<script src="js/core/openMC/surface.js"></script>
+			<script src="js/core/openMC/cell.js"></script>
+			<script src="js/core/openMC/sphere.js"></script>
+			<script src="js/core/openMC/plane.js"></script>
+			<script src="js/core/openMC/cylinder.js"></script>
+			<script src="js/core/openMC/openMCManager.js"></script>
+			<script src="js/core/openMC/openMCMeshCreator.js"></script>			
+			<script src="js/core/openMC/openMCReader.js"></script>
+			<script src="js/core/openMC/intersector.js"></script>
+			<script src="js/core/openMC/openMCTests.js"></script>
+
+			
+
+
+			<script src="js/core/cutManager.js"></script>
+			<script src="js/core/sceneManager.js"></script>
+			<script src="js/core/exportManager.js"></script>
+			<script src="js/core/buttonsGenerator.js"></script>
+			<script src="js/core/pickHelper.js"></script>
+			<script src="js/core/meshTools.js"></script>
+			<!--<script src="js/core/FontLoader.js"></script>-->
+			
+			<script src="js/lib/csg/csg-lib.js"></script>
+			<script src="js/lib/csg/three-csg.js"></script>
+			<script src="js/lib/export-lib/ColladaExporter.js"></script>
+			<script src="js/lib/export-lib/STLExporter.js"></script>
+			<script src="js/lib/export-lib/OBJExporter.js"></script>
+			<script src="js/lib/export-lib/PLYExporter.js"></script>
+			
 			<div id="maDivDroite">
-				<script src ="js/core/main.js"></script>
-				<script src="js/lib/three.js"></script>
-				<script src ="js/lib/OrbitControls.js"></script>
-				<script src ="js/lib/ConvexHull.js"></script>
-				<script src ="js/lib/ConvexGeometry.js"></script>
-				
-				<script src ="js/lib/earcut.js"></script>
-				<script src ="js/lib/delaunator/utils.js"></script>
-				<script src ="js/lib/delaunator/orient2d.js"></script>
-				<script src ="js/lib/delaunator/delaunator.js"></script>
-
-
-
-				<script src="js/core/moret/moretReader.js"></script>
-				<script src="js/core/moret/moretMeshCreator.js"></script>		
-				<script src="js/core/moret/moretMeshTransformer.js"></script>
-				<script src="js/core/moret/moretManager.js"></script>
-				<script src="js/core/moret/moretLatticeCreator.js"></script>
-				<script src="js/core/moret/moretModuleCreator.js"></script>
-
-				<script src="js/core/serpent/serpentReader.js"></script>
-				<script src="js/core/serpent/serpentMeshCreator.js"></script>
-				<script src="js/core/serpent/serpentManager.js"></script>
-
-
-				<script src="js/core/openMC/openMCManager.js"></script>
-				<script src="js/core/openMC/openMCMeshCreator.js"></script>
-				<script src="js/core/openMC/openMCReader.js"></script>
-				<script src="js/core/openMC/surface.js"></script>
-				<script src="js/core/openMC/cell.js"></script>
-				<script src="js/core/openMC/sphere.js"></script>
-				<script src="js/core/openMC/plane.js"></script>
-				<script src="js/core/openMC/cylinder.js"></script>
-				<script src="js/core/openMC/intersector.js"></script>
-				<script src="js/core/openMC/openMCTests.js"></script>
-
-				
-
-
-				<script src="js/core/cutManager.js"></script>
-				<script src="js/core/sceneManager.js"></script>
-				<script src="js/core/exportManager.js"></script>
-				<script src="js/core/buttonsGenerator.js"></script>
-				<script src="js/core/pickHelper.js"></script>
-				<script src="js/core/meshTools.js"></script>
-				<!--<script src="js/core/FontLoader.js"></script>-->
-				
-				<script src="js/lib/csg/csg-lib.js"></script>
-				<script src="js/lib/csg/three-csg.js"></script>
-				<script src="js/lib/export-lib/ColladaExporter.js"></script>
-				<script src="js/lib/export-lib/STLExporter.js"></script>
-				<script src="js/lib/export-lib/OBJExporter.js"></script>
-				<script src="js/lib/export-lib/PLYExporter.js"></script>
+				<div id="help_version">
+				<h3><a  href="help.html">I need help</a></h3>
+				<h3> version 86 - june 2023 </h3>
+				</div>
 			</div>	
+			
 		
 	</div>
 	</body>
+	
 </html>

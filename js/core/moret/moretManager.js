@@ -51,6 +51,7 @@ class moretManager {
 		this.lattice_creator.remove_first_msec_cell_first_module();		
 			
 		
+		console.log(this.group_array);
 		this.scene_manager.scene.add(this.group_array[0]);
 		//scene_manager.scene.add(this.group_array[1]);
 		//console.log('\nGRAPH SCENE');

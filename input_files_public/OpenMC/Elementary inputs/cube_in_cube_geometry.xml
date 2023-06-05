@@ -1,0 +1,18 @@
+<?xml version='1.0' encoding='utf-8'?>
+<geometry>
+  <cell id="5" material="3" region="5 -6 7 -8 9 -10 " universe="1" />
+  <cell id="6" material="4" region="55 -56 57 -58 9 -10 " universe="1" />
+  <surface boundary="reflective" coeffs="-20.0" id="5" name="minimum x" type="x-plane" />
+  <surface boundary="reflective" coeffs="20.0" id="6" name="maximum x" type="x-plane" />
+  <surface boundary="reflective" coeffs="-20.0" id="7" name="minimum y" type="y-plane" />
+  <surface boundary="reflective" coeffs="20.0" id="8" name="maximum y" type="y-plane" />
+  
+  <surface boundary="reflective" coeffs="-20.0" id="9" name="minimum z" type="z-plane" />
+  <surface boundary="reflective" coeffs="20.0" id="10" name="maximum z" type="z-plane" />
+
+  <surface boundary="reflective" coeffs="-10.0" id="55" name="minimum xb" type="x-plane" />
+  <surface boundary="reflective" coeffs="10.0" id="56" name="maximum xb" type="x-plane" />
+  <surface boundary="reflective" coeffs="-10.0" id="57" name="minimum yb" type="y-plane" />
+  <surface boundary="reflective" coeffs="10.0" id="58" name="maximum yb" type="y-plane" />
+  
+</geometry>

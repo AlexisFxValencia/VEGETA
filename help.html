@@ -4,6 +4,11 @@
 		<meta charset="utf-8">
 		<title>JDD viewer - Neutronics input 3D plotting </title>
 		<link href="style.css" rel="stylesheet" type="text/css">
+        <style>
+            .conteneur { 
+              overflow-y: scroll;
+            }
+          </style>
 	</head>
 	<body>
 		
@@ -15,39 +20,49 @@
 		</div>
 
 		<div>
-			<div id="maDivDroite">
+			<div id="maDivDroite" class="conteneur">
+            <h2>
+                <a  href="index.html">Back to the viewer</a>
+            </h2>
             <h1>Help</h1>
+            <h2> What is VEGETA ? </h2>
+            <p> VEGETA is a very light app to plot 3D-Geometries of neutronic codes and export them as 3D files.
+                It doesn't require an installation, it works as a local website.
+                For now, only openMC and MORET are available. SERPENT2 will be added at some point.
+            <p> 
             <h2> Basics :</h2>
             <p> Principle : Copy-paste your text input on the left, 
                 click on "Plot" and wait for the generation of your 3D view </p>
             <p> 
-            <p> MORET 5 is selected by default but you can change the neutronic code used
-                on the left
+            <p> Auto-detect of neutronic code is selected by default but you can manually define
+                 the neutronic code used.
             </p>
-            <p> The name of the volume and its material is displayed on top of the viewer
+            <p> The name of the mesh cell and its material is displayed on top of the viewer
                 when the mouse hovers on it </p>
 
-            <h2> Get a volume transparent :</h2>
-                <ul>You can get a mesh transparent by :
+            <h2> Make a cell transparent :</h2>
+                <ul>You can make a mesh transparent by :
                     <li>right clicking on it </li>
-                    <li> click on the checkbox on the left corresponding to the name of the volume</li>
+                    <li> click on the checkbox on the left (scroll down) corresponding to the name of the volume</li>
                 </ul>
             </p>
 
             <h2> Generate a 3D export :</h2>
                 <p>
-                    Mainly use .ply (includes colors)
+                    nom only .ply available (includes colors)
                     <br/>
                     If you want multiple 3D pieces, you have to adapt the view to the 
-                    export you want (get every unecessary volume transparent).
+                    export you want, that is make every unecessary cells transparent.
                 </p>
-            <h2> Contact</h2>
-            made by Alexis Valencia 
-            alexis.valencia@irsn.fr
+            <h2> Contact : Alexis Valencia</h2>
+            <p>alexisfx.valencia@gmail.com <br/>
+            <a = href="https://github.com/alexisfxValencia/">https://github.com/alexisfxValencia/</a> <br/>
+            <br/>
+            If you have any troubles, feel free to contact me. You can also send me a problematic input file.
             
-            <h2>
-            <a  href="index.html">Back to the viewer</a>
-            </h2>
+        </p>
+            
+            <br/><br/><br/><br/><br/><br/>
             
 
             

@@ -88,18 +88,23 @@ class sceneManager {
 		this.render();
 	}
 
-	set_bbox(code_manager){
-		this.bbox = new THREE.Box3().setFromObject(code_manager.group_array[0]);
+	set_bbox(){
+		let mybox = new THREE.Box3();
+		this.scene.traverse(function (objet) {
+			if (objet instanceof THREE.Mesh) {
+				mybox.expandByObject(objet);
+			}
+		  });
+		this.bbox = mybox;
+		console.log("bbox", this.bbox);
 	}
 	
 
 	locate_camera(){
 		this.camera.position.x = 0;
-		this.camera.position.y = 0;
-		
-		//this.camera.position.y = (this.bbox.max.y - this.bbox.min.y)/2;
-		//this.camera.position.z = 3*this.bbox.max.z;
-		this.camera.position.z = 100;
+		this.camera.position.y = 0;		
+		this.camera.position.y = (this.bbox.min.y - this.bbox.max.y)/2;
+		this.camera.position.z = 3*this.bbox.max.z;
 		this.controls.update();
 		this.render();
 	}

@@ -40,9 +40,9 @@ class buttonsGenerator {
 
 		div.append(document.createElement("br"));
 		div.appendChild(ply_button);
-		div.appendChild(stl_button);
-		div.appendChild(dae_button);
-		div.appendChild(obj_button);
+		//div.appendChild(stl_button);
+		//div.appendChild(dae_button);
+		//div.appendChild(obj_button);
 		div.append(document.createElement("br"));
 		div.append(document.createElement("br"));
 		document.getElementById('export_zone').appendChild(div);
@@ -225,6 +225,7 @@ class buttonsGenerator {
 		input.addEventListener("click",function(){transparency_setting(this, index, mesh_array)}, false); //here 1st this = buttonsGenerator, 2nd this = input
 		let that = this;
 		function transparency_setting(input, index, mesh_array){
+			console.log("mesh_array", mesh_array);
 			if (input.checked == true){				
 				mesh_array[index].material.transparent = true;
 				mesh_array[index].material.opacity = 0;

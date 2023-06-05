@@ -11,6 +11,7 @@ class sphere{
         this.color = color;
         this.id;
         this.type;
+        this.temp_sign;
         
         
 	}

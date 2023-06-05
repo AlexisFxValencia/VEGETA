@@ -1,0 +1,26 @@
+<?xml version='1.0' encoding='utf-8'?>
+<geometry>
+  <cell id="1" material="1" region="10 -11 100 -101 1000 -1001" universe="1" />
+  <cell id="2" material="1" region="12 -13 100 -101 1000 -1001" universe="1" />
+  <cell id="3" material="1" region="10 -11 102 -103 1000 -1001" universe="1" />
+  <cell id="4" material="1" region="12 -13 102 -103 1000 -1001" universe="1" />
+  
+  <cell id="5" material="1" region="10 -13 100 -103 1001 -1002" universe="1" />
+  <cell id="6" material="1" region="10 -11 100 -103 1002 -1003" universe="1" /> 
+  
+  <surface boundary="reflective" coeffs="0.0" id="10" name = "x_min" type="x-plane" />
+  <surface boundary="reflective" coeffs="1.0" id="11" name = "x2" type="x-plane" />
+  <surface boundary="reflective" coeffs="9.0" id="12" name = "x3" type="x-plane" />
+  <surface boundary="reflective" coeffs="10.0" id="13" name = "x_max" type="x-plane" />
+  
+  <surface boundary="reflective" coeffs="0.0" id="100" name = "y_min" type="y-plane" />
+  <surface boundary="reflective" coeffs="1.0" id="101" name = "y2" type="y-plane" />
+  <surface boundary="reflective" coeffs="9.0" id="102" name = "y3" type="y-plane" />
+  <surface boundary="reflective" coeffs="10.0" id="103" name = "y_max" type="y-plane" />
+  
+  <surface boundary="reflective" coeffs="0.0" id="1000" name="z_min" type="z-plane" />
+  <surface boundary="reflective" coeffs="9.0" id="1001" name="z1" type="z-plane" />  
+  <surface boundary="reflective" coeffs="10.0" id="1002" name="z1" type="z-plane" />
+  <surface boundary="reflective" coeffs="20.0" id="1003" name="z_max" type="z-plane" />
+
+</geometry>
