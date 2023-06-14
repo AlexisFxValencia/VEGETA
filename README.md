@@ -1,6 +1,6 @@
 # VEGETA
 
-A very light app to plot MORET, SERPENT and MCNP Geometries and export them as 3D files.
+A very light app to plot MORET, SERPENT and openMC Geometries and export them as 3D files.
 
 
 ## Getting started
