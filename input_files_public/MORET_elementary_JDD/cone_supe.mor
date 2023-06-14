@@ -1,0 +1,12 @@
+GEOM
+    MODU 0 
+
+      TYPE 1 BOIT 10 10 10
+      TYPE 2 CONX ANGL 25 
+      TYPE 3 CYLX 5 20
+
+      VOLU refl 0 1 FUEL 0.0 0.0 0.0 
+
+      VOLU obj 0 2 STEEL 0.0 0.0 0.0 SUPE 1 refl
+
+FINM

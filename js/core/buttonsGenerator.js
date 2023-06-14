@@ -173,18 +173,21 @@ class buttonsGenerator {
 			input.type = "checkbox";
 			input.addEventListener("click",function(){center_all(this)}, false);
 			
-			
-
 			let that = this;
 			function center_all(){
-				let bbox = new THREE.Box3().setFromObject(that.code_manager.group_array[0]);
 				let v_center = new THREE.Vector3( 0, 1, 0 );
-				bbox.getCenter(v_center);	
-				that.code_manager.group_array[0].translateX(-v_center.x);
-				that.code_manager.group_array[0].translateY(-v_center.y);
-				that.code_manager.group_array[0].translateZ(-v_center.z);
+				that.scene_manager.bbox.getCenter(v_center);	
+				
+				let root_group = that.code_manager.group_array[0];
+				root_group.translateX(-v_center.x);
+				root_group.translateY(-v_center.y);
+				root_group.translateZ(-v_center.z);
+				
+				let updated_v_min = that.scene_manager.bbox.min.sub(v_center);
+				let updated_v_max = that.scene_manager.bbox.max.sub(v_center);
+				that.scene_manager.bbox = new THREE.Box3(updated_v_min, updated_v_max);				
+				that.cut_manager.set_sliders_boundaries();
 
-				that.scene_manager.set_bbox(that.code_manager);
 				that.cut_manager.set_planes_position();
 				that.scene_manager.render();
 					

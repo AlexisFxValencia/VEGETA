@@ -174,7 +174,7 @@ intersect_parents(){
 	}
 }
 
-bsp_substraction(vector, labeled_bsp_mother, bsp_son){		
+bsp_substraction(vector, labeled_bsp_mother, bsp_son){	
 	bsp_son.translate(vector.x, vector.y, vector.z);
 	labeled_bsp_mother.bsp = labeled_bsp_mother.bsp.subtract(bsp_son);
 	bsp_son.translate(-vector.x, -vector.y, -vector.z);

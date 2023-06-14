@@ -1,4 +1,4 @@
-- réunir les intersect_etsu, intersect_supe,...
+
 - optimiser les intersections pour les réseaux. 
 
 à faire :
@@ -36,20 +36,32 @@ debugger export .stl, supprimer les autres exports ?
 pb : le glisser fait disparaître les objets
 veut-on vraiment que la grille disparaisse avec un clic droit?
 
-auto-détection de code.
-
 Pb : réseaux dont on peut supprimer par clic droit toutes les cellules, il faudrait laisser
 cette possibilité en option. 
 
+placement initial des coupes PB
+
 
 Pb cone MORET
+Pb tronquer réseaux MORET
+
 openMc : Lattice Carré et HEX
 openMC : Opérations booléennes cellules
 
-créer une flèche de retour en haut a gauche dans la partie aide.
-
 placement camera openMC bof 
 On sent que pb de mémoire quand chargement de plusieurs jdd volumineux à la suite. --> libérer ram
+
+voir si on peut pas modifier les coupes par des intersection par une boite.
+
+
+v 88 14 06 23
+- z-cut corrected.
+
+v 87 07 06 23
+- MORET : cone localization corrected.
+- MORET : cutting planes localization after centering the 3d plot corrected.
+- inversed z clipping plane.
+
 
 v 86 03 06 23
 - openMC : improved box mesh (defined by 6 planes) location.

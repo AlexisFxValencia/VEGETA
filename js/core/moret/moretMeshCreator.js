@@ -38,15 +38,7 @@ class moretMeshCreator {
 			this.add_labeled_bsp(mesh, false);
 
 			let [x_obj, y_obj, z_obj] = this.get_volume_relative_position(volume);
-			/*
-			if (type.shape == "CONX"){
-				x_obj -= 0.5*this.infinity/10;
-			}if (type.shape == "CONY"){
-				y_obj -= 0.5*this.infinity/10;
-			}if (type.shape == "CONZ"){
-				z_obj -= 0.5*this.infinity/10;
-			}
-			*/
+			
 			
 			mesh.position.set(x_obj, y_obj, z_obj);	
 			
@@ -296,34 +288,25 @@ class moretMeshCreator {
 				let height = this.infinity/10;				
 				let radius = height * tan; 
 				geometry = new THREE.ConeGeometry( radius, height, 32 );
-
-				/* // PARTIE A TRAVAILLER pour avoir les cones la bonne hauteur directement via sa geometrie.
-				if (type.shape =="CONZ"){
-					console.log("geometry", geometry);
-					//cf . https://dustinpfister.github.io/2021/06/07/threejs-buffer-geometry-attributes-position/
-					const position = geometry.getAttribute('position');
-					//let n = position.array.length;
-					let n = geometry.index.count;
-					console.log("my n", n);
-					for (let vertIndex = 0; vertIndex < n; vertIndex++){
-						let posIndex = geometry.index.array[vertIndex] * 3;
-						position.array[posIndex + 2] -= 0.5*height;
-					}
-					position.needsUpdate = true;						
-				}
-				*/
+	
 				
 			}		
 
 			var mesh = new THREE.Mesh( geometry, material);
+			let cone_bsp = CSG.fromMesh(mesh);
+			let height = this.infinity/10;
+			cone_bsp.translate(0, -0.5*height, 0);
+			let processed_mesh = CSG.toMesh(cone_bsp, mesh.matrix, mesh.material);
+			mesh = processed_mesh;
 			
-
 			if (type.shape == "CONX"){
 				let vector = new THREE.Vector3(1, 0, 0);
 				this.mesh_tools.rotate_mesh(mesh, vector);
 			} else if(type.shape == "CONZ"){
 				let vector = new THREE.Vector3(0, 0, 1);
 				this.mesh_tools.rotate_mesh(mesh, vector);
+
+				
 			}
 		}
 			

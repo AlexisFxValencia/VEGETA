@@ -95,7 +95,7 @@ function generate_moret_rendering(){
 	cut_manager = new cutManager(scene_manager);
 	cut_manager.set_planes();
 	moret_manager = new moretManager(scene_manager, moret_reader, cut_manager);
-	scene_manager.generate_controls(moret_manager.group_array);	
+	scene_manager.generate_controls(moret_manager.group_array, cut_manager);	
 	
 	
 	moret_manager.create_objects_in_the_scene();

@@ -91,6 +91,7 @@ class sceneManager {
 	set_bbox(){
 		let mybox = new THREE.Box3();
 		this.scene.traverse(function (objet) {
+			//console.log(objet);
 			if (objet instanceof THREE.Mesh) {
 				mybox.expandByObject(objet);
 			}
@@ -110,7 +111,7 @@ class sceneManager {
 	}
 
 
-	generate_controls(group_array){
+	generate_controls(group_array, cut_manager){
 		this.controls = new THREE.OrbitControls( this.camera, this.renderer.domElement );
 		
 		//this.controls.enablePan = false;
@@ -136,22 +137,27 @@ class sceneManager {
 		function keyMoveRight() {			
 			for (let group of group_array){
 				group.position.x += 5;
+				console.log(cut_manager);
+				cut_manager.x_plane.constant += 5;
 			}
 			
 		}		
 		function keyMoveLeft() {
 			for (let group of group_array){
 				group.position.x -= 5;
+				cut_manager.x_plane.constant -= 5;
 			}
 		}		
 		function keyMoveUp() {
 			for (let group of group_array){
 				group.position.y += 5;
+				cut_manager.y_plane.constant += 5;
 			}
 		}		
 		function keyMoveDown() {
 			for (let group of group_array){
 				group.position.y -= 5;
+				cut_manager.y_plane.constant -= 5;
 			}
 		}
 		

@@ -1,0 +1,12 @@
+
+  GEOM
+    MODU 0 
+      TYPE 100 BOIT 50.0 50.0 50.0 
+      TYPE 101 CONZ ANGL 25.0 
+      TYPE 3 CYLX 5 20
+
+      VOLU principal 0 100 ACIER 0.0 0.0 0.0   
+      VOLU secondaire principal 101 EAU 0.0 0.0 0.0 
+
+    FINM
+  FING
