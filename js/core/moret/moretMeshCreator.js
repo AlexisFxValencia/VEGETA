@@ -45,6 +45,7 @@ class moretMeshCreator {
 					
 
 			this.mesh_array.push(mesh);		
+			console.log("coucoucou", z_obj);
 			this.add_cell_to_its_container(volume, mesh);
 			//console.log("moret mesh :", mesh);
 			mesh.updateMatrix();
@@ -389,7 +390,7 @@ class moretMeshCreator {
 		let group = this.group_array.find(group => group.name == id_modu);	
 		if (id_cont == 0){ // on ajoute au module en cours
 			group.add(moret_cell);
-		} else if ( id_cont == id_modu){ 	
+		} else if (id_cont == id_modu) { 
 			let container_volu = this.moret_reader.volu_array.find(el => el.id_modu === volu.id_modu && el.id === id_cont);
 			if (container_volu != undefined){
 				let container = group.getObjectByName(id_modu + " " + id_cont);
@@ -404,21 +405,24 @@ class moretMeshCreator {
 	}
 
 	get_volume_relative_position(volume){
-		let id_cont = volume.id_cont;
-		if (id_cont == 0){ //correctif pour les id_modules à 0 pour des volumes dans d'autres modules que le n°0 (convention d'écriture).
-			id_cont = volume.id_modu;
-		}
-		if (this.moret_reader.modu_array.includes(id_cont) && id_cont === volume.id_modu){ //si le conteneur est le module
+		if (volume.id_cont == 0){ //correctif pour les id_modules à 0 pour des volumes dans d'autres modules que le n°0 (convention d'écriture).
 			return [volume.x, volume.y, volume.z];
-		} else { // le conteneur est donc un volume
-			let container_volu = this.moret_reader.volu_array.find(el => el.id_modu === volume.id_modu && el.id === id_cont);
-			if (container_volu == undefined){
-				console.log("container_volu is undefined");
+		}
+		else if (volume.id_cont == volume.id_modu) {
+			let container_volu = this.moret_reader.volu_array.find(el => el.id_modu === volume.id_modu && el.id === volume.id_cont);
+			if (container_volu != undefined) {
+				return [volume.x - container_volu.x, volume.y - container_volu.y, volume.z - container_volu.z];
+			} else {
+				return [volume.x, volume.y, volume.z];
 			}
-			return [volume.x - container_volu.x, volume.y - container_volu.y, volume.z - container_volu.z];
-		}	
-		
-
+		} else{
+			let container_volu = this.moret_reader.volu_array.find(el => el.id_modu === volume.id_modu && el.id === volume.id_cont);
+			if (container_volu != undefined) {
+				return [volume.x - container_volu.x, volume.y - container_volu.y, volume.z - container_volu.z];
+			} else {
+				console.log("container volume not found.")
+			}
+		}
 	}
 
 	

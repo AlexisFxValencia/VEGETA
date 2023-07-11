@@ -185,11 +185,11 @@ class moretReader{
 			}
 			//console.log("hole_array", hole_array);
 			//console.log("type_array", this.type_array);
-			//console.log("this.volu_array", this.volu_array);
+			console.log("this.volu_array", this.volu_array);
 		}
 		
 		this.check_volu_order();
-		//console.log("moret_reader.volu_array", moret_reader.volu_array);
+		console.log("this.volu_array", this.volu_array);
 	}
 
 	check_volu_order(){
