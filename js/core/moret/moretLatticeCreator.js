@@ -360,7 +360,9 @@ class moretLatticeCreator{
 		console.log("remove first mpri cell of the first module");
 		for (let volume of this.moret_reader.volu_array){
 			if (volume.id_modu == this.moret_reader.modu_array[0]){ //test for the name of the module
-				this.remove_first_mpri_cell(volume);
+				if (this.is_mpri(volume) == true){
+					this.remove_mesh(volume);
+				}
 			}		
 		}
 	}
@@ -369,20 +371,18 @@ class moretLatticeCreator{
 		console.log("remove first mpri cell of the first module");
 		for (let volume of this.moret_reader.volu_array){
 			if (volume.id_modu != this.moret_reader.modu_array[0]){
-				this.remove_first_mpri_cell(volume);
+				if (this.is_msec(volume) == true){
+					this.remove_mesh(volume);
+				}
 			}		
 		}
 	}
 
-	remove_first_mpri_cell(volume){
-		if (this.is_mpri(volume) == true){
-			let id_modu = volume.id_modu;
-			let id = volume.id;
-			let mpri = this.mesh_tools.search_object(id_modu + " " + id, this.group_array);
-			if (mpri != undefined){
-				mpri.removeFromParent();	
-			}			
-		}
+	remove_mesh(volume){		
+		let mesh = this.mesh_tools.search_object(volume.id_modu + " " + volume.id, this.group_array);
+		if (mesh != undefined){
+			mesh.removeFromParent();	
+		}					
 	}
 
 
@@ -397,23 +397,14 @@ class moretLatticeCreator{
 
 
 
-	remove_first_msec_cell(volume){
-		if (this.is_msec(volume) == true){
-			let id_modu = volume.id_modu;
-			let id = volume.id;
-			let msec = this.mesh_tools.search_object(id_modu + " " + id, this.group_array);
-			
-			if (msec != undefined){
-				msec.removeFromParent();	
-			}			
-		}
-	}
-
 	remove_first_msec_cell_first_module(){
 		console.log("remove first msec cell of the first module");
 		for (let volume of this.moret_reader.volu_array){
 			if (volume.id_modu == this.moret_reader.modu_array[0]){
-				this.remove_first_msec_cell(volume);
+				//this.remove_first_msec_cell(volume);
+				if (this.is_mpri(volume) == true){
+					this.remove_mesh(volume);
+				}
 			}		
 		}
 	}
@@ -422,7 +413,10 @@ class moretLatticeCreator{
 		console.log("remove first msec cell of the first module");
 		for (let volume of this.moret_reader.volu_array){
 			if (volume.id_modu != this.moret_reader.modu_array[0]){
-				this.remove_first_msec_cell(volume);
+				//this.remove_first_msec_cell(volume);
+				if (this.is_msec(volume) == true){
+					this.remove_mesh(volume);
+				}
 			}		
 		}
 	}
@@ -442,12 +436,12 @@ class moretLatticeCreator{
 	intersect_parents_lattice(lattice){	
 		console.log("starting intersecting parent lattice");
 		let id_modu = lattice.id_modu;
-		let id_maille = lattice.id_mpri;		
+		let id_mpri = lattice.id_mpri;		
 		let nx = lattice.nx;
 		let ny = lattice.ny;
 		let nz = lattice.nz;		
 		let local_volu_array = this.moret_reader.volu_array.filter(el => el.id_modu === id_modu);
-		let volume = local_volu_array.find(el => el.id === id_maille);
+		let volume = local_volu_array.find(el => el.id === id_mpri);
 		if (volume != undefined){
 			let [dx, dy, dz] = [0, 0, 0];			
 			for (let type of this.moret_reader.type_array){
@@ -460,7 +454,7 @@ class moretLatticeCreator{
 			var box_geometry = new THREE.BoxGeometry(nx*dx, ny*dy, nz*dz);	
 			let material = new THREE.MeshBasicMaterial({color: this.mesh_tools.getRandomColor()}); // inutile de mettre un matériau/couleur
 			var lattice_box = new THREE.Mesh( box_geometry, material);			
-			let maille_name = id_modu + " " + id_maille;
+			let maille_name = id_modu + " " + id_mpri;
 			var mesh_maille = this.mesh_tools.search_object(maille_name, this.group_array);
 			let parent_position = new THREE.Vector3();
 			mesh_maille.parent.getWorldPosition(parent_position);
