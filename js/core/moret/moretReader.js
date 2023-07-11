@@ -616,58 +616,65 @@ class moretReader{
 
 	lattice_reading(text, module_name) { 
 		if (text.includes("RESC") || text.includes("LATS")){
-			//isolement de la partie du JDD MORET entre RESC et FINR
-			//let lattice_regex = new RegExp(/RESC([\s\S]*?)FINR/);
-			//let lattice_text = text.match(lattice_regex); 
-
 			text = text.split('RESC').pop().split('FINR')[0];	
 			text = text.split('LATS').pop().split('ENDL')[0];	
-			//console.log(text);
-
 			if (text != null){
-				//separation en lignes
 				let lattice_lines = text.split('\n');
-				var lattice_found = false;
-				//var id_maille;
+				let lattice_found = false;	
 				
-				// lecture des differentes lignes
+				let id_mpri;
+				let nx;
+				let ny;
+				let nz;
+				let ix;
+				let iy;
+				let iz;
+				let indp_array;
+
 				for(let i = 0; i < lattice_lines.length ; i++){
 					let line = lattice_lines[i].trim();
 					let line_array = line.split(/\s+/);
 					if(line_array[0]=="MPRI"){
-						var id_maille = line_array[1];
+						id_mpri = line_array[1];
 						lattice_found = true;
 					}
 					if(line_array[0] == "DIMR" || line_array[0] == "DIML"){
-						var id_nx = parseInt(line_array[1], 10);
-						var id_ny = parseInt(line_array[2], 10);
-						var id_nz = parseInt(line_array[3], 10);
-						
+						nx = parseInt(line_array[1], 10);
+						ny = parseInt(line_array[2], 10);
+						nz = parseInt(line_array[3], 10);						
 					}
 
 					if (line_array[0] == "DISM" || line_array[0] == "ENLM"){
-						this.dism_reading(module_name, id_maille, line_array);
+						this.dism_reading(module_name, id_mpri, line_array);
 					}
 
 					if(line_array[0] == "INDP"){
-						var ix = parseInt(line_array[1], 10);
-						var iy = parseInt(line_array[2], 10);
-						var iz = parseInt(line_array[3], 10);
-						var indp_array = [ix, iy, iz];
-						
+						ix = parseInt(line_array[1], 10);
+						iy = parseInt(line_array[2], 10);
+						iz = parseInt(line_array[3], 10);
+						indp_array = [ix, iy, iz];						
 					}
+
 					if (line_array[0] == "MSEC"){
 						let text_msec = text.split("MSEC");
 						text_msec.shift();
-						this.msec_reading(module_name, id_maille, text_msec[0]);
+						this.msec_reading(module_name, id_mpri, text_msec[0]);
 					}
 
 					if (line_array[0] == "NAPP" || line_array[0] == "LAYE"){
-						this.napp_reading(module_name, id_maille, id_nx, id_ny, line_array);	
+						this.napp_reading(module_name, id_mpri, nx, ny, line_array);	
 					}
 				}
 				if (lattice_found){
-					this.lattice_array.push([module_name, id_maille, id_nx, id_ny, id_nz, indp_array]);
+					const lattice = {						
+						id_modu: module_name,
+						id_mpri: id_mpri,
+						nx: nx,
+						ny: ny,
+						nz: nz,
+						indp_array: indp_array,
+					};
+					this.lattice_array.push(lattice);
 					console.log("this.lattice_array", this.lattice_array);
 				}			
 				
@@ -681,35 +688,41 @@ class moretReader{
 			text = text.split('RESH').pop().split('FINR')[0];
 			text = text.split('LATH').pop().split('ENDL')[0];
 			
-			//console.log("text hex", text);
-
 			if (text != null){
 				let lattice_lines = text.split('\n');
-				var lattice_found = false;
+				let lattice_found = false;
+
+				let id_mpri;
+				let nr;
+				let nz;
+				let ix;
+				let iy;
+				let iz;
+				let indp_array;
 
 				for(let i = 0; i < lattice_lines.length ; i++){
 					let line = lattice_lines[i].trim();
 					let line_array = line.split(/\s+/);
 					if(line_array[0]=="MPRI"){
-						var id_maille = line_array[1];
+						id_mpri = line_array[1];
 						lattice_found = true;
 					}
 					if(line_array[0] == "DIMR" || line_array[0] == "DIML"){
-						var id_nr = parseInt(line_array[1], 10);
-						var id_nz = parseInt(line_array[2], 10);
+						nr = parseInt(line_array[1], 10);
+						nz = parseInt(line_array[2], 10);
 						
 					}
 					if(line_array[0] == "INDP"){
-						var ix = parseInt(line_array[1], 10);
-						var iy = parseInt(line_array[2], 10);
-						var iz = parseInt(line_array[3], 10);
-						var indp_array = [ix, iy, iz];
+						ix = parseInt(line_array[1], 10);
+						iy = parseInt(line_array[2], 10);
+						iz = parseInt(line_array[3], 10);
+						indp_array = [ix, iy, iz];
 						
 					}					
 					if (line_array[0] == "MSEC"){
 						let text_msec = text.split("MSEC");
 						text_msec.shift();
-						this.msec_reading(module_name, id_maille, text_msec[0]);
+						this.msec_reading(module_name, id_mpri, text_msec[0]);
 					}
 					
 					/*
@@ -718,19 +731,26 @@ class moretReader{
 						let text_napp = text.split("NAPP");
 						text_napp.shift();
 						//console.log('text_napp', text_napp);
-						this.napp_reading(module_name, id_maille, id_nx, id_ny, text_napp[0]);
+						this.napp_reading(module_name, id_mpri, nx, ny, text_napp[0]);
 					}
 					*/
 				}
 				if (lattice_found){
-					this.lattice_array_hex.push([module_name, id_maille, id_nr, id_nz, 0, indp_array]);
+					const lattice_hex = {						
+						id_modu: module_name,
+						id_mpri: id_mpri,
+						nr: nr,
+						nz: nz,
+						indp_array: indp_array,
+					};
+					this.lattice_array_hex.push(lattice_hex);
 				}			
 				//console.log("lattice_array_hex", this.lattice_array_hex);
 				
 			}
 			/*
-			if (isNaN(id_nz)){
-				id_nz = 1;
+			if (isNaN(nz)){
+				nz = 1;
 			}
 			*/
 			}
@@ -740,14 +760,24 @@ class moretReader{
 	msec_reading(module_name, id_mpri, text_msec){
 		let line_array = text_msec.trim().split(/\s+/);
 		let id_msec = line_array[0];
-		let nb_msec = line_array[1];
-		this.msec_lattice_array.push([module_name, id_mpri, id_msec, nb_msec]);
+		let nb_msec = parseInt(line_array[1]);
+		
+		let coordinates = [];
 		for (let i = 0 ; i < nb_msec; i++){
 			let x = line_array[3 * i + 2];
 			let y = line_array[3 * i + 3];
 			let z = line_array[3 * i + 4];
-			this.msec_lattice_array.push([module_name, id_mpri, x, y, z]);
+			coordinates.push([x, y, z]);
 		}
+
+		const msec = {						
+			id_modu: module_name,
+			id_mpri: id_mpri,
+			id_msec: id_msec,
+			nb_msec: nb_msec,
+			coordinates: coordinates,
+		};
+		this.msec_lattice_array.push(msec);
 
 		console.log("msec_lattice_array",this.msec_lattice_array);
 	}
@@ -778,23 +808,21 @@ class moretReader{
 
 	}
 
-	napp_reading(module_name, id_mpri, id_nx, id_ny, text_napp){		
-		let temporary_array = [];
+	napp_reading(module_name, id_mpri, nx, ny, text_napp){		
+		let napp_coordinates = [];
 		let msec_list = [];
+		
 		let offset = 2;
-		for (let j = 0 ; j < id_ny ; j++){
-			for (let k = 0 ; k < id_nx; k++){
-				let id_msec = text_napp[j * id_ny + k + offset];	
-				if (id_msec != id_mpri){
-								
+		for (let j = 0 ; j < ny ; j++){
+			for (let k = 0 ; k < nx; k++){
+				let id_msec = text_napp[j * ny + k + offset];	
+				if (id_msec != id_mpri){								
 					let x = j ;
-					//let y = k + 1;
 					let y = k;
-					//let z = 1;
 					let z = 0;
-					temporary_array.push([id_msec, x, y, z]);
+					napp_coordinates.push([id_msec, x, y, z]);
 
-					let col_id_msec = msec_list.map(function(value,index) { return value[0]; });	
+					let col_id_msec = msec_list.map(function(value,index) { return value[0]; });					
 					if (col_id_msec.includes(id_msec)){
 						let msec = msec_list.find(el => el[0] === id_msec);
 						msec[1] += 1;						
@@ -805,22 +833,32 @@ class moretReader{
 			}
 		}
 
-		console.log('napp temporary_array', temporary_array);
+		console.log('napp_coordinates', napp_coordinates);
 		console.log('napp msec_list', msec_list);
 
+		let coordinates = [];
 		//pushing data in the this.msec_lattice_array
 		for (let msec of msec_list){
 			let id_msec = msec[0];
 			let nb_msec = msec[1];
-			this.msec_lattice_array.push([module_name, id_mpri, id_msec, nb_msec]);
-			let filtered_temporary_array = temporary_array.filter(el => el[0] === id_msec);
-			for (let line of filtered_temporary_array){
+			let filtered_napp_coordinates = napp_coordinates.filter(el => el[0] === id_msec);
+			for (let line of filtered_napp_coordinates){
 				let x = line[1];
 				let y = line[2];
 				let z = line[3];
-				this.msec_lattice_array.push([module_name, id_mpri, x, y, z]);
+				coordinates.push([x, y, z]);
 			}
+
+			const final_msec = {						
+				id_modu: module_name,
+				id_mpri: id_mpri,
+				id_msec: id_msec,
+				nb_msec: nb_msec,
+				coordinates: coordinates,
+			};
+			this.msec_lattice_array.push(final_msec);
 		}
+		
 		
 
 		console.log("napp msec_lattice_array",this.msec_lattice_array);
