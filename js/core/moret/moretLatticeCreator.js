@@ -45,13 +45,16 @@ class moretLatticeCreator{
 			for (let y_index = 0; y_index < ny; y_index++){
 				for (let z_index = 0; z_index < nz; z_index++){					
 					if (local_dism_array != undefined && this.is_dism_cell(local_dism_array.coordinates, x_index + ix, y_index + iy, z_index + iz)){
-						console.log(" dism cell : ", x_index, y_index, z_index);
+						console.log(" not creating the dism cell mesh : ", x_index, y_index, z_index);
 					} else{							
-						let [mpri_cell_to_create, id_msec] = this.check_type_lattice_cell(local_msec_array, x_index + ix, y_index + iy, z_index + iz);
-						console.log("mpri_cell_to_create", mpri_cell_to_create);
-
-						let volume_msec = local_volu_array.find(el => el.id === id_msec);
-						let mesh = this.choose_pattern(x_index, y_index, z_index, mpri_cell_to_create, volume_mpri, volume_msec);
+						let [mpri_cell_to_create, id_msec] = this.check_type_lattice_cell(local_msec_array, x_index + ix, y_index + iy, z_index + iz);						
+						let mesh;
+						if (mpri_cell_to_create){
+							mesh = this.clone_mesh(volume_mpri, x_index, y_index, z_index);
+						} else {	
+							let volume_msec = local_volu_array.find(el => el.id === id_msec);		
+							mesh = this.clone_mesh(volume_msec, x_index, y_index, z_index);	
+						}	
 						this.mesh_creator.add_cell_to_its_container(volume_mpri, mesh);				
 						this.mesh_creator.mesh_array.push(mesh);
 					}						
@@ -80,20 +83,6 @@ class moretLatticeCreator{
 		return [true, -1];
 	}
 	
-
-	choose_pattern(x_index, y_index, z_index, mpri_cell_to_create, volume_mpri, volume_msec){
-		let mesh;
-		if (mpri_cell_to_create){
-			mesh = this.clone_mesh(volume_mpri, x_index, y_index, z_index);
-		} else {			
-			mesh = this.clone_mesh(volume_msec, x_index, y_index, z_index);	
-		}	
-		return mesh;
-	}
-
-
-
-
 
 
 	create_lattices_first_module_hex(){
