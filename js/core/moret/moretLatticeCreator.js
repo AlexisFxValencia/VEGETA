@@ -274,19 +274,17 @@ class moretLatticeCreator{
 	}
 
 	create_one_pattern_hex(position_x, position_y, position_z, volume_mpri, hexagone, local_msec_array, local_volu_array, ix, iy, iz){
-		console.log("create_one_pattern_hex");
+		//console.log("create_one_pattern_hex");
 		let [x_index, y_index, z_index] = this.find_hex_index(position_x, position_y, position_z, 0, 0, 0, hexagone);
 		let [mpri_cell_to_create, id_msec] = this.check_type_lattice_cell(local_msec_array, x_index+ix, y_index+iy, z_index+iz);
-		
-		let volume_msec = local_volu_array.find(el => el.id === id_msec);
-		
 		let mesh;
 		if (mpri_cell_to_create){
 			mesh = this.clone_hex_mesh(volume_mpri, position_x, position_y, position_z);
-		} else {			
+		} else {	
+			let volume_msec = local_volu_array.find(el => el.id === id_msec);		
 			mesh = this.clone_hex_mesh(volume_msec, position_x, position_y, position_z);	
 		}
-
+		mesh.name = volume_mpri.id_modu + " " + volume_mpri.id + " " + String(x_index + ix) + " " + String(y_index + iy) + " " + String(z_index + iz);
 		this.mesh_creator.add_cell_to_its_container(volume_mpri, mesh);
 		this.mesh_creator.mesh_array.push(mesh);
 	}
@@ -326,18 +324,10 @@ class moretLatticeCreator{
 		let cloned_mesh = model_volume.clone(true);
 		cloned_mesh.material = model_volume.material.clone();	
 		cloned_mesh.material.clippingPlanes = [ this.cut_manager.x_plane, this.cut_manager.y_plane, this.cut_manager.z_plane ];
-
-		let x_index = 0;
-		let y_index = 0;
-		cloned_mesh.name = id_modu + " " + id_mpri + " " + String(x_index+1) + " " + String(y_index+1);
-		//console.log("cloned_mesh.name", cloned_mesh.name);
-
 		cloned_mesh.position.set(x, y, z);
 
 		return cloned_mesh;		
-		//console.log("cloned_mesh", cloned_mesh);
 	}
-
 
 	
 	remove_first_mpri_cell_first_module(){
@@ -371,7 +361,6 @@ class moretLatticeCreator{
 		}					
 	}
 
-
 	is_mpri(volume){
 		for (let lattice of this.moret_reader.lattice_array){ 
 			if(volume.id_modu == lattice.id_modu && volume.id == lattice.id_mpri){
@@ -380,8 +369,6 @@ class moretLatticeCreator{
 		}
 		return false;
 	}
-
-
 
 	remove_first_msec_cell_first_module(){
 		console.log("remove first msec cell of the first module");
@@ -404,7 +391,6 @@ class moretLatticeCreator{
 			}		
 		}
 	}
-
 
 
 	is_msec(volume){

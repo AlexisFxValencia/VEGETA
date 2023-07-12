@@ -212,6 +212,21 @@ update_geometries(){
 
 
 
+intersect_parents_lattice_first_module(){
+	for (let lattice of this.moret_reader.lattice_array){
+		if (lattice.id_modu == this.moret_reader.modu_array[0]){
+			this.intersect_parents_lattice(lattice);
+		}
+	}				
+}
+
+intersect_parents_lattice_secondary_modules(){
+	for (let lattice of this.moret_reader.lattice_array){
+		if (lattice.id_modu != this.moret_reader.modu_array[0]){
+			this.intersect_parents_lattice(lattice);
+		}
+	}			
+}
 
 intersect_parents_lattice(lattice){	
 	let mpri_name = lattice.id_modu + " " + lattice.id_mpri;
@@ -260,21 +275,76 @@ intersect_parents_lattice(lattice){
 }
 
 
-
-intersect_parents_lattice_first_module(){
-	for (let lattice of this.moret_reader.lattice_array){
+intersect_parents_lattice_first_module_hex(){
+	for (let lattice of this.moret_reader.lattice_array_hex){
 		if (lattice.id_modu == this.moret_reader.modu_array[0]){
-			this.intersect_parents_lattice(lattice);
+			this.intersect_parents_lattice_hex(lattice);
 		}
 	}				
 }
 
-intersect_parents_lattice_secondary_modules(){
-	for (let lattice of this.moret_reader.lattice_array){
+intersect_parents_lattice_secondary_modules_hex(){
+	for (let lattice of this.moret_reader.lattice_array_hex){
 		if (lattice.id_modu != this.moret_reader.modu_array[0]){
-			this.intersect_parents_lattice(lattice);
+			this.intersect_parents_lattice_hex(lattice);
 		}
 	}			
+}
+
+intersect_parents_lattice_hex(lattice){	
+	console.log("intersect_parents_lattice_hex");
+	let mpri_name = lattice.id_modu + " " + lattice.id_mpri;
+	let volume_mpri = this.moret_reader.volu_array.find(el => el.id_modu === lattice.id_modu && el.id === lattice.id_mpri);
+	let type = this.moret_reader.type_array.find(el => el.id === volume_mpri.id_type && el.id_modu === volume_mpri.id_modu);
+
+	let side = type.parameters.side;
+	let height = type.parameters.height;
+	let azimuth = type.parameters.azimuth;
+	let hexagone_mesh = this.mesh_tools.hexprism_z_mesh_creator(side, height, azimuth );
+	if (type.shape =="HEXX"){
+		let vector = new THREE.Vector3(1, 0, 0);
+		this.mesh_tools.rotate_mesh(mesh, vector);
+	} 
+	if(type.shape =="HEXY"){
+		let vector = new THREE.Vector3(0, 1, 0);
+		this.mesh_tools.rotate_mesh(mesh, vector);				
+	} 
+	let hexagone_bsp = CSG.fromMesh(hexagone_mesh);
+
+	let mesh_mpri = this.mesh_tools.search_object(mpri_name, this.group_array);
+	let mesh_parent = mesh_mpri.parent;
+	let labeled_bsp_mother = this.labeled_bsp_array.find(labeled_bsp => labeled_bsp.name === mesh_parent.name)
+
+	let [nr, nz] = [lattice.nr, lattice.nz];
+	let [ix, iy, iz] = [0, 0, 0];
+	if (lattice.indp_array != undefined){
+		ix = lattice.indp_array[0];
+		iy = lattice.indp_array[1];
+		iz = lattice.indp_array[2];
+	}
+
+	for (let x_index = -nr; x_index < nr; x_index++){
+		for (let y_index = -nr; y_index < nr; y_index++){
+			for (let z_index = 0; z_index < nz; z_index++){				
+				let name_son = lattice.id_modu + " " + lattice.id_mpri + " " + String(x_index + ix) + " " + String(y_index + iy) + " " + String(z_index + iz);
+				let mesh_son = this.mesh_tools.search_object(name_son, this.group_array);			
+				if (mesh_son != undefined){
+					let vector_son = new THREE.Vector3();					
+					mesh_son.getWorldPosition(vector_son);					
+					let vector_parent = new THREE.Vector3();
+					mesh_son.parent.getWorldPosition(vector_parent);
+					vector_parent.sub(mesh_parent.position);
+					vector_son.sub(vector_parent);
+					this.bsp_substraction(vector_son, labeled_bsp_mother, hexagone_bsp);						
+				}
+			}
+		}
+	}	
+
+	let processed_mesh = CSG.toMesh(labeled_bsp_mother.bsp, labeled_bsp_mother.matrix, labeled_bsp_mother.material);
+	mesh_parent.geometry = processed_mesh.geometry;
+	mesh_parent.updateMatrix();
+
 }
 
 }
