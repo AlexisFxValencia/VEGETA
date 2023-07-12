@@ -11,6 +11,7 @@ class moretReader{
 		this.lattice_array_hex = [];
 		this.msec_lattice_array = [];	
 		this.dism_lattice_array = [];
+		this.disb_lattice_array = [];
 		this.hole_array = [];	
 		this.trun_array = [];
 		this.supe_array = [];
@@ -28,6 +29,7 @@ class moretReader{
 		this.lattice_array_hex = [];	
 		this.msec_lattice_array = [];		
 		this.dism_lattice_array = [];
+		this.disb_lattice_array = [];
 		this.hole_array = [];	
 		this.trun_array = [];
 		this.supe_array = [];
@@ -68,7 +70,8 @@ class moretReader{
 		text = text.replace(/\s+TRUN/g, ' TRUN'); // évite des TRUN seuls sur leur ligne (les rattache au volume précédent)
 		text = text.replace(/\s+ROTA/g, ' ROTA'); // évite des ROTA seuls sur leur ligne (les rattache au volume précédent)
 
-		
+		text = text.replace(/\s+BORD/g, ' BORD'); // évite des BORD seuls sur leur ligne (les rattache au DISB précédent)
+
 
 		text = text.replace(/^\s+/gm, ''); // supprime les caractères d'espacement de début de ligne.
 		
@@ -648,6 +651,10 @@ class moretReader{
 						this.dism_reading(module_name, id_mpri, line_array);
 					}
 
+					if (line_array[0] == "DISB" || line_array[0] == "ENLB"){
+						this.disb_reading(module_name, id_mpri, line_array);
+					}
+
 					if(line_array[0] == "INDP"){
 						ix = parseInt(line_array[1], 10);
 						iy = parseInt(line_array[2], 10);
@@ -806,6 +813,18 @@ class moretReader{
 		};
 		this.dism_lattice_array.push(dism);
 
+	}
+
+	disb_reading(module_name, id_mpri, line_array){
+		let id_volu = line_array[2];
+		
+		const disb = {
+			id_modu: module_name,
+			id_mpri: id_mpri,
+			id_volu: id_volu,
+		};
+		this.disb_lattice_array.push(disb);
+		console.log("this.disb_lattice_array :", this.disb_lattice_array)
 	}
 
 	napp_reading(module_name, id_mpri, nx, ny, text_napp){		

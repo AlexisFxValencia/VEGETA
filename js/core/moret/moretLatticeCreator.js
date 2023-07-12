@@ -53,7 +53,7 @@ class moretLatticeCreator{
 			for (let x_index = 0; x_index < nx; x_index++){
 				for (let y_index = 0; y_index < ny; y_index++){
 					for (let z_index = 0; z_index < nz; z_index++){					
-						if (dism_coordinates.length != 0 && this.is_dism_cell(dism_coordinates, x_index + ix, y_index + iy, z_index + iz)){
+						if (this.is_dism_cell(dism_coordinates, x_index + ix, y_index + iy, z_index + iz)){
 							console.log(" dism cell : ", x_index, y_index, z_index);
 						} else{							
 							let [mpri_cell_to_create, id_msec] = this.check_type_lattice_cell(local_msec_array, x_index + ix, y_index + iy, z_index + iz);
@@ -471,24 +471,21 @@ class moretLatticeCreator{
 
 
 	intersect_parents_lattice_first_module(){
-		if (this.moret_reader.lattice_array[0] != undefined){			
-			for (let lattice of this.moret_reader.lattice_array){
-				if (this.moret_reader.modu_array[0] == lattice.id_modu){
-					this.intersect_parents_lattice(lattice);
-				}
-			}				
-		}
+		for (let lattice of this.moret_reader.lattice_array){
+			if (lattice.id_modu == this.moret_reader.modu_array[0]){
+				this.intersect_parents_lattice(lattice);
+			}
+		}				
 	}
 
 	intersect_parents_lattice_secondary_modules(){
-		if (this.moret_reader.lattice_array[0] != undefined){	
-			for (let lattice of this.moret_reader.lattice_array){
-				if (this.moret_reader.modu_array[0] != lattice.id_modu){
-					this.intersect_parents_lattice(lattice);
-				}
-			}			
-		}
+		for (let lattice of this.moret_reader.lattice_array){
+			if (lattice.id_modu != this.moret_reader.modu_array[0]){
+				this.intersect_parents_lattice(lattice);
+			}
+		}			
 	}
+
 
 
 

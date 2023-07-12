@@ -45,9 +45,7 @@ class moretMeshCreator {
 					
 
 			this.mesh_array.push(mesh);		
-			console.log("coucoucou", z_obj);
 			this.add_cell_to_its_container(volume, mesh);
-			//console.log("moret mesh :", mesh);
 			mesh.updateMatrix();
 			
 
