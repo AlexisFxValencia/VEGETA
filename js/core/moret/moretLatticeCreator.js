@@ -28,7 +28,7 @@ class moretLatticeCreator{
 
 	create_one_lattice(lattice){		
 		let pattern_array = this.moret_reader.volu_array.filter(el => el.id === lattice.id_mpri && el.id_modu === lattice.id_modu ); // select volumes that are mpri.
-		//console.log("lattice pattern_array", pattern_array);
+		console.log("lattice pattern_array", pattern_array);
 		for (let volume_mpri of pattern_array){
 			let [nx, ny, nz] = [lattice.nx, lattice.ny, lattice.nz];
 			let [ix, iy, iz] = [0, 0, 0];
@@ -38,22 +38,15 @@ class moretLatticeCreator{
 				iz = lattice.indp_array[2];
 				//console.log("indp : ", "ix", ix, "iy", iy, "iz", iz);
 			}
-			let id_modu = volume_mpri.id_modu;
-			let id_mpri = volume_mpri.id;
-			let local_msec_array = this.moret_reader.msec_lattice_array.filter(el => el.id_modu === id_modu && el.id_mpri === id_mpri);		
-			let local_dism_array = this.moret_reader.dism_lattice_array.filter(el => el.id_modu === id_modu && el.id_mpri === id_mpri);		
-			let dism_coordinates = [];
-			if (local_dism_array != undefined && local_dism_array[0] != undefined){
-				dism_coordinates = local_dism_array[0].coordinates;
-			}
-
-			let local_volu_array = this.moret_reader.volu_array.filter(el => el.id_modu === id_modu);
+			let local_msec_array = this.moret_reader.msec_lattice_array.filter(el => el.id_modu === lattice.id_modu  && el.id_mpri === lattice.id_mpri );		
+			let local_dism_array = this.moret_reader.dism_lattice_array.find(el => el.id_modu === lattice.id_modu  && el.id_mpri === lattice.id_mpri );		
+			let local_volu_array = this.moret_reader.volu_array.filter(el => el.id_modu === lattice.id_modu);
 			
 
 			for (let x_index = 0; x_index < nx; x_index++){
 				for (let y_index = 0; y_index < ny; y_index++){
 					for (let z_index = 0; z_index < nz; z_index++){					
-						if (this.is_dism_cell(dism_coordinates, x_index + ix, y_index + iy, z_index + iz)){
+						if (local_dism_array != undefined && this.is_dism_cell(local_dism_array.coordinates, x_index + ix, y_index + iy, z_index + iz)){
 							console.log(" dism cell : ", x_index, y_index, z_index);
 						} else{							
 							let [mpri_cell_to_create, id_msec] = this.check_type_lattice_cell(local_msec_array, x_index + ix, y_index + iy, z_index + iz);

@@ -53,11 +53,14 @@ On sent que pb de mémoire quand chargement de plusieurs jdd volumineux à la su
 
 voir si on peut pas modifier les coupes par des intersection par une boite.
 
+voir si plusieurs MSEC dans un lattice est reconnu par VEGETA
+
+
 v 89 11 07 23 
 - mesh z placement corrected
 - moret : lattice reading and creation simplified
 - moret : disb reading added.
-
+- moret : create_one_lattice simplification
 
 v 88 14 06 23
 - z-cut corrected.
