@@ -212,23 +212,23 @@ update_geometries(){
 
 
 
-intersect_parents_lattice_first_module(){
+subtract_lattice_meshes_first_module(){
 	for (let lattice of this.moret_reader.lattice_array){
 		if (lattice.id_modu == this.moret_reader.modu_array[0]){
-			this.intersect_parents_lattice(lattice);
+			this.subtract_lattice_mesh(lattice);
 		}
 	}				
 }
 
-intersect_parents_lattice_secondary_modules(){
+subtract_lattice_meshes_secondary_modules(){
 	for (let lattice of this.moret_reader.lattice_array){
 		if (lattice.id_modu != this.moret_reader.modu_array[0]){
-			this.intersect_parents_lattice(lattice);
+			this.subtract_lattice_mesh(lattice);
 		}
 	}			
 }
 
-intersect_parents_lattice(lattice){	
+subtract_lattice_mesh(lattice){	
 	let mpri_name = lattice.id_modu + " " + lattice.id_mpri;
 	let volume_mpri = this.moret_reader.volu_array.find(el => el.id_modu === lattice.id_modu && el.id === lattice.id_mpri);
 	let type = this.moret_reader.type_array.find(el => el.id === volume_mpri.id_type && el.id_modu === volume_mpri.id_modu);
@@ -275,23 +275,23 @@ intersect_parents_lattice(lattice){
 }
 
 
-intersect_parents_lattice_first_module_hex(){
+subtract_lattice_meshes_first_module_hex(){
 	for (let lattice of this.moret_reader.lattice_array_hex){
 		if (lattice.id_modu == this.moret_reader.modu_array[0]){
-			this.intersect_parents_lattice_hex(lattice);
+			this.subtract_lattice_mesh_lattice_hex(lattice);
 		}
 	}				
 }
 
-intersect_parents_lattice_secondary_modules_hex(){
+subtract_lattice_meshes_secondary_modules_hex(){
 	for (let lattice of this.moret_reader.lattice_array_hex){
 		if (lattice.id_modu != this.moret_reader.modu_array[0]){
-			this.intersect_parents_lattice_hex(lattice);
+			this.subtract_lattice_mesh_lattice_hex(lattice);
 		}
 	}			
 }
 
-intersect_parents_lattice_hex(lattice){	
+subtract_lattice_mesh_lattice_hex(lattice){	
 	console.log("intersect_parents_lattice_hex");
 	let mpri_name = lattice.id_modu + " " + lattice.id_mpri;
 	let volume_mpri = this.moret_reader.volu_array.find(el => el.id_modu === lattice.id_modu && el.id === lattice.id_mpri);
