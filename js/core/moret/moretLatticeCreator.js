@@ -27,37 +27,34 @@ class moretLatticeCreator{
 
 
 	create_one_lattice(lattice){		
-		let pattern_array = this.moret_reader.volu_array.filter(el => el.id === lattice.id_mpri && el.id_modu === lattice.id_modu ); // select volumes that are mpri.
-		console.log("lattice pattern_array", pattern_array);
-		for (let volume_mpri of pattern_array){
-			let [nx, ny, nz] = [lattice.nx, lattice.ny, lattice.nz];
-			let [ix, iy, iz] = [0, 0, 0];
-			if (lattice.indp_array != undefined){
-				ix = lattice.indp_array[0];
-				iy = lattice.indp_array[1];
-				iz = lattice.indp_array[2];
-				//console.log("indp : ", "ix", ix, "iy", iy, "iz", iz);
-			}
-			let local_msec_array = this.moret_reader.msec_lattice_array.filter(el => el.id_modu === lattice.id_modu  && el.id_mpri === lattice.id_mpri );		
-			let local_dism_array = this.moret_reader.dism_lattice_array.find(el => el.id_modu === lattice.id_modu  && el.id_mpri === lattice.id_mpri );		
-			let local_volu_array = this.moret_reader.volu_array.filter(el => el.id_modu === lattice.id_modu);
-			
+		let [nx, ny, nz] = [lattice.nx, lattice.ny, lattice.nz];
+		let [ix, iy, iz] = [0, 0, 0];
+		if (lattice.indp_array != undefined){
+			ix = lattice.indp_array[0];
+			iy = lattice.indp_array[1];
+			iz = lattice.indp_array[2];
+			//console.log("indp : ", "ix", ix, "iy", iy, "iz", iz);
+		}
+		let local_msec_array = this.moret_reader.msec_lattice_array.filter(el => el.id_modu === lattice.id_modu  && el.id_mpri === lattice.id_mpri );		
+		let local_dism_array = this.moret_reader.dism_lattice_array.find(el => el.id_modu === lattice.id_modu  && el.id_mpri === lattice.id_mpri );		
+		let local_volu_array = this.moret_reader.volu_array.filter(el => el.id_modu === lattice.id_modu);
+		
+		let volume_mpri = this.moret_reader.volu_array.find(el => el.id === lattice.id_mpri && el.id_modu === lattice.id_modu ); // select volumes that are mpri.
 
-			for (let x_index = 0; x_index < nx; x_index++){
-				for (let y_index = 0; y_index < ny; y_index++){
-					for (let z_index = 0; z_index < nz; z_index++){					
-						if (local_dism_array != undefined && this.is_dism_cell(local_dism_array.coordinates, x_index + ix, y_index + iy, z_index + iz)){
-							console.log(" dism cell : ", x_index, y_index, z_index);
-						} else{							
-							let [mpri_cell_to_create, id_msec] = this.check_type_lattice_cell(local_msec_array, x_index + ix, y_index + iy, z_index + iz);
-							console.log("mpri_cell_to_create", mpri_cell_to_create);
+		for (let x_index = 0; x_index < nx; x_index++){
+			for (let y_index = 0; y_index < ny; y_index++){
+				for (let z_index = 0; z_index < nz; z_index++){					
+					if (local_dism_array != undefined && this.is_dism_cell(local_dism_array.coordinates, x_index + ix, y_index + iy, z_index + iz)){
+						console.log(" dism cell : ", x_index, y_index, z_index);
+					} else{							
+						let [mpri_cell_to_create, id_msec] = this.check_type_lattice_cell(local_msec_array, x_index + ix, y_index + iy, z_index + iz);
+						console.log("mpri_cell_to_create", mpri_cell_to_create);
 
-							let volume_msec = local_volu_array.find(el => el.id === id_msec);
-							let mesh = this.choose_pattern(x_index, y_index, z_index, mpri_cell_to_create, volume_mpri, volume_msec);
-							this.mesh_creator.add_cell_to_its_container(volume_mpri, mesh);				
-							this.mesh_creator.mesh_array.push(mesh);
-						}						
-					}
+						let volume_msec = local_volu_array.find(el => el.id === id_msec);
+						let mesh = this.choose_pattern(x_index, y_index, z_index, mpri_cell_to_create, volume_mpri, volume_msec);
+						this.mesh_creator.add_cell_to_its_container(volume_mpri, mesh);				
+						this.mesh_creator.mesh_array.push(mesh);
+					}						
 				}
 			}
 		}
