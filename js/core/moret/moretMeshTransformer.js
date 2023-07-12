@@ -212,43 +212,52 @@ update_geometries(){
 
 
 
+
 intersect_parents_lattice(lattice){	
-	console.log("starting intersecting parent lattice");
-	let id_modu = lattice.id_modu;
-	let id_mpri = lattice.id_mpri;		
-	let nx = lattice.nx;
-	let ny = lattice.ny;
-	let nz = lattice.nz;		
-	let local_volu_array = this.moret_reader.volu_array.filter(el => el.id_modu === id_modu);
-	let volume = local_volu_array.find(el => el.id === id_mpri);
-	if (volume != undefined){
-		let [dx, dy, dz] = [0, 0, 0];			
-		for (let type of this.moret_reader.type_array){
-			if(volume.id_type == type.id){
-				dx = type.parameters.dx;
-				dy = type.parameters.dy;
-				dz = type.parameters.dz;
+	let mpri_name = lattice.id_modu + " " + lattice.id_mpri;
+	let volume_mpri = this.moret_reader.volu_array.find(el => el.id_modu === lattice.id_modu && el.id === lattice.id_mpri);
+	let type = this.moret_reader.type_array.find(el => el.id === volume_mpri.id_type && el.id_modu === volume_mpri.id_modu);
+	let dx = type.parameters.dx;
+	let dy = type.parameters.dy;
+	let dz = type.parameters.dz;
+	let box_geometry = new THREE.BoxGeometry(dx, dy, dz);
+	let box_bsp = CSG.fromGeometry(box_geometry);
+
+	let mesh_mpri = this.mesh_tools.search_object(mpri_name, this.group_array);
+	let mesh_parent = mesh_mpri.parent;
+	let labeled_bsp_mother = this.labeled_bsp_array.find(labeled_bsp => labeled_bsp.name === mesh_parent.name)
+
+	let [nx, ny, nz] = [lattice.nx, lattice.ny, lattice.nz];
+	let [ix, iy, iz] = [0, 0, 0];
+	if (lattice.indp_array != undefined){
+		ix = lattice.indp_array[0];
+		iy = lattice.indp_array[1];
+		iz = lattice.indp_array[2];
+	}
+
+	for (let x_index = 0; x_index < nx; x_index++){
+		for (let y_index = 0; y_index < ny; y_index++){
+			for (let z_index = 0; z_index < nz; z_index++){				
+				let name_son = lattice.id_modu + " " + lattice.id_mpri + " " + String(x_index + ix) + " " + String(y_index + iy) + " " + String(z_index + iz);
+				let mesh_son = this.mesh_tools.search_object(name_son, this.group_array);			
+				if (mesh_son != undefined){
+					let vector_son = new THREE.Vector3();					
+					mesh_son.getWorldPosition(vector_son);					
+					let vector_parent = new THREE.Vector3();
+					mesh_son.parent.getWorldPosition(vector_parent);
+					vector_parent.sub(mesh_parent.position);
+					vector_son.sub(vector_parent);
+					this.bsp_substraction(vector_son, labeled_bsp_mother, box_bsp);						
+				}
 			}
 		}
-		var box_geometry = new THREE.BoxGeometry(nx*dx, ny*dy, nz*dz);	
-		let material = new THREE.MeshBasicMaterial({color: this.mesh_tools.getRandomColor()}); // inutile de mettre un matériau/couleur
-		var lattice_box = new THREE.Mesh( box_geometry, material);			
-		let maille_name = id_modu + " " + id_mpri;
-		var mesh_maille = this.mesh_tools.search_object(maille_name, this.group_array);
-		let parent_position = new THREE.Vector3();
-		mesh_maille.parent.getWorldPosition(parent_position);
-		//console.log('parent_position', parent_position);
-		let x_center = volume.x + (nx/2 - 1/2)*dx - parent_position.x;
-		let y_center = volume.y + (ny/2 - 1/2)*dy - parent_position.y;
-		let z_center = volume.z + (nz/2 - 1/2)*dz - parent_position.z;
+	}	
 
-		lattice_box.position.x = x_center;
-		lattice_box.position.y = y_center;
-		lattice_box.position.z = z_center;		
-		this.mesh_tools.container_geometrical_substraction(mesh_maille.parent, lattice_box);	
-	}
+	let processed_mesh = CSG.toMesh(labeled_bsp_mother.bsp, labeled_bsp_mother.matrix, labeled_bsp_mother.material);
+	mesh_parent.geometry = processed_mesh.geometry;
+	mesh_parent.updateMatrix();
+
 }
-
 
 
 

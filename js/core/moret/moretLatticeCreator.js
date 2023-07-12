@@ -5,6 +5,7 @@ class moretLatticeCreator{
 		this.mesh_tools = mesh_tools;
 		this.cut_manager = cut_manager;
 		this.group_array = group_array;
+		this.labeled_bsp_array = []; 
     }
 
 	create_lattices_first_module(){
@@ -40,6 +41,7 @@ class moretLatticeCreator{
 		let local_volu_array = this.moret_reader.volu_array.filter(el => el.id_modu === lattice.id_modu);
 		
 		let volume_mpri = this.moret_reader.volu_array.find(el => el.id === lattice.id_mpri && el.id_modu === lattice.id_modu ); // select volumes that are mpri.
+	
 
 		/*
 		let x_start = 0;
@@ -65,7 +67,10 @@ class moretLatticeCreator{
 							let volume_msec = local_volu_array.find(el => el.id === id_msec);		
 							mesh = this.clone_mesh(volume_msec, x_index, y_index, z_index);	
 						}	
-						this.mesh_creator.add_cell_to_its_container(volume_mpri, mesh);				
+						mesh.name = lattice.id_modu + " " + lattice.id_mpri + " " + String(x_index + ix) + " " + String(y_index + iy) + " " + String(z_index + iz);
+
+						this.mesh_creator.add_cell_to_its_container(volume_mpri, mesh);	
+						this.add_labeled_bsp(mesh);			
 						this.mesh_creator.mesh_array.push(mesh);
 					}						
 				}
@@ -313,9 +318,6 @@ class moretLatticeCreator{
 		y_obj = y_obj + y_index*dy;
 		z_obj = z_obj + z_index*dz;					
 		
-		mesh.name = id_modu + " " + id + " " + String(x_index+1) + " " + String(y_index+1);
-		//console.log("name:", id_modu + " " + id + " " + String(x_index+1) + " " + String(y_index+1));
-		//console.log("cellule combustible name :" + moret_latice_cell.name);
 		mesh.position.set(x_obj, y_obj, z_obj);
 		return mesh;
 	}
@@ -418,5 +420,15 @@ class moretLatticeCreator{
 		return false;
 	}
 
+	add_labeled_bsp(mesh){
+		let labeled_bsp = {
+			name: mesh.name,
+			bsp: CSG.fromMesh(mesh),
+			matrix: mesh.matrix, 
+			material: mesh.material,
+			is_hole: false,
+		};
+		this.labeled_bsp_array.push(labeled_bsp);
+	}
 
 }

@@ -60,7 +60,8 @@ v 90 12 07 23
 - moret : lattice reading and creation simplified
 - moret : disb reading added.
 - moret : create_one_lattice simplification
-- moret : lattice"s parent substraction moved to moretMeshTransformer.
+- moret : intersect_parents_lattice moved to moretMeshTransformer.
+- moret : improved intersect_parents_lattice
 
 v 89 11 07 23 
 - mesh z placement corrected
