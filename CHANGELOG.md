@@ -62,6 +62,7 @@ v 90 12 07 23
 - moret : create_one_lattice simplification
 - moret : intersect_parents_lattice moved to moretMeshTransformer.
 - moret : improved intersect_parents_lattice
+- moret : create_one_pattern_hex simplification
 
 v 89 11 07 23 
 - mesh z placement corrected

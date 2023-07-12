@@ -126,7 +126,6 @@ class moretLatticeCreator{
 		let id_mpri = lattice.id_mpri;
 		let nr = lattice.nr;
 		let nz = lattice.nz;
-		console.log("nz : ", nz);
 		
 		let local_volu_array = this.moret_reader.volu_array.filter(el => el.id_modu === id_modu);
 		let local_msec_array = this.moret_reader.msec_lattice_array.filter(el => el.id_modu === id_modu && el.id_mpri === id_mpri);		
@@ -276,25 +275,22 @@ class moretLatticeCreator{
 
 	create_one_pattern_hex(position_x, position_y, position_z, volume_mpri, hexagone, local_msec_array, local_volu_array, ix, iy, iz){
 		console.log("create_one_pattern_hex");
-		let [hex_index_x, hex_index_y, hex_index_z] = this.find_hex_index(position_x, position_y, position_z, 0, 0, 0, hexagone);
-		let [mpri_cell_to_create, id_msec] = this.check_type_lattice_cell(local_msec_array, hex_index_x+ix, hex_index_y+iy, hex_index_z+iz);
+		let [x_index, y_index, z_index] = this.find_hex_index(position_x, position_y, position_z, 0, 0, 0, hexagone);
+		let [mpri_cell_to_create, id_msec] = this.check_type_lattice_cell(local_msec_array, x_index+ix, y_index+iy, z_index+iz);
 		
 		let volume_msec = local_volu_array.find(el => el.id === id_msec);
 		
-		let mesh = this.choose_pattern_hex(position_x, position_y, position_z, mpri_cell_to_create, volume_mpri, volume_msec);
+		let mesh;
+		if (mpri_cell_to_create){
+			mesh = this.clone_hex_mesh(volume_mpri, position_x, position_y, position_z);
+		} else {			
+			mesh = this.clone_hex_mesh(volume_msec, position_x, position_y, position_z);	
+		}
+
 		this.mesh_creator.add_cell_to_its_container(volume_mpri, mesh);
 		this.mesh_creator.mesh_array.push(mesh);
 	}
 
-	choose_pattern_hex(x_index, y_index, z_index, mpri_cell_to_create, volume_mpri, volume_msec){
-		let mesh;
-		if (mpri_cell_to_create){
-			mesh = this.clone_hex_mesh(volume_mpri, x_index, y_index, z_index);
-		} else {			
-			mesh = this.clone_hex_mesh(volume_msec, x_index, y_index, z_index);	
-		}			
-		return mesh;
-	}
 
 	clone_mesh(volume, x_index, y_index, z_index){
 		//console.log("cloning mesh : ", volume);
