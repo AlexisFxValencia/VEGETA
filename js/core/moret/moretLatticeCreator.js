@@ -8,7 +8,7 @@ class moretLatticeCreator{
     }
 
 	create_lattices_first_module(){
-		console.log("create lattices of the first module");
+		console.log("creating the lattices of the first module");
 		for (let lattice of this.moret_reader.lattice_array){
 			if (lattice.id_modu == this.moret_reader.modu_array[0]){
 				this.create_one_lattice(lattice);
@@ -17,7 +17,7 @@ class moretLatticeCreator{
 	}
 		
 	create_lattices_secondary_modules(){
-		console.log("create lattices of other modules");
+		console.log("creating the lattices of other modules");
 		for (let lattice of this.moret_reader.lattice_array){
 			if (lattice.id_modu != this.moret_reader.modu_array[0]){
 				this.create_one_lattice(lattice);
