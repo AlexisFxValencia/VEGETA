@@ -8,7 +8,7 @@ class moretManager {
 		let mesh_tools = new meshTools();
 		this.mesh_creator = new moretMeshCreator(moret_reader, mesh_tools, cut_manager, this.group_array);
 		this.lattice_creator = new moretLatticeCreator(moret_reader, this.mesh_creator, mesh_tools, cut_manager, this.group_array);
-		this.mesh_transformer = new moretMeshTransformer(moret_reader, this.mesh_creator, mesh_tools, this.group_array);
+		this.mesh_transformer = new moretMeshTransformer(moret_reader, this.mesh_creator, this.lattice_creator, mesh_tools, this.group_array);
 		this.module_creator = new moretModuleCreator(moret_reader, this.mesh_creator, mesh_tools, this.group_array);
 	}
 
@@ -29,8 +29,8 @@ class moretManager {
 		
 
 		// SECONDARY MODULES CREATION (lattices included)		
-		this.lattice_creator.intersect_parents_lattice_secondary_modules();
 		this.lattice_creator.create_lattices_secondary_modules();
+		this.mesh_transformer.intersect_parents_lattice_secondary_modules();
 		
 		this.lattice_creator.create_lattices_secondary_modules_hex();
 		this.lattice_creator.remove_first_mpri_cell_secondary_modules();	
@@ -42,9 +42,10 @@ class moretManager {
 
 		//FIRST MODULE CREATION (lattices included)
 		this.module_creator.intersect_holes_first_module();
-		this.module_creator.add_module_to_its_hole_first_module();
-		this.lattice_creator.intersect_parents_lattice_first_module();		
+		this.module_creator.add_module_to_its_hole_first_module();		
+
 		this.lattice_creator.create_lattices_first_module();
+		this.mesh_transformer.intersect_parents_lattice_first_module();	
 		
 		this.lattice_creator.create_lattices_first_module_hex();
 		this.lattice_creator.remove_first_mpri_cell_first_module();				

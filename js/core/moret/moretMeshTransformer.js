@@ -1,7 +1,8 @@
 class moretMeshTransformer{
-	constructor(moret_reader, mesh_creator, mesh_tools, group_array){
+	constructor(moret_reader, mesh_creator, lattice_creator, mesh_tools, group_array){
 		this.moret_reader = moret_reader;
         this.mesh_creator = mesh_creator;
+		this.lattice_creator = lattice_creator;
 		this.mesh_tools = mesh_tools;
 		this.group_array = group_array;
 		this.labeled_bsp_array = []; 
@@ -209,5 +210,62 @@ update_geometries(){
 
 }
 
+
+
+intersect_parents_lattice(lattice){	
+	console.log("starting intersecting parent lattice");
+	let id_modu = lattice.id_modu;
+	let id_mpri = lattice.id_mpri;		
+	let nx = lattice.nx;
+	let ny = lattice.ny;
+	let nz = lattice.nz;		
+	let local_volu_array = this.moret_reader.volu_array.filter(el => el.id_modu === id_modu);
+	let volume = local_volu_array.find(el => el.id === id_mpri);
+	if (volume != undefined){
+		let [dx, dy, dz] = [0, 0, 0];			
+		for (let type of this.moret_reader.type_array){
+			if(volume.id_type == type.id){
+				dx = type.parameters.dx;
+				dy = type.parameters.dy;
+				dz = type.parameters.dz;
+			}
+		}
+		var box_geometry = new THREE.BoxGeometry(nx*dx, ny*dy, nz*dz);	
+		let material = new THREE.MeshBasicMaterial({color: this.mesh_tools.getRandomColor()}); // inutile de mettre un matériau/couleur
+		var lattice_box = new THREE.Mesh( box_geometry, material);			
+		let maille_name = id_modu + " " + id_mpri;
+		var mesh_maille = this.mesh_tools.search_object(maille_name, this.group_array);
+		let parent_position = new THREE.Vector3();
+		mesh_maille.parent.getWorldPosition(parent_position);
+		//console.log('parent_position', parent_position);
+		let x_center = volume.x + (nx/2 - 1/2)*dx - parent_position.x;
+		let y_center = volume.y + (ny/2 - 1/2)*dy - parent_position.y;
+		let z_center = volume.z + (nz/2 - 1/2)*dz - parent_position.z;
+
+		lattice_box.position.x = x_center;
+		lattice_box.position.y = y_center;
+		lattice_box.position.z = z_center;		
+		this.mesh_tools.container_geometrical_substraction(mesh_maille.parent, lattice_box);	
+	}
+}
+
+
+
+
+intersect_parents_lattice_first_module(){
+	for (let lattice of this.moret_reader.lattice_array){
+		if (lattice.id_modu == this.moret_reader.modu_array[0]){
+			this.intersect_parents_lattice(lattice);
+		}
+	}				
+}
+
+intersect_parents_lattice_secondary_modules(){
+	for (let lattice of this.moret_reader.lattice_array){
+		if (lattice.id_modu != this.moret_reader.modu_array[0]){
+			this.intersect_parents_lattice(lattice);
+		}
+	}			
+}
 
 }
