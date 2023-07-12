@@ -70,7 +70,6 @@ class moretLatticeCreator{
 						mesh.name = lattice.id_modu + " " + lattice.id_mpri + " " + String(x_index + ix) + " " + String(y_index + iy) + " " + String(z_index + iz);
 
 						this.mesh_creator.add_cell_to_its_container(volume_mpri, mesh);	
-						this.add_labeled_bsp(mesh);			
 						this.mesh_creator.mesh_array.push(mesh);
 					}						
 				}
@@ -400,17 +399,6 @@ class moretLatticeCreator{
 			}
 		}
 		return false;
-	}
-
-	add_labeled_bsp(mesh){
-		let labeled_bsp = {
-			name: mesh.name,
-			bsp: CSG.fromMesh(mesh),
-			matrix: mesh.matrix, 
-			material: mesh.material,
-			is_hole: false,
-		};
-		this.labeled_bsp_array.push(labeled_bsp);
 	}
 
 }
