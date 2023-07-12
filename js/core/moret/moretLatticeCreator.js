@@ -80,10 +80,7 @@ class moretLatticeCreator{
 	}
 
 	check_type_lattice_cell(local_msec_array, x_index, y_index, z_index){
-		console.log("local_msec_array", local_msec_array);
 		for (let msec of local_msec_array){
-			console.log(msec.coordinates);
-			console.log(x_index, y_index, z_index);
 			for (let coordinate of msec.coordinates){		
 				if (x_index == coordinate[0] &&  y_index == coordinate[1] && z_index == coordinate[2]){
 					return [false, msec.id_msec];
@@ -361,6 +358,7 @@ class moretLatticeCreator{
 		for (let volume of this.moret_reader.volu_array){
 			if (volume.id_modu == this.moret_reader.modu_array[0]){ //test for the name of the module
 				if (this.is_mpri(volume) == true){
+					console.log("remove mpri");
 					this.remove_mesh(volume);
 				}
 			}		
@@ -368,10 +366,11 @@ class moretLatticeCreator{
 	}
 
 	remove_first_mpri_cell_secondary_modules(){
-		console.log("remove first mpri cell of the first module");
+		console.log("remove first mpri cell of the other modules");
 		for (let volume of this.moret_reader.volu_array){
 			if (volume.id_modu != this.moret_reader.modu_array[0]){
-				if (this.is_msec(volume) == true){
+				if (this.is_mpri(volume) == true){
+					console.log("remove mpri");
 					this.remove_mesh(volume);
 				}
 			}		
@@ -401,8 +400,7 @@ class moretLatticeCreator{
 		console.log("remove first msec cell of the first module");
 		for (let volume of this.moret_reader.volu_array){
 			if (volume.id_modu == this.moret_reader.modu_array[0]){
-				//this.remove_first_msec_cell(volume);
-				if (this.is_mpri(volume) == true){
+				if (this.is_msec(volume) == true){
 					this.remove_mesh(volume);
 				}
 			}		
@@ -413,7 +411,6 @@ class moretLatticeCreator{
 		console.log("remove first msec cell of the first module");
 		for (let volume of this.moret_reader.volu_array){
 			if (volume.id_modu != this.moret_reader.modu_array[0]){
-				//this.remove_first_msec_cell(volume);
 				if (this.is_msec(volume) == true){
 					this.remove_mesh(volume);
 				}
