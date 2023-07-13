@@ -240,6 +240,11 @@ subtract_lattice_mesh(lattice){
 
 	let mesh_mpri = this.mesh_tools.search_object(mpri_name, this.group_array);
 	let mesh_parent = mesh_mpri.parent;
+
+	if (mesh_parent.geometry == undefined){ // if mesh_parent is not a mesh but a group
+		return;
+	}
+
 	let labeled_bsp_mother = this.labeled_bsp_array.find(labeled_bsp => labeled_bsp.name === mesh_parent.name)
 
 	let [nx, ny, nz] = [lattice.nx, lattice.ny, lattice.nz];
@@ -346,5 +351,70 @@ subtract_lattice_mesh_lattice_hex(lattice){
 	mesh_parent.updateMatrix();
 
 }
+
+
+intersect_lattice_with_its_container_first_module(){
+	for (let lattice of this.moret_reader.lattice_array){
+		if (lattice.id_modu == this.moret_reader.modu_array[0]){
+			if (lattice.nx < 0 || lattice.ny < 0 || lattice.nz < 0){
+				this.intersect_lattice_with_its_container(lattice);
+			}
+		}
+	}	
+}
+
+intersect_lattice_with_its_container_secondary_modules(){
+	for (let lattice of this.moret_reader.lattice_array){
+		if (lattice.id_modu != this.moret_reader.modu_array[0]){
+			if (lattice.nx < 0 || lattice.ny < 0 || lattice.nz < 0){
+				this.intersect_lattice_with_its_container(lattice);
+			}
+		}
+	}	
+}
+
+intersect_lattice_with_its_container(lattice){
+	console.log("intersect_lattice_with_its_container");
+	let mpri_name = lattice.id_modu + " " + lattice.id_mpri;
+	let mesh_mpri = this.mesh_tools.search_object(mpri_name, this.group_array);
+	let container_mesh = mesh_mpri.parent;
+	let container_labeled_bsp = this.labeled_bsp_array.find(labeled_bsp => labeled_bsp.name === container_mesh.name)
+
+	let [nx, ny, nz] = [lattice.nx, lattice.ny, lattice.nz];
+	let [ix, iy, iz] = [0, 0, 0];
+	if (lattice.indp_array != undefined){
+		ix = lattice.indp_array[0];
+		iy = lattice.indp_array[1];
+		iz = lattice.indp_array[2];
+	}
+	
+	for (let x_index = 0; x_index < nx; x_index++){
+		for (let y_index = 0; y_index < ny; y_index++){
+			for (let z_index = 0; z_index < nz; z_index++){ 
+				if (x_index+y_index+z_index != 0){ // Otherwise pb because first maille is subtracted from the container, so there is no intersection between the two.
+					let maille_name = lattice.id_modu + " " + lattice.id_mpri + " " + String(x_index + ix) + " " + String(y_index + iy) + " " + String(z_index + iz);
+					let maille_mesh = this.mesh_tools.search_object(maille_name, this.group_array);	
+					let maille_labeled_bsp = this.mesh_creator.search_labeled_bsp(maille_name, false);
+
+					if (maille_mesh != undefined){		
+						let maille_position = new THREE.Vector3(0.0, 0.0 ,0.0);
+						maille_mesh.getWorldPosition(maille_position);
+						//console.log(x_index, y_index,z_index);
+						//console.log(maille_position);
+						maille_position.sub(mesh_mpri.position);
+						maille_labeled_bsp.bsp.translate(maille_position.x, maille_position.y, maille_position.z);
+						maille_labeled_bsp.bsp = maille_labeled_bsp.bsp.intersect(container_labeled_bsp.bsp);
+						
+						let processed_mesh = CSG.toMesh(maille_labeled_bsp.bsp, maille_labeled_bsp.matrix, maille_labeled_bsp.material);
+						maille_mesh.geometry = processed_mesh.geometry;
+						maille_mesh.updateMatrix();
+					}
+				}
+			}
+		}
+	}	
+
+}
+
 
 }

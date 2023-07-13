@@ -5,7 +5,6 @@ class moretLatticeCreator{
 		this.mesh_tools = mesh_tools;
 		this.cut_manager = cut_manager;
 		this.group_array = group_array;
-		this.labeled_bsp_array = []; 
     }
 
 	create_lattices_first_module(){
@@ -42,7 +41,6 @@ class moretLatticeCreator{
 		
 		let volume_mpri = this.moret_reader.volu_array.find(el => el.id === lattice.id_mpri && el.id_modu === lattice.id_modu ); // select volumes that are mpri.
 	
-
 		/*
 		let x_start = 0;
 		let x_end = nx;
@@ -62,14 +60,31 @@ class moretLatticeCreator{
 						let [mpri_cell_to_create, id_msec] = this.check_type_lattice_cell(local_msec_array, x_index + ix, y_index + iy, z_index + iz);						
 						let mesh;
 						if (mpri_cell_to_create){
-							mesh = this.clone_mesh(volume_mpri, x_index, y_index, z_index);
+							mesh = this.clone_mesh(volume_mpri);
 						} else {	
 							let volume_msec = local_volu_array.find(el => el.id === id_msec);		
-							mesh = this.clone_mesh(volume_msec, x_index, y_index, z_index);	
+							mesh = this.clone_mesh(volume_msec);	
 						}	
 						mesh.name = lattice.id_modu + " " + lattice.id_mpri + " " + String(x_index + ix) + " " + String(y_index + iy) + " " + String(z_index + iz);
 
+						this.mesh_creator.add_labeled_bsp(mesh, false);
+
+						let type = this.moret_reader.type_array.find(el => el.id == volume_mpri.id_type && el.id_modu == volume_mpri.id_modu);
+						let dx = type.parameters.dx;
+						let dy = type.parameters.dy;
+						let dz = type.parameters.dz;
+						let [x_mpri, y_mpri, z_mpri] = this.mesh_creator.get_volume_relative_position(volume_mpri);
+						let x_obj = x_mpri + x_index*dx;
+						let y_obj = y_mpri + y_index*dy;
+						let z_obj = z_mpri + z_index*dz;					
+						mesh.position.set(x_obj, y_obj, z_obj);
+
 						this.mesh_creator.add_cell_to_its_container(volume_mpri, mesh);	
+						
+
+						mesh.updateMatrix();
+						
+						
 						this.mesh_creator.mesh_array.push(mesh);
 					}						
 				}
@@ -289,29 +304,11 @@ class moretLatticeCreator{
 	}
 
 
-	clone_mesh(volume, x_index, y_index, z_index){
-		//console.log("cloning mesh : ", volume);
-		let type = this.moret_reader.type_array.find(el => el.id == volume.id_type && el.id_modu == volume.id_modu);
-		let [x_obj, y_obj, z_obj] = this.mesh_creator.get_volume_relative_position(volume);
-		let id_modu = volume.id_modu;
-		let id = volume.id;
-		let model_mesh = this.mesh_tools.search_object(id_modu + " " + id, this.group_array);
-		//console.log("model_volume", model_volume);
+	clone_mesh(volume){
+		let model_mesh = this.mesh_tools.search_object(volume.id_modu + " " + volume.id, this.group_array);
 		let mesh = model_mesh.clone(true);
-		mesh.material = model_mesh.material.clone();	
+		mesh.material = model_mesh.material.clone();			
 		mesh.material.clippingPlanes = [ this.cut_manager.x_plane, this.cut_manager.y_plane, this.cut_manager.z_plane ];
-		
-		// A RAJOUTER POUR DES COULEURS ALEATOIRES / NE PAS SUPPRIMER						
-		//moret_latice_cell.material.color.setHex(Math.random() * 0xffffff );				
-		let dx = type.parameters.dx;
-		let dy = type.parameters.dy;
-		let dz = type.parameters.dz;
-
-		x_obj = x_obj + x_index*dx;
-		y_obj = y_obj + y_index*dy;
-		z_obj = z_obj + z_index*dz;					
-		
-		mesh.position.set(x_obj, y_obj, z_obj);
 		return mesh;
 	}
 
