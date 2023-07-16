@@ -356,9 +356,9 @@ subtract_lattice_mesh_lattice_hex(lattice){
 intersect_lattice_with_its_container_first_module(){
 	for (let lattice of this.moret_reader.lattice_array){
 		if (lattice.id_modu == this.moret_reader.modu_array[0]){
-			if (lattice.nx < 0 || lattice.ny < 0 || lattice.nz < 0){
+			//if (lattice.nx < 0 || lattice.ny < 0 || lattice.nz < 0){
 				this.intersect_lattice_with_its_container(lattice);
-			}
+			//}
 		}
 	}	
 }
@@ -366,9 +366,9 @@ intersect_lattice_with_its_container_first_module(){
 intersect_lattice_with_its_container_secondary_modules(){
 	for (let lattice of this.moret_reader.lattice_array){
 		if (lattice.id_modu != this.moret_reader.modu_array[0]){
-			if (lattice.nx < 0 || lattice.ny < 0 || lattice.nz < 0){
+			//if (lattice.nx < 0 || lattice.ny < 0 || lattice.nz < 0){
 				this.intersect_lattice_with_its_container(lattice);
-			}
+			//}
 		}
 	}	
 }
@@ -388,6 +388,7 @@ intersect_lattice_with_its_container(lattice){
 		iz = lattice.indp_array[2];
 	}
 	
+
 	for (let x_index = 0; x_index < nx; x_index++){
 		for (let y_index = 0; y_index < ny; y_index++){
 			for (let z_index = 0; z_index < nz; z_index++){ 
@@ -408,7 +409,59 @@ intersect_lattice_with_its_container(lattice){
 						let processed_mesh = CSG.toMesh(maille_labeled_bsp.bsp, maille_labeled_bsp.matrix, maille_labeled_bsp.material);
 						maille_mesh.geometry = processed_mesh.geometry;
 						maille_mesh.updateMatrix();
+
+						if (maille_labeled_bsp.bsp.polygons.length == 0){
+							for (let child of maille_mesh.children){
+								child.removeFromParent();
+							}
+							
+						} else{
+							
+							if (maille_mesh.children != undefined){
+								maille_mesh.children[0].traverse( function(child_mesh) {
+									//let child_mesh = maille_mesh.children[0];
+			
+									let child_position = new THREE.Vector3(0.0, 0.0 ,0.0);
+									child_mesh.getWorldPosition(child_position);
+									console.log(child_mesh.name, " child_position :", child_position);
+									
+									let child_bsp = CSG.fromMesh(child_mesh)
+									child_bsp.translate(child_position.x, child_position.y, child_position.z);
+									
+									child_bsp = child_bsp.intersect(container_labeled_bsp.bsp);
+									//child_bsp.translate(-child_position.x, -child_position.y, -child_position.z);
+									
+									let processed_child_mesh = CSG.toMesh(child_bsp, child_mesh.matrix, child_mesh.material);
+									child_mesh.geometry = processed_child_mesh.geometry;
+									
+									//console.log(child_mesh.name, " child_mesh.position :", child_mesh.position);
+									
+									child_mesh.position.set(-child_position.x, -child_position.y, -child_position.z);
+									
+									/*
+									child_mesh.traverse( function(child) {
+										child.position.set(child_position.x, child_position.y, child_position.z);
+									});
+									*/
+
+									child_mesh.updateMatrix();
+
+									
+									
+									
+									
+									
+								
+								})
+							}
+							
+							
+						}
 					}
+
+					
+					
+					
 				}
 			}
 		}

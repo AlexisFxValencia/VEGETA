@@ -1,0 +1,39 @@
+  GEOM
+    MODU 0 
+      TYPE 1 BOIT 21.75 21.75 50.0 
+      TYPE 2 BOIT 11.75 11.75 50.0 
+      TYPE 3 BOIT 11.25 11.25 50.0 
+      TYPE 4 BOIT 0.63 0.63 50.0 
+      TYPE 5 CYLZ 0.475 50.0 
+      TYPE 6 CYLZ 0.418 50.0 
+      TYPE 7 CYLZ 0.4096 50.0 
+
+      * Volume : reflecteur_eau (LATEC name)  
+      VOLU reflecteur_eau 0 1 water 0.0 0.0 0.0 
+
+      * Volume : alveole_ext (LATEC name)  
+      VOLU alveole_ext reflecteur_eau 2 steel 0.0 0.0 0.0 
+
+      * Volume : alveole_int (LATEC name)  
+      VOLU alveole_int alveole_ext 3 water 0.0 0.0 0.0 
+
+      * Volume : maille_combustible (LATEC name)  
+      VOLU maille_combustible alveole_int 4 water -8.910000000000001 -9.540000000000001 0.0 
+
+      * Volume : gaine (LATEC name)  
+      VOLU gaine maille_combustible 5 alliageM5 -8.910000000000001 -9.540000000000001 0.0 
+
+      * Volume : gaine_int (LATEC name)  
+      VOLU gaine_int gaine 6 vide -8.910000000000001 -9.540000000000001 0.0 
+
+      * Volume : pastille (LATEC name)  
+      VOLU pastille gaine_int 7 fuel -8.910000000000001 -9.540000000000001 0.0 
+
+      RESC
+        MPRI maille_combustible 
+        DIMR 20 20 1.0 
+        INDP 1 1 1 
+      FINR
+    FINM
+  FING
+
