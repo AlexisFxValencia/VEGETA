@@ -41,19 +41,28 @@ class moretLatticeCreator{
 		
 		let volume_mpri = this.moret_reader.volu_array.find(el => el.id === lattice.id_mpri && el.id_modu === lattice.id_modu ); // select volumes that are mpri.
 	
-		/*
-		let x_start = 0;
-		let x_end = nx;
-		if (nx == -1){
-			//trouver parent du reseau
-			//coordonnée max et min en x. bounding box ?
+		
+		let [x_start, x_end, y_start, y_end, z_start, z_end] = this.compute_nx_ny_nz_infinite_lattice(volume_mpri, nx, ny, nz);
 
+		if (nx < 0){
+			let container_volu = this.moret_reader.volu_array.find(el => el.id_modu === volume_mpri.id_modu && el.id === volume_mpri.id_cont);
+			let type_mpri = this.moret_reader.type_array.find(el => el.id == volume_mpri.id_type && el.id_modu == volume_mpri.id_modu);
+			let type_container = this.moret_reader.type_array.find(el => el.id == container_volu.id_type && el.id_modu == container_volu.id_modu);
+			
+			if (type_container.shape == "BOX" && type_mpri.shape == "BOX"){
+				let N = Math.floor(type_container.parameters.dx/type_mpri.parameters.dx)+1;
+				x_start = -N;
+				x_end = N;
+			}
 		}
-		*/
 
-		for (let x_index = 0; x_index < nx; x_index++){
-			for (let y_index = 0; y_index < ny; y_index++){
-				for (let z_index = 0; z_index < nz; z_index++){					
+		
+
+
+
+		for (let x_index = x_start; x_index < x_end; x_index++){
+			for (let y_index = y_start; y_index < y_end; y_index++){
+				for (let z_index = z_start; z_index < z_end; z_index++){					
 					if (local_dism_array != undefined && this.is_dism_cell(local_dism_array.coordinates, x_index + ix, y_index + iy, z_index + iz)){
 						console.log(" not creating the dism cell mesh : ", x_index, y_index, z_index);
 					} else{							
@@ -90,6 +99,81 @@ class moretLatticeCreator{
 				}
 			}
 		}
+	}
+
+	compute_nx_ny_nz_infinite_lattice(volume_mpri, nx, ny, nz){
+		let x_start = 0;
+		let x_end = nx;
+		let y_start = 0;
+		let y_end = ny;
+		let z_start = 0;
+		let z_end = nz;
+		
+		if (nx < 0 || ny < 0 || nz < 0){
+			let container_volu = this.moret_reader.volu_array.find(el => el.id_modu === volume_mpri.id_modu && el.id === volume_mpri.id_cont);
+			let type_mpri = this.moret_reader.type_array.find(el => el.id == volume_mpri.id_type && el.id_modu == volume_mpri.id_modu);
+			let type_container = this.moret_reader.type_array.find(el => el.id == container_volu.id_type && el.id_modu == container_volu.id_modu);
+			
+			
+			if (type_container.shape == "BOX" && type_mpri.shape == "BOX"){
+				if (nx < 0){
+					let Nx = Math.floor(type_container.parameters.dx/type_mpri.parameters.dx)+1;
+					x_start = -Nx;
+					x_end = Nx;
+				}
+				if (ny < 0){
+					let Ny = Math.floor(type_container.parameters.dy/type_mpri.parameters.dy)+1;
+					y_start = -Ny;
+					y_end = Ny;
+				}
+				if (nz < 0){
+					let Nz = Math.floor(type_container.parameters.dz/type_mpri.parameters.dz)+1;
+					z_start = -Nz;
+					z_end = Nz;
+				}
+			}
+			
+			
+			/*
+			if (nx < 0){
+				let container_volu = this.moret_reader.volu_array.find(el => el.id_modu === volume_mpri.id_modu && el.id === volume_mpri.id_cont);
+				let type_mpri = this.moret_reader.type_array.find(el => el.id == volume_mpri.id_type && el.id_modu == volume_mpri.id_modu);
+				let type_container = this.moret_reader.type_array.find(el => el.id == container_volu.id_type && el.id_modu == container_volu.id_modu);
+				
+				if (type_container.shape == "BOX" && type_mpri.shape == "BOX"){
+					let N = Math.floor(type_container.parameters.dx/type_mpri.parameters.dx)+1;
+					x_start = -N;
+					x_end = N;
+				}
+			}
+
+			if (ny < 0){
+				let container_volu = this.moret_reader.volu_array.find(el => el.id_modu === volume_mpri.id_modu && el.id === volume_mpri.id_cont);
+				let type_mpri = this.moret_reader.type_array.find(el => el.id == volume_mpri.id_type && el.id_modu == volume_mpri.id_modu);
+				let type_container = this.moret_reader.type_array.find(el => el.id == container_volu.id_type && el.id_modu == container_volu.id_modu);
+				
+				if (type_container.shape == "BOX" && type_mpri.shape == "BOX"){
+					let N = Math.floor(type_container.parameters.dy/type_mpri.parameters.dy)+1;
+					y_start = -N;
+					y_end = N;
+				}
+			}
+
+			if (nz < 0){
+				let container_volu = this.moret_reader.volu_array.find(el => el.id_modu === volume_mpri.id_modu && el.id === volume_mpri.id_cont);
+				let type_mpri = this.moret_reader.type_array.find(el => el.id == volume_mpri.id_type && el.id_modu == volume_mpri.id_modu);
+				let type_container = this.moret_reader.type_array.find(el => el.id == container_volu.id_type && el.id_modu == container_volu.id_modu);
+				
+				if (type_container.shape == "BOX" && type_mpri.shape == "BOX"){
+					let N = Math.floor(type_container.parameters.dz/type_mpri.parameters.dz)+1;
+					z_start = -N;
+					z_end = N;
+				}
+			}
+			*/
+		}
+		return [x_start, x_end, y_start, y_end, z_start, z_end];
+		
 	}
 
 	is_dism_cell(dism_coordinates, x_index, y_index, z_index){

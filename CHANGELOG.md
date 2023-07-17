@@ -57,6 +57,7 @@ voir si plusieurs MSEC dans un lattice est reconnu par VEGETA
 
 v92 17 07 23
 - improved intersect_lattice_with_its_container
+- compute_nx_ny_nz_infinite_lattice created
 
 
 v91 13 07 23
