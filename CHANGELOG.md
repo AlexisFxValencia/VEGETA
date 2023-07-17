@@ -55,6 +55,10 @@ voir si on peut pas modifier les coupes par des intersection par une boite.
 
 voir si plusieurs MSEC dans un lattice est reconnu par VEGETA
 
+v92 17 07 23
+- improved intersect_lattice_with_its_container
+
+
 v91 13 07 23
 - moretLatticeCreator restructured
 - new function in moretMeshTransformer : intersect_lattice_with_its_container

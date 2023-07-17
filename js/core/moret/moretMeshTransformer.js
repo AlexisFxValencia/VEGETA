@@ -378,7 +378,6 @@ intersect_lattice_with_its_container(lattice){
 	let mpri_name = lattice.id_modu + " " + lattice.id_mpri;
 	let mesh_mpri = this.mesh_tools.search_object(mpri_name, this.group_array);
 	let container_mesh = mesh_mpri.parent;
-	let container_labeled_bsp = this.labeled_bsp_array.find(labeled_bsp => labeled_bsp.name === container_mesh.name)
 
 	let [nx, ny, nz] = [lattice.nx, lattice.ny, lattice.nz];
 	let [ix, iy, iz] = [0, 0, 0];
@@ -388,6 +387,7 @@ intersect_lattice_with_its_container(lattice){
 		iz = lattice.indp_array[2];
 	}
 	
+	let container_bsp = CSG.fromMesh(container_mesh);
 
 	for (let x_index = 0; x_index < nx; x_index++){
 		for (let y_index = 0; y_index < ny; y_index++){
@@ -400,62 +400,34 @@ intersect_lattice_with_its_container(lattice){
 					if (maille_mesh != undefined){		
 						let maille_position = new THREE.Vector3(0.0, 0.0 ,0.0);
 						maille_mesh.getWorldPosition(maille_position);
-						//console.log(x_index, y_index,z_index);
-						//console.log(maille_position);
 						maille_position.sub(mesh_mpri.position);
 						maille_labeled_bsp.bsp.translate(maille_position.x, maille_position.y, maille_position.z);
-						maille_labeled_bsp.bsp = maille_labeled_bsp.bsp.intersect(container_labeled_bsp.bsp);
-						
+						maille_labeled_bsp.bsp = maille_labeled_bsp.bsp.intersect(container_bsp);
+
 						let processed_mesh = CSG.toMesh(maille_labeled_bsp.bsp, maille_labeled_bsp.matrix, maille_labeled_bsp.material);
 						maille_mesh.geometry = processed_mesh.geometry;
 						maille_mesh.updateMatrix();
 
-						if (maille_labeled_bsp.bsp.polygons.length == 0){
+						if (maille_labeled_bsp.bsp.polygons.length == 0){ //no intersection remaining so remove the children (don't loose time)
 							for (let child of maille_mesh.children){
 								child.removeFromParent();
-							}
-							
-						} else{
-							
-							if (maille_mesh.children != undefined){
-								maille_mesh.children[0].traverse( function(child_mesh) {
-									//let child_mesh = maille_mesh.children[0];
-			
+							}							
+						} else if (maille_mesh.children != undefined){ // compute the intersection of the container with the children.
+								maille_mesh.children[0].traverse( function(child_mesh) {			
 									let child_position = new THREE.Vector3(0.0, 0.0 ,0.0);
-									child_mesh.getWorldPosition(child_position);
-									console.log(child_mesh.name, " child_position :", child_position);
+									child_mesh.getWorldPosition(child_position);									
+									let child_bsp = CSG.fromMesh(child_mesh);							
 									
-									let child_bsp = CSG.fromMesh(child_mesh)
-									child_bsp.translate(child_position.x, child_position.y, child_position.z);
-									
-									child_bsp = child_bsp.intersect(container_labeled_bsp.bsp);
-									//child_bsp.translate(-child_position.x, -child_position.y, -child_position.z);
-									
+									container_bsp.translate(-child_position.x, -child_position.y, -child_position.z);
+									child_bsp = child_bsp.intersect(container_bsp);
+									container_bsp.translate(child_position.x, child_position.y, child_position.z);
+													
 									let processed_child_mesh = CSG.toMesh(child_bsp, child_mesh.matrix, child_mesh.material);
 									child_mesh.geometry = processed_child_mesh.geometry;
-									
-									//console.log(child_mesh.name, " child_mesh.position :", child_mesh.position);
-									
-									child_mesh.position.set(-child_position.x, -child_position.y, -child_position.z);
-									
-									/*
-									child_mesh.traverse( function(child) {
-										child.position.set(child_position.x, child_position.y, child_position.z);
-									});
-									*/
-
 									child_mesh.updateMatrix();
-
-									
-									
-									
-									
-									
-								
 								})
+								
 							}
-							
-							
 						}
 					}
 
@@ -470,4 +442,3 @@ intersect_lattice_with_its_container(lattice){
 }
 
 
-}
