@@ -34,9 +34,9 @@ class moretManager {
 		
 		this.mesh_transformer.intersect_lattice_with_its_container_secondary_modules();
 		
-		//this.mesh_transformer.subtract_lattice_meshes_secondary_modules();		
+		this.mesh_transformer.subtract_lattice_meshes_secondary_modules();		
 		this.lattice_creator.create_lattices_secondary_modules_hex();
-		//this.mesh_transformer.subtract_lattice_meshes_secondary_modules_hex();
+		this.mesh_transformer.subtract_lattice_meshes_secondary_modules_hex();
 		this.lattice_creator.remove_first_mpri_cell_secondary_modules();	
 		this.lattice_creator.remove_first_msec_cell_secondary_modules();	
 		
@@ -54,9 +54,9 @@ class moretManager {
 
 		this.mesh_transformer.intersect_lattice_with_its_container_first_module();
 
-		//this.mesh_transformer.subtract_lattice_meshes_first_module();			
+		this.mesh_transformer.subtract_lattice_meshes_first_module();			
 		this.lattice_creator.create_lattices_first_module_hex();
-		//this.mesh_transformer.subtract_lattice_meshes_first_module_hex();
+		this.mesh_transformer.subtract_lattice_meshes_first_module_hex();
 
 		this.lattice_creator.remove_first_mpri_cell_first_module();				
 		this.lattice_creator.remove_first_msec_cell_first_module();		

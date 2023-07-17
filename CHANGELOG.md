@@ -55,9 +55,12 @@ voir si on peut pas modifier les coupes par des intersection par une boite.
 
 voir si plusieurs MSEC dans un lattice est reconnu par VEGETA
 
+inifnite lattice : gérer les conteneurs sphères. gérer l'intersection du conteneur par ses fils.
+
 v92 17 07 23
 - improved intersect_lattice_with_its_container
 - compute_nx_ny_nz_infinite_lattice created
+- Ok for infinite lattice ( Box or Z-Cylinder container)
 
 
 v91 13 07 23
