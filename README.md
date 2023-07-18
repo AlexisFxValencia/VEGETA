@@ -12,6 +12,7 @@ The test files are in the input_files_public folder.
 
 ##Examples of MORET Geometries : 
 ![ecran](https://github.com/AlexisFxValencia/VEGETA/assets/84465552/ee77d077-1a23-45cc-8601-27bcea6ec252)
+![EC_REP](https://github.com/AlexisFxValencia/VEGETA/assets/84465552/2cf11690-84f7-442f-940d-902cd67354fd)
 
 ![cylindre_reseau_infini](https://github.com/AlexisFxValencia/VEGETA/assets/84465552/648c0c70-c40a-4a98-bdf9-aaa1991eeff8)
 
