@@ -57,10 +57,12 @@ voir si plusieurs MSEC dans un lattice est reconnu par VEGETA
 
 inifnite lattice : gérer les conteneurs sphères. gérer l'intersection du conteneur par ses fils.
 
+maille secondaire aussi
 
 v93 18 07 23
 - MORET infinite lattice : remove the surplus of lattice meshes when intersecting with the container. 
 - corrected infinite lattice container subtraction
+- Ok for infinite lattice when Spherical container
 
 
 v92 17 07 23

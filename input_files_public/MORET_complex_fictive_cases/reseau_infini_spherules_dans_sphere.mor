@@ -1,0 +1,22 @@
+
+MODU 0
+TYPE 1 SPHE 20
+VOLU conteneur 0 1 EAU 0.0 0.0 0.0
+
+ 
+
+TYPE 2 BOX 5 5 5
+VOLU maille conteneur 2 ACIER 0.0 0.0 0.0
+
+ 
+
+TYPE 3 SPHE 3
+VOLU pastille maille 3 URANIUM 0.0 0.0 0.0
+FINM
+
+ 
+
+LATS
+MPRI maille
+DIML -1 -1 -1
+ENDL
