@@ -60,6 +60,7 @@ inifnite lattice : gérer les conteneurs sphères. gérer l'intersection du cont
 
 v93 18 07 23
 - MORET infinite lattice : remove the surplus of lattice meshes when intersecting with the container. 
+- corrected infinite lattice container subtraction
 
 
 v92 17 07 23

@@ -259,6 +259,7 @@ subtract_lattice_mesh(lattice){
 
 	
 	let [nx, ny, nz] = [lattice.nx, lattice.ny, lattice.nz];
+	
 	if (nx > 0 && ny > 0 && nz > 0){
 		console.log(mesh_mpri);
 		console.log(mesh_parent);
@@ -277,9 +278,23 @@ subtract_lattice_mesh(lattice){
 		mesh_parent.geometry = processed_mesh.geometry;
 		mesh_parent.updateMatrix();
 
-	} else{
-		// à compléter pour les réseaux infinis.
+	} else{// for infinite lattices.
+		for (let mesh_son of mesh_mpri.parent.children){
+			let vector_son = new THREE.Vector3();					
+			mesh_son.getWorldPosition(vector_son);					
+			let vector_parent = new THREE.Vector3();
+			mesh_son.parent.getWorldPosition(vector_parent);
+			vector_parent.sub(mesh_parent.position);
+			//vector_son.sub(vector_parent);
+			this.bsp_substraction(vector_son, labeled_bsp_mother, box_bsp);	
+		}
+
+		let processed_mesh = CSG.toMesh(labeled_bsp_mother.bsp, labeled_bsp_mother.matrix, labeled_bsp_mother.material);
+		mesh_parent.geometry = processed_mesh.geometry;
+		mesh_parent.updateMatrix();
 	}
+	
+	
 }
 
 subtract_lattice_meshes_first_module_hex(){
@@ -429,22 +444,13 @@ intersect_lattice_with_its_container(lattice){
 					let processed_child_mesh = CSG.toMesh(child_bsp, child_mesh.matrix, child_mesh.material);
 					child_mesh.geometry = processed_child_mesh.geometry;
 					child_mesh.updateMatrix();
-				});
+					});
+				}						
+					
 			}
-								
 				
-			}
-			
 		}
-	}
-	
-	/*
-	const children = container_mesh.children.slice();
-	for (let child of children){
-		child.removeFromParent();
-	}
-	*/
-	
+	}	
 }
 
 }
