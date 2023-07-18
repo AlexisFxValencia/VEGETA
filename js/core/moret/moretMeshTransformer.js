@@ -388,13 +388,14 @@ intersect_lattice_with_its_container(lattice){
 		iy = lattice.indp_array[1];
 		iz = lattice.indp_array[2];
 	}
-	
-	for (let maille_mesh of mesh_mpri.parent.children){	
+	//console.log(mesh_mpri.parent.children);
+	const children = container_mesh.children.slice();
+	for (let maille_mesh of children){	
 		// skip the first maille
 		if (maille_mesh.name == lattice.id_modu + " " + lattice.id_mpri + " " + String(ix) + " " + String(iy) + " " + String(iz)){
 			continue;
 		}
-
+		
 		if (maille_mesh != undefined){		
 			let maille_position = new THREE.Vector3(0.0, 0.0 ,0.0);
 			maille_mesh.getWorldPosition(maille_position);
@@ -407,16 +408,16 @@ intersect_lattice_with_its_container(lattice){
 			container_bsp.translate(maille_position.x, maille_position.y, maille_position.z);
 
 			let processed_mesh = CSG.toMesh(processed_bsp, maille_mesh.matrix, maille_mesh.material);
-			maille_mesh.geometry = processed_mesh.geometry;
-			
 			
 			if (processed_bsp.polygons.length == 0){ //no intersection remaining so remove the children (don't loose time)
-				for (let child of maille_mesh.children){
-					child.removeFromParent();
-				}						
-			} else if (maille_mesh.children.length != 0){ // compute the intersection of the container with the children.
-				
-				maille_mesh.children[0].traverse( function(child_mesh) {			
+				if (maille_mesh.name != lattice.id_modu + " " + lattice.id_mpri){
+					 maille_mesh.removeFromParent();
+				}
+			} else {
+				maille_mesh.geometry = processed_mesh.geometry;
+
+				if (maille_mesh.children.length != 0){ // compute the intersection of the container with the children.
+					maille_mesh.children[0].traverse( function(child_mesh) {			
 					let child_position = new THREE.Vector3(0.0, 0.0 ,0.0);
 					child_mesh.getWorldPosition(child_position);									
 					let child_bsp = CSG.fromMesh(child_mesh);							
@@ -429,13 +430,21 @@ intersect_lattice_with_its_container(lattice){
 					child_mesh.geometry = processed_child_mesh.geometry;
 					child_mesh.updateMatrix();
 				});
+			}
 								
 				
 			}
 			
 		}
 	}
-
+	
+	/*
+	const children = container_mesh.children.slice();
+	for (let child of children){
+		child.removeFromParent();
+	}
+	*/
+	
 }
 
 }

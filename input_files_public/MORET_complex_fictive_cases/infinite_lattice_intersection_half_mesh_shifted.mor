@@ -31,7 +31,7 @@
 
       RESC
         MPRI maille_combustible 
-        DIMR 20 20 1.0 
+        DIMR -1 -1 1.0 
         INDP 1 1 1 
       FINR
     FINM

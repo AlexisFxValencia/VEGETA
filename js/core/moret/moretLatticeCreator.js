@@ -60,7 +60,7 @@ class moretLatticeCreator{
 							mesh = this.clone_mesh(volume_msec);	
 						}	
 						mesh.name = lattice.id_modu + " " + lattice.id_mpri + " " + String(x_index + ix) + " " + String(y_index + iy) + " " + String(z_index + iz);
-
+						
 						this.mesh_creator.add_labeled_bsp(mesh, false);
 
 						let type = this.moret_reader.type_array.find(el => el.id == volume_mpri.id_type && el.id_modu == volume_mpri.id_modu);
@@ -72,18 +72,15 @@ class moretLatticeCreator{
 						let y_obj = y_mpri + y_index*dy;
 						let z_obj = z_mpri + z_index*dz;					
 						mesh.position.set(x_obj, y_obj, z_obj);
-
-						this.mesh_creator.add_cell_to_its_container(volume_mpri, mesh);	
-						
-
 						mesh.updateMatrix();
+
+						this.mesh_creator.add_cell_to_its_container(volume_mpri, mesh);
 						
-						
-						this.mesh_creator.mesh_array.push(mesh);
+						this.mesh_creator.mesh_array.push(mesh);						
 					}						
 				}
 			}
-		}
+		}	
 	}
 
 	compute_nx_ny_nz_infinite_lattice(volume_mpri, nx, ny, nz){

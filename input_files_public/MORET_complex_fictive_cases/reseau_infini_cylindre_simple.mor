@@ -1,0 +1,23 @@
+EOM
+MODU 0
+TYPE 1 CYLZ 20 50
+VOLU conteneur 0 1 EAU 0.0 0.0 0.0
+
+ 
+
+TYPE 2 BOX 5 5 50
+VOLU maille conteneur 2 ACIER 3.0 3.0 0.0
+
+ 
+
+TYPE 3 CYLZ 3 50
+VOLU pastille maille 3 URANIUM 3.0 3.0 0.0
+FINM
+
+ 
+
+LATS
+MPRI maille
+DIML -1 -1 1
+ENDL
+FING

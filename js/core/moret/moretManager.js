@@ -63,7 +63,7 @@ class moretManager {
 		
 			
 		
-		console.log(this.group_array);
+		console.log("this.group_array : ",this.group_array);
 		this.scene_manager.scene.add(this.group_array[0]);
 		//scene_manager.scene.add(this.group_array[1]);
 		//console.log('\nGRAPH SCENE');
