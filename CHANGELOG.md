@@ -57,8 +57,10 @@ voir si plusieurs MSEC dans un lattice est reconnu par VEGETA
 
 
 
-resoudre pb coupes + clavier
+resoudre pb coupes + clavier;
 
+
+bouton pour regénérer les couleurs sans tout recharger.
 
 v93 18 07 23
 - MORET infinite lattice : remove the surplus of lattice meshes when intersecting with the container. 
