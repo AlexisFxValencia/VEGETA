@@ -55,9 +55,10 @@ voir si on peut pas modifier les coupes par des intersection par une boite.
 
 voir si plusieurs MSEC dans un lattice est reconnu par VEGETA
 
-inifnite lattice : gérer les conteneurs sphères. gérer l'intersection du conteneur par ses fils.
 
-maille secondaire aussi
+
+resoudre pb coupes + clavier
+
 
 v93 18 07 23
 - MORET infinite lattice : remove the surplus of lattice meshes when intersecting with the container. 
