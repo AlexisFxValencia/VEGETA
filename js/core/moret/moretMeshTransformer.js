@@ -148,7 +148,9 @@ get_position_to_add(mesh){
 
 intersect_parents(){
 	console.log("starting intersecting parents");
-	for (let volume of this.moret_reader.volu_array){		
+	for (let volume of this.moret_reader.volu_array){	
+		
+		
 		let name = volume.id_modu + " " + volume.id;
 		//let group = this.group_array.find(group => group.name = volume.id_modu);
 		//let mesh_son = group.getObjectByName(name);
@@ -167,8 +169,10 @@ intersect_parents(){
 				if (labeled_bsp_mother == undefined){
 					this.add_labeled_bsp(mesh_son.parent);
 					labeled_bsp_mother = this.labeled_bsp_array.find(labeled_bsp => labeled_bsp.name === mesh_son.parent.name);
-				}								
-				this.bsp_substraction(vector_son, labeled_bsp_mother, labeled_bsp_son.bsp);
+				}		
+				if (!this.lattice_creator.is_mpri(volume)){						
+					this.bsp_substraction(vector_son, labeled_bsp_mother, labeled_bsp_son.bsp);
+				}
 			}	
 		}	
 			
@@ -403,15 +407,10 @@ intersect_lattice_with_its_container(lattice){
 		iy = lattice.indp_array[1];
 		iz = lattice.indp_array[2];
 	}
-	//console.log(mesh_mpri.parent.children);
+
 	const children = container_mesh.children.slice();
-	for (let maille_mesh of children){	
-		// skip the first maille
-		if (maille_mesh.name == lattice.id_modu + " " + lattice.id_mpri + " " + String(ix) + " " + String(iy) + " " + String(iz)){
-			continue;
-		}
-		
-		if (maille_mesh != undefined){		
+	for (let maille_mesh of children){			
+		if (maille_mesh != undefined ){				
 			let maille_position = new THREE.Vector3(0.0, 0.0 ,0.0);
 			maille_mesh.getWorldPosition(maille_position);
 			maille_position.sub(maille_mesh.position);
@@ -426,7 +425,10 @@ intersect_lattice_with_its_container(lattice){
 			
 			if (processed_bsp.polygons.length == 0){ //no intersection remaining so remove the children (don't loose time)
 				if (maille_mesh.name != lattice.id_modu + " " + lattice.id_mpri){
-					 maille_mesh.removeFromParent();
+					if (maille_mesh.name != lattice.id_modu + " " + lattice.id_mpri + " " + String(ix) + " " + String(iy) + " " + String(iz)){
+						maille_mesh.removeFromParent();
+					}
+						
 				}
 			} else {
 				maille_mesh.geometry = processed_mesh.geometry;

@@ -127,6 +127,24 @@ class moretLatticeCreator{
 					y_end = Ny;
 				}
 				if (nz < 0){
+					let Nz = Math.floor(2*type_container.parameters.height/type_mpri.parameters.dz)+1;
+					z_start = -Nz;
+					z_end = Nz;
+				}
+			}
+
+			if (type_container.shape == "SPHE"){
+				if (nx < 0){
+					let Nx = Math.floor(2*type_container.parameters.radius/type_mpri.parameters.dx)+1;
+					x_start = -Nx;
+					x_end = Nx;
+				}
+				if (ny < 0){
+					let Ny = Math.floor(2*type_container.parameters.radius/type_mpri.parameters.dy)+1;
+					y_start = -Ny;
+					y_end = Ny;
+				}
+				if (nz < 0){
 					let Nz = Math.floor(2*type_container.parameters.radius/type_mpri.parameters.dz)+1;
 					z_start = -Nz;
 					z_end = Nz;
